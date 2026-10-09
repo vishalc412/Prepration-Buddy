@@ -1,0 +1,99 @@
+{
+  "15": {
+    "title": "Stanford CME295 Transformers & LLMs | Autumn 2026 | Lecture 1 - Transformers",
+    "url": "https://www.youtube.com/watch?v=114i2Kz-LZA",
+    "creator": "Stanford Online / Afshine and Shervine Amidi",
+    "note": "Video identity verified through Stanford course syllabus. Tokenization, embeddings and attention foundation; architecture trade-offs remain in bundled lessons."
+  },
+  "16": {
+    "title": "Diffusion and Score-Based Generative Models",
+    "url": "https://www.youtube.com/watch?v=wMmqCMwuM2Q",
+    "creator": "MIT OpenCourseWare / Yang Song",
+    "note": "Direct lecture link verified through MIT OCW. Advanced score-based derivation; begin with offline noise-schedule exercise before watching."
+  },
+  "17": {
+    "title": "Stanford CME295 | Autumn 2025 | Lecture 3 - Large Language Models",
+    "url": "https://www.youtube.com/watch?v=Q5baLehv5So",
+    "creator": "Stanford Online / Afshine and Shervine Amidi",
+    "note": "Official syllabus includes Mixture of Experts, context length and sampling. Relevant subject lecture, not coverage of every offline question."
+  },
+  "18": {
+    "title": "The State Space Model Revolution, with Albert Gu",
+    "url": "https://www.youtube.com/watch?v=1zjMalKLHiA",
+    "creator": "The Cognitive Revolution / Albert Gu",
+    "note": "Author interview verified through publisher episode page. Start near 05:39 for state spaces and 25:19 for Mamba; discussion includes architecture-specific trade-offs."
+  },
+  "19": {
+    "title": "PyTorch for Deep Learning & Machine Learning \u2013 Full Course",
+    "url": "https://www.youtube.com/watch?v=V_xro1bcAuA",
+    "creator": "freeCodeCamp.org / Daniel Bourke",
+    "note": "Tensor fundamentals, training workflow, classification and model experiments. Select material matching current module; use current PyTorch docs for changed APIs and device behavior."
+  },
+  "20": {
+    "title": "Stanford CME295 | Autumn 2025 | Lecture 4 - LLM training",
+    "url": "https://www.youtube.com/watch?v=VlA_jt_3Qc4",
+    "creator": "Stanford Online / Afshine and Shervine Amidi",
+    "note": "Official syllabus includes quantization and hardware optimization. General foundation; BitNet binary/ternary specifics come from linked original papers and official repository."
+  },
+  "21": {
+    "title": "Stanford CME295 | Autumn 2025 | Lecture 7 - Agentic LLMs",
+    "url": "https://www.youtube.com/watch?v=h-7S6HNq0Vg",
+    "creator": "Stanford Online / Afshine and Shervine Amidi",
+    "note": "Official syllabus includes RAG, advanced retrieval and agents. Complement bundled deployment constraints and deterministic execution controls."
+  },
+  "25": {
+    "title": "Stanford CME295 | Autumn 2025 | Lecture 7 - Agentic LLMs",
+    "url": "https://www.youtube.com/watch?v=h-7S6HNq0Vg",
+    "creator": "Stanford Online / Afshine and Shervine Amidi",
+    "note": "Official syllabus includes RAG, advanced retrieval and agents. Complement bundled deployment constraints and deterministic execution controls."
+  },
+  "29": {
+    "title": "Stanford CME295 | Autumn 2025 | Lecture 7 - Agentic LLMs",
+    "url": "https://www.youtube.com/watch?v=h-7S6HNq0Vg",
+    "creator": "Stanford Online / Afshine and Shervine Amidi",
+    "note": "Official syllabus includes RAG, advanced retrieval and agents. Complement bundled deployment constraints and deterministic execution controls."
+  },
+  "22": {
+    "title": "Stanford CME295 | Autumn 2025 | Lecture 8 - LLM evaluation",
+    "url": "https://www.youtube.com/watch?v=8fNP4N46RRo",
+    "creator": "Stanford Online / Afshine and Shervine Amidi",
+    "note": "Official syllabus covers judge methods, benefits, biases and pitfalls. No synthetic metric is your production hallucination rate."
+  },
+  "23": {
+    "title": "Deep Dive into LLMs like ChatGPT",
+    "url": "https://www.youtube.com/watch?v=7xTGNNLPyMI",
+    "creator": "Andrej Karpathy",
+    "note": "General-audience technical overview of LLM behavior and training. Pair with local prompting, structured-output and failure-case assignments; no provider account is required for bundled teaching."
+  },
+  "24": {
+    "title": "Learn RAG From Scratch \u2013 Python AI Tutorial from a LangChain Engineer",
+    "url": "https://www.youtube.com/watch?v=sVcwVQRHIc8",
+    "creator": "freeCodeCamp.org / Lance Martin",
+    "note": "RAG pipeline concepts and Python examples. Framework/provider calls in video are optional; bundled lexical fixtures run locally and do not prove embedding or LLM answer quality. Follow current retrieval docs for API drift."
+  },
+  "27": {
+    "title": "Learn Python - Full Course for Beginners [Tutorial]",
+    "url": "https://www.youtube.com/watch?v=rfscVS0vtbw",
+    "creator": "freeCodeCamp.org / Mike Dane",
+    "note": "Foundation refresher: data types, collections, functions, exceptions and classes. Follow each selected topic with bundled Python scenarios; old setup screens may differ from current Python."
+  },
+  "28": {
+    "title": "Let's build GPT: from scratch, in code, spelled out.",
+    "url": "https://www.youtube.com/watch?v=kCc8FmEb1nY",
+    "creator": "Andrej Karpathy",
+    "note": "Code-level transformer and language-model construction. Requires Python/PyTorch foundations. Rebuild a small component and explain causal attention rather than copying an entire training run."
+  },
+  "30": {
+    "title": "OWASP TOP 10 for LLM01: Prompt Injection",
+    "url": "https://www.youtube.com/watch?v=dq5jD_qE1Cg",
+    "creator": "Vandana Verma",
+    "note": "Focused prompt-injection explanation from creator's LLM-security series. Follow current OWASP risk guidance; prompts alone cannot replace application authorization or egress policy."
+  },
+  "26": {
+    "title": "Search Neo4j official Cypher and RDF/SPARQL tutorials",
+    "url": "https://www.youtube.com/results?search_query=Neo4j+official+Cypher+RDF+OWL+SPARQL+tutorial",
+    "creator": "YouTube topic search",
+    "kind": "search",
+    "note": "Explicit search link, not a verified individual video. Read linked W3C and Neo4j references for semantic and query-language distinctions."
+  }
+}

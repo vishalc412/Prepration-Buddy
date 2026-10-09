@@ -1,0 +1,920 @@
+[
+  {
+    "id": "client-01",
+    "day": 15,
+    "topic": "Transformer families",
+    "question": "What are the different LLM/Transformer architectures—encoder-only, decoder-only, and encoder-decoder?",
+    "plain": "Think of three reading and writing arrangements. An encoder-only model reads a supplied sequence and builds contextual representations, usually allowing a word to use words on both sides. A decoder-only model reads a prefix and predicts what follows, using a rule that hides future positions. An encoder-decoder model first represents a source sequence, then writes a target sequence while consulting that source. These names describe information flow, not intelligence levels. A document classifier, a conversational generator and a translation system may need different arrangements. Training objective and output head matter alongside the architecture; a family name alone cannot determine capability.",
+    "mechanism": "Start with a sequence of token vectors. Self-attention creates a query, key and value for each position, scores query-key compatibility, and mixes values using normalized scores. The attention mask determines which positions may contribute. In an ordinary bidirectional encoder, a nonpadding position can consult the full source sequence. A classification head may pool one representation, while a token-labeling head uses each position. Masked-token prediction is one possible pretraining objective, not a synonym for every encoder.\nA causal decoder uses a triangular mask: position i consults positions at or before i. Its final hidden vector is projected into vocabulary logits for the next-token distribution. During training, shifted targets and teacher forcing allow losses for many positions in parallel without revealing later target tokens to an earlier prediction. During generation, new tokens extend the prefix sequentially.\nAn encoder-decoder has two sets of blocks. Source self-attention builds source representations. Target self-attention remains causal. Cross-attention uses target queries and source keys/values, providing a separate path from target generation to source evidence. The original Transformer used this arrangement; BERT and GPT-style models illustrate other arrangements. Positional information, residual paths and feed-forward layers remain important. These mechanisms can be combined or modified; compare actual masks and connectivity before classifying a unfamiliar model.",
+    "answer": "I distinguish the three families by visibility and source-to-output connectivity. Encoder-only models usually create bidirectional input representations and suit tasks such as classification, tagging or embeddings when trained appropriately. Decoder-only models apply causal self-attention and predict successive tokens from a prefix, making a shared prompt-plus-response stream natural. Encoder-decoder models represent a source separately and generate a causal target with cross-attention to the source. BERT, GPT-style models and T5 are useful examples, but their objectives and downstream adaptations still matter. A decoder-only model absolutely processes input; it lacks a separate encoder stack, not representation building. I would choose based on the task, available checkpoint, context requirements and measured quality, latency and memory. I would inspect masks and output heads rather than assume the most popular family is best for every workload.",
+    "example": "Classification: source “refund approved” → encoder representations → class logits. Continuation: “refund approved because” → causal decoder → next-token logits. Translation: English source → encoder; French prefix → decoder plus source cross-attention.",
+    "pitfalls": [
+      "Calling an encoder an embedding lookup only; contextual blocks do more.",
+      "Assuming decoder-only models have no input processing.",
+      "Treating architecture, training objective and downstream task as interchangeable."
+    ],
+    "followups": [
+      {
+        "question": "Can an encoder-only model generate text?",
+        "answer": "Specialized generation procedures or additional components can adapt it, but ordinary masked-token encoding does not provide the standard causal next-token loop. Specify the adaptation rather than treating capability as an absolute architectural prohibition."
+      },
+      {
+        "question": "How do I recognize cross-attention?",
+        "answer": "Trace the origins of Q, K and V. Target hidden states supply queries; separately computed source representations supply keys and values. This differs from self-attention, where all three originate in the same stream."
+      }
+    ],
+    "hints": [
+      "Compare which tokens each position may see.",
+      "Separate a source stream from a causal target stream.",
+      "Look for cross-attention and the training target."
+    ],
+    "checks": [
+      {
+        "question": "Which family has a separate source stack and target cross-attention?",
+        "options": [
+          "Encoder-only",
+          "Encoder-decoder",
+          "Decoder-only"
+        ],
+        "answer": 1,
+        "explanation": "The decoder queries representations produced by the separate source encoder."
+      },
+      {
+        "question": "What makes ordinary next-token attention causal?",
+        "options": [
+          "Future positions are masked",
+          "All weights are binary",
+          "It has no embeddings"
+        ],
+        "answer": 0,
+        "explanation": "The visibility mask prevents use of future sequence positions."
+      }
+    ],
+    "sources": [
+      {
+        "title": "Attention Is All You Need",
+        "url": "https://arxiv.org/abs/1706.03762"
+      },
+      {
+        "title": "BERT: Pre-training of Deep Bidirectional Transformers",
+        "url": "https://arxiv.org/abs/1810.04805"
+      },
+      {
+        "title": "Language Models are Unsupervised Multitask Learners",
+        "url": "https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf"
+      },
+      {
+        "title": "Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer",
+        "url": "https://arxiv.org/abs/1910.10683"
+      }
+    ]
+  },
+  {
+    "id": "client-02",
+    "day": 15,
+    "topic": "Decoder-only motivation",
+    "question": "Why do we need a decoder-only architecture?",
+    "plain": "We do not need it for every problem. It is useful when the desired behavior is to continue a sequence: read instructions, examples or conversation, then produce the next text. One stack can process both the supplied prefix and the generated response. The same next-token training rule applies across many text formats. This simplifies a general continuation interface, but convenience does not guarantee the best result for every task. If you only need a document category or a fixed-size representation, an encoder may be suitable. If you need separate source and target processing, an encoder-decoder may be suitable instead.",
+    "mechanism": "Autoregressive modeling factorizes a sequence probability into a product of conditional probabilities: p(x1,...,xn) = product p(xt | x<t). Taking negative log probability turns this into a sum of per-position training losses. A causal stack is compatible with that factorization because each prediction uses only its prefix. A prompt can include a task description and examples; the response continues the same sequence. This interface does not require a separate source encoder or a different output head for every text task.\nTraining is still computationally different from serving. Given a complete training sequence, causal masks allow many conditional predictions in one forward pass. At inference, the next token is not yet known, so output tokens are appended one at a time. Cached keys and values avoid recomputing some previous projections, at the cost of retained state that grows with context in ordinary attention implementations.\nThe causal restriction is a trade-off. Earlier prompt positions cannot see later prompt positions under the usual mask, although the final prompt position can use the entire prefix. Other objectives can exploit bidirectional source context more directly. Availability of suitable pretrained weights, task data, context length, decoding policy and deployment constraints affect selection. A fluent continuation is not evidence of factual correctness. Demonstrate the actual task under representative inputs and budgets before declaring one architecture necessary.",
+    "answer": "Decoder-only architecture is a useful design for autoregressive language modeling, not a universal requirement. It represents a prefix and predicts its continuation through the same stack. That fits instructions, dialogue, code and examples expressed as one token stream, with a common next-token objective during pretraining. Causal masking prevents future-token leakage; generation then appends outputs sequentially. The approach offers a flexible interface, but inference may require significant context and cache memory, and earlier positions lack bidirectional access to later prompt positions. For classification or embeddings I would consider an appropriate encoder; for explicit source-to-target work I would also consider encoder-decoder checkpoints. I would compare quality, first-token latency, generation throughput and peak memory at the requested sequence length. Architecture is one decision axis, alongside training data, adaptation and operational evidence.",
+    "example": "A completion API accepts “Convert this function to Java: ...\nResult:” and produces Java tokens as the same stream continues; no dedicated Java output head is implied. This illustrates one-stream continuation; evaluate the resulting code with tests rather than equating a generated token sequence with correctness.",
+    "pitfalls": [
+      "Saying decoder-only is the only way to generate.",
+      "Confusing parallel training positions with parallel autoregressive output tokens.",
+      "Claiming a next-token objective guarantees reliable reasoning."
+    ],
+    "followups": [
+      {
+        "question": "Why can training evaluate many positions at once?",
+        "answer": "The true training tokens are already available. A causal mask ensures each position sees only its allowed prefix, and the loss compares its logits with a shifted target. Serving lacks those future output tokens."
+      },
+      {
+        "question": "Is simpler connectivity always cheaper?",
+        "answer": "No. Compare checkpoint size, context, cache, kernels, batch shape and task quality. A topology description is insufficient to predict end-to-end cost."
+      }
+    ],
+    "hints": [
+      "Write the prefix-to-next-token contract.",
+      "Separate training from inference.",
+      "Describe one task where another family fits."
+    ],
+    "checks": [
+      {
+        "question": "Decoder-only is most naturally aligned with which contract?",
+        "options": [
+          "Continue a supplied prefix",
+          "Guarantee factual truth",
+          "Remove all sequence state"
+        ],
+        "answer": 0,
+        "explanation": "Autoregressive conditionals predict a continuation from the preceding tokens."
+      },
+      {
+        "question": "What should decide a production choice?",
+        "options": [
+          "Family popularity alone",
+          "Measured task quality and deployment budgets",
+          "The word decoder"
+        ],
+        "answer": 1,
+        "explanation": "The workload and deployment constraints determine whether an available model is suitable."
+      }
+    ],
+    "sources": [
+      {
+        "title": "Language Models are Unsupervised Multitask Learners",
+        "url": "https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf"
+      },
+      {
+        "title": "Attention Is All You Need",
+        "url": "https://arxiv.org/abs/1706.03762"
+      }
+    ]
+  },
+  {
+    "id": "client-03",
+    "day": 15,
+    "topic": "Prompt ingestion",
+    "question": "If decoder-only has no separate encoder, how does it take and understand the input prompt?",
+    "plain": "The name can mislead: the decoder stack still reads and transforms the prompt. First a tokenizer converts text into token identifiers. Embedding lookup turns those identifiers into vectors; positional information helps distinguish order. The vectors then pass through causal attention and other transformations. At the last prompt position, the model has a representation informed by the whole preceding prompt. It uses that representation to predict the next token, and repeats after adding the predicted token. Tokenization is a preparation step, not a separate Transformer encoder. “Understand” here means learned contextual processing with observable task behavior, not guaranteed human comprehension.",
+    "mechanism": "Trace “The meeting is on Friday. Reply with the weekday:” as token IDs x1...xn. An embedding matrix maps each ID to a vector. Positional encodings or position-dependent attention transformations distinguish otherwise identical token content at different positions. Every block applies causal self-attention, residual connections, normalization and a feed-forward transformation. At position i, attention may combine values from j <= i; it does not need an encoder output because its own stream already contains the prompt representations.\nAfter the last block, the hidden vector at position n is projected through a language-model head to vocabulary logits. Softmax converts logits into a probability distribution. Greedy decoding or a sampling policy chooses a token; the chosen token joins the context. A stop condition and an output-token budget terminate the loop. Prompt processing is often called prefill, while repeated one-token generation is called decode. Both belong to the same model, even though their execution shapes and latency differ.\nDuring ordinary cached attention inference, previous keys and values can be retained per layer, letting a newly appended token consult preceding tokens without recalculating their key/value projections. This cache is not a database of verified facts. It is session-dependent numerical state. The causal mask means an early prompt token does not see later tokens, but the final prompt position can receive information from every allowed earlier position. A token embedding, tokenizer or prompt prefill must not be described as a separate encoder-only Transformer.",
+    "answer": "A decoder-only Transformer takes the prompt directly into its own stack. Text is tokenized, token IDs are embedded, positional information is incorporated, and successive causal attention and feed-forward blocks create contextual hidden states. The final prompt position can attend to all earlier prompt positions, so its hidden state supports the first next-token prediction. A vocabulary head produces logits; a decoding policy selects a token, appends it and repeats. Prefill processes the existing prompt; decode generates new tokens. These are phases of the same stack. Tokenizer encoding is a string-to-ID operation, not a separate Transformer encoder. The absence of cross-attention to an encoder does not mean the model lacks representations. I would also distinguish this learned conditional behavior from factual reliability and test whether the response follows the supplied evidence and instructions.",
+    "example": "For prompt token vectors [2,4,8], the last causal row can mix all three values; the first row can only mix its own value. The day 15 fixture changes the future value and confirms the first output remains unchanged.",
+    "pitfalls": [
+      "Calling the tokenizer a Transformer encoder.",
+      "Assuming every prompt position has bidirectional visibility.",
+      "Describing KV cache as persistent factual memory."
+    ],
+    "followups": [
+      {
+        "question": "Can the first prompt token inspect the last one?",
+        "answer": "Under ordinary causal self-attention it cannot. Later positions can use earlier positions. The final prompt position is therefore different from the first; bidirectional prompt variants require an explicitly different mask."
+      },
+      {
+        "question": "What happens if the prompt exceeds the context budget?",
+        "answer": "The serving system must enforce a policy such as rejection, truncation or a validated retrieval/summary process. Do not assume all text was read; disclose which evidence remains accessible."
+      }
+    ],
+    "hints": [
+      "Begin with token IDs and vectors.",
+      "Draw the lower triangular visibility matrix.",
+      "Follow the final prompt state into vocabulary logits."
+    ],
+    "checks": [
+      {
+        "question": "Where is a decoder-only prompt processed?",
+        "options": [
+          "Inside the decoder stack itself",
+          "Only in an unseen mandatory encoder",
+          "Only after the answer is generated"
+        ],
+        "answer": 0,
+        "explanation": "The same causal blocks transform prompt and output tokens."
+      },
+      {
+        "question": "Tokenizer.encode means what in this context?",
+        "options": [
+          "A full bidirectional Transformer pass",
+          "Text-to-token IDs",
+          "A guarantee of semantic comprehension"
+        ],
+        "answer": 1,
+        "explanation": "Tokenizer encoding is distinct from a Transformer encoder stack."
+      }
+    ],
+    "sources": [
+      {
+        "title": "Language Models are Unsupervised Multitask Learners",
+        "url": "https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf"
+      },
+      {
+        "title": "Attention Is All You Need",
+        "url": "https://arxiv.org/abs/1706.03762"
+      }
+    ]
+  },
+  {
+    "id": "client-04",
+    "day": 16,
+    "topic": "Diffusion process",
+    "question": "What is a diffusion model, and how does it work?",
+    "plain": "Imagine deliberately adding static to a clean picture until its structure becomes difficult to see. A diffusion model learns how to reverse a related corruption process. During training, we supply a noisy example and tell the network how much noise was added; a target teaches it a useful denoising direction. During generation, we start from noise and repeatedly refine it using the learned network and a sampling rule. This is different from writing one text token at a time. The gradual process defines the modeling approach; it does not specify one mandatory network shape or guarantee that every generated picture is correct.",
+    "mechanism": "A simple Gaussian forward process gradually corrupts data x0. Let beta_t be a step noise variance, alpha_t = 1-beta_t, and alpha_bar_t the product of alphas up to t. A noisy sample can be constructed directly as x_t = sqrt(alpha_bar_t) x0 + sqrt(1-alpha_bar_t) epsilon, with standard Gaussian epsilon. The time index tells the model which corruption level it sees. An epsilon-prediction objective asks a network epsilon_theta(x_t,t,conditioning) to estimate the sampled noise; other parameterizations predict clean data or a velocity-like quantity.\nA reverse sampler uses this learned prediction with a schedule to update a noisy state toward the data distribution. Depending on the formulation and sampler, an update may include additional noise or be deterministic. Generating an image requires repeatedly evaluating the denoiser; the number of updates is an operational quality/latency trade-off, not automatically the number of training noise levels. Conditioning such as text can steer denoising without redefining the forward corruption equation.\nOur scalar lab supplies known epsilon and algebraically recovers x0. It checks a numerical identity, not a learned network or a valid generative sampler. Using true noise in that fixture is an oracle unavailable for an arbitrary new noisy sample. A real model must estimate the denoising quantity from training data, and an iterative sampler must have consistent coefficients. Noise prediction accuracy, output quality and unsafe memorization require separate evaluation. Avoid describing diffusion as simply removing a fixed filter from every image.",
+    "answer": "Diffusion is a generative modeling approach with a defined corruption process and a learned reverse process. In a common Gaussian formulation, training constructs a noisy example at a sampled time and teaches a denoiser to predict the added noise or an equivalent target. At generation time, a sampler starts from noise and applies successive learned updates, optionally conditioned on text or another input. The time/noise level is part of the network input. The forward process, denoising network, target parameterization and sampler are separate design choices. I would not equate diffusion with a U-Net or confuse an oracle algebra fixture with trained generation. Operationally I would evaluate quality, latency, conditioning fidelity and safety at a specified resolution, schedule and step count. A different sampler can change speed and outputs without changing the entire model family.",
+    "example": "With alpha_bar=.64, x0=2 and epsilon=-1, x_t=.8×2+.6×(-1)=1. Recovering (1-.6×(-1))/.8 gives 2. This uses known fixture noise; a trained denoiser must estimate it. The denoising quantity is supplied in this arithmetic example, so no model has estimated it and no image is generated.",
+    "pitfalls": [
+      "Confusing forward corruption with the learned reverse network.",
+      "Using true fixture noise and calling the result a trained generator.",
+      "Assuming every sampler uses identical updates or step counts."
+    ],
+    "followups": [
+      {
+        "question": "Why provide a time or noise-level input?",
+        "answer": "The same observed value can correspond to very different uncertainty at different noise levels. The denoiser needs that information to estimate the appropriate direction or target."
+      },
+      {
+        "question": "Does fewer sampling steps guarantee the same quality?",
+        "answer": "No. Sampler, model training, schedule, conditioning and workload influence the trade-off. Compare controlled outputs and task metrics rather than inferring quality from step count alone."
+      }
+    ],
+    "hints": [
+      "Separate clean data, corrupted data and sampled noise.",
+      "Write the forward equation with alpha_bar.",
+      "Explain what must be learned and what the sampler computes."
+    ],
+    "checks": [
+      {
+        "question": "The scalar oracle lab demonstrates what?",
+        "options": [
+          "A trained image generator",
+          "A forward-noise algebra identity",
+          "A universal sampler benchmark"
+        ],
+        "answer": 1,
+        "explanation": "Known epsilon allows exact inversion of the toy equation without learning."
+      },
+      {
+        "question": "Which quantity tells the denoiser the corruption level?",
+        "options": [
+          "Time or noise level",
+          "Tenant ID alone",
+          "The output filename"
+        ],
+        "answer": 0,
+        "explanation": "Denoising depends on the level of corruption."
+      }
+    ],
+    "sources": [
+      {
+        "title": "Denoising Diffusion Probabilistic Models",
+        "url": "https://arxiv.org/abs/2006.11239"
+      }
+    ]
+  },
+  {
+    "id": "client-05",
+    "day": 16,
+    "topic": "Diffusion architectures",
+    "question": "Does a diffusion model require an encoder-decoder architecture?",
+    "plain": "No. Diffusion describes a corruption-and-denoising approach, while encoder-decoder describes a network arrangement. They answer different questions. Some image diffusion systems use a U-Net whose shrinking and expanding feature paths look like an encoder and decoder. A latent diffusion system may also use an autoencoder to compress images and reconstruct them later. A text-conditioned system may have a separate text encoder. These components have different jobs. A diffusion denoiser can instead use Transformer blocks. Seeing an encoder somewhere in a product does not make diffusion itself dependent on the original source-target Transformer architecture or any single denoiser layout.",
+    "mechanism": "Disentangle four roles before interpreting a diagram. First, the diffusion process defines noisy states and reverse updates. Second, the denoiser maps a noisy state, a time/noise level and optional conditioning to a prediction. Third, a representation system may map images to a latent space and back. Fourth, a conditioning system may turn text or other inputs into vectors consumed by the denoiser. The sampler orchestrates repeated denoiser calls with chosen coefficients.\nA U-Net denoiser uses downsampling and upsampling feature paths with skip connections. Calling those paths encoder and decoder refers to spatial feature processing; it is not automatically the encoder-decoder Transformer used for translation. In latent diffusion, an image autoencoder can be trained separately to reduce spatial representation cost. Diffusion then acts on latent tensors, and decoding converts the final latent into pixels. A text encoder supplies conditioning but does not perform the image denoising loop.\nDiffusion Transformers provide a counterexample to the claim that a U-Net is required: the denoising backbone processes latent patches through Transformer blocks. This still needs a valid diffusion objective and sampler, and a particular system may retain an image autoencoder or conditioning encoder. Therefore ask which component a diagram labels encoder and which job it performs. Changing denoiser geometry changes implementation and trade-offs; it does not remove the defining noisy-state training and reverse-generation process. Compare a complete configured pipeline rather than judging from a component nickname.",
+    "answer": "A diffusion model does not require a particular encoder-decoder architecture. Diffusion specifies the forward corruption and learned reverse modeling process; the denoising backbone is a separate choice. A U-Net has spatial down/up paths and skips, but that differs from a source encoder plus causal target decoder with cross-attention. Latent diffusion can use an image autoencoder for compression and reconstruction, while a text encoder provides conditioning. Those components should be identified independently. A diffusion Transformer can replace the U-Net denoiser, demonstrating that U-Net geometry is not essential to diffusion. I would draw the noisy-state path, denoiser, sampler, image representation and conditioning path separately. Then I would explain which parts are trained together or frozen, and measure the complete pipeline at its actual resolution and sampling budget.",
+    "example": "PipelineA: noisy pixels → U-Net → predicted noise. PipelineB: noisy latent patches → Transformer → predicted denoising target → sampler; image decoder converts final latent to pixels. Both may implement diffusion.",
+    "pitfalls": [
+      "Equating a U-Net upsampling path with a causal language decoder.",
+      "Calling the image autoencoder the denoiser.",
+      "Inferring the entire pipeline from the word encoder."
+    ],
+    "followups": [
+      {
+        "question": "Can pixel-space diffusion avoid an image autoencoder?",
+        "answer": "Yes. A process can operate directly on pixel tensors. Latent compression is an additional design choice with reconstruction and computation trade-offs."
+      },
+      {
+        "question": "Is a text encoder mandatory for unconditional diffusion?",
+        "answer": "No. Unconditional generation does not require a text-conditioning component. Conditional pipelines need a representation of their conditioning, whose implementation varies."
+      }
+    ],
+    "hints": [
+      "Name the process and backbone separately.",
+      "Identify image compression and text conditioning as distinct jobs.",
+      "Use a Transformer denoiser as a concrete counterexample."
+    ],
+    "checks": [
+      {
+        "question": "Which statement is correct?",
+        "options": [
+          "Every diffusion model is a translation encoder-decoder",
+          "Diffusion and backbone geometry are separate choices",
+          "Every diffusion model needs a text encoder"
+        ],
+        "answer": 1,
+        "explanation": "The denoising process admits multiple backbones and conditioning configurations."
+      },
+      {
+        "question": "An image autoencoder typically supplies which role?",
+        "options": [
+          "Text token sampling",
+          "Latent compression and pixel reconstruction",
+          "Router load balancing"
+        ],
+        "answer": 1,
+        "explanation": "It maps between image and latent representation spaces."
+      }
+    ],
+    "sources": [
+      {
+        "title": "High-Resolution Image Synthesis with Latent Diffusion Models",
+        "url": "https://arxiv.org/abs/2112.10752"
+      },
+      {
+        "title": "Scalable Diffusion Models with Transformers",
+        "url": "https://arxiv.org/abs/2212.09748"
+      },
+      {
+        "title": "Denoising Diffusion Probabilistic Models",
+        "url": "https://arxiv.org/abs/2006.11239"
+      }
+    ]
+  },
+  {
+    "id": "client-06",
+    "day": 17,
+    "topic": "Mixture of Experts",
+    "question": "What is Mixture of Experts (MoE)?",
+    "plain": "Mixture of Experts gives a model several alternative learned transformations and a routing mechanism that chooses which ones to use for each input. In a sparse language-model layer, a token may visit only one or a few experts instead of all of them. That can provide many total parameters while activating a smaller subset for each token. The experts are usually neural subnetworks, not independent chatbots or guaranteed specialists such as “Java expert” and “medical expert.” The router and experts learn useful behavior from training. More total capacity can also require more memory, communication and routing coordination; sparse activation does not make every deployment cheap.",
+    "mechanism": "Consider a token hidden vector h with dimension d. A dense feed-forward layer applies one learned transformation to every token. A sparse MoE substitutes multiple expert transformations E1...EN and a learned router. Router logits are often an affine map W_r h + b; probabilities are derived by softmax. A routing rule selects a subset S, and the layer combines selected outputs using defined gates, for example sum over e in S of g_e E_e(h). Some designs use top-1, others top-k, and exact gate normalization varies.\nTotal parameters include every expert, shared layers and the router. Active computation counts only selected experts plus shared components, routing and communication. Therefore total and active parameter counts describe different costs. Experts distributed across devices may require dispatching token vectors and gathering results. Skewed traffic can overload one expert even when the average arithmetic budget seems small. Training commonly needs balancing mechanisms; capacity rules must specify whether overflow is rerouted, deferred or dropped.\nRouting is learned from task losses together with any auxiliary terms. Selection itself is discrete, so the implementation must specify how learning signals reach gates and selected experts. A toy fixed-logit router checks top-k selection and weighted outputs only. It does not prove specialization or training stability. At a principal level, compare matched task quality and actual hardware, and track per-expert load, overflow and tail latency. Do not multiply expert count by a claimed speed factor without measuring the rest of the system.",
+    "answer": "MoE is a model-layer pattern with multiple learned expert subnetworks and a router that selects or weights them. Sparse MoE activates a small subset per token, often in place of a dense feed-forward block, so total model capacity can exceed the parameters used for one token. The rest of the model, routing and communication still contribute cost. Experts are not necessarily human-labeled subject specialists. I would explain the token hidden vector, router scores, selection rule, expert evaluation and output combination. Then I would distinguish total versus active parameters, resident memory and dispatched computation. Important production risks are skewed expert loads, capacity overflow, communication and training stability. Our fixed-logit lab demonstrates routing arithmetic, not learned expertise. A model selection claim should use workload-specific quality and latency measurements on the intended hardware.",
+    "example": "Four experts, top 2 routing: tokenA chooses 0 and 2; tokenB chooses 1 and 3. All four sets of weights may remain resident even though each token evaluates only two expert transformations. Resident weight memory, dispatched token work and inter-device traffic must be counted separately in a real deployment plan.",
+    "pitfalls": [
+      "Treating sparse MoE as always cheaper in memory.",
+      "Assigning human skill labels to experts without evidence.",
+      "Ignoring shared-layer, router and communication costs."
+    ],
+    "followups": [
+      {
+        "question": "Is an ensemble the same thing?",
+        "answer": "An ensemble often evaluates separate models and combines their predictions. Sparse layer-level MoE conditionally dispatches representations inside a model; the granularity and training arrangement differ."
+      },
+      {
+        "question": "Why measure per-expert load?",
+        "answer": "Averages can hide a hot expert that limits throughput and increases tail latency or overflow. Count assignments and capacity events by expert and layer."
+      }
+    ],
+    "hints": [
+      "Replace one feed-forward layer with several alternatives.",
+      "Route each token to a small subset.",
+      "Separate total capacity from active work and communication."
+    ],
+    "checks": [
+      {
+        "question": "Sparse MoE chooses experts most commonly at what granularity?",
+        "options": [
+          "Only once per human profession",
+          "Per token representation at a layer",
+          "Only at installation"
+        ],
+        "answer": 1,
+        "explanation": "Layer routers commonly act on individual token hidden vectors."
+      },
+      {
+        "question": "More total experts automatically reduce which cost?",
+        "options": [
+          "All resident weight memory",
+          "Neither cost automatically",
+          "All network communication"
+        ],
+        "answer": 1,
+        "explanation": "Sparse activation does not guarantee any universal memory or communication reduction."
+      }
+    ],
+    "sources": [
+      {
+        "title": "Switch Transformers",
+        "url": "https://arxiv.org/abs/2101.03961"
+      }
+    ]
+  },
+  {
+    "id": "client-07",
+    "day": 17,
+    "topic": "MoE analogy",
+    "question": "Explain MoE in layman terms.",
+    "plain": "Picture a workshop with several workbenches. A dispatcher sees each small piece of work and sends it to a few benches, then collects their results. The whole workshop has many tools, but any one piece uses only a subset. This captures sparse MoE's idea: conditional use of model capacity. Now remove two misleading parts of the analogy. The benches do not come with guaranteed human professions, and the dispatcher is not reading a dictionary of topic labels. Both are learned numerical functions. If everyone is sent to one bench, the queue becomes a problem even though unused benches remain available elsewhere.",
+    "mechanism": "Map each analogy element carefully. A piece of work is a token's contextual hidden vector, not necessarily an entire user question. A bench is a learned expert feed-forward network at one layer. The dispatcher is a router that maps the hidden vector to scores. Sending work is top-k selection and token dispatch. Collecting work is a specified gated combination of expert outputs. Other Transformer operations can remain shared before and after this layer.\nA question about Java may contain punctuation, code symbols and ordinary language; its tokens can take different routes, and routes can change at different layers. It would be inaccurate to say one globally designated Java expert answers the whole prompt. The training system may produce useful specialization, but the meaningful groups must be investigated with routing and behavior evidence.\nThe workshop metaphor also exposes operations costs. More benches need storage space: all expert weights may require substantial memory. Moving work between benches on different devices creates communication. One popular bench produces a bottleneck. A capacity limit requires a policy for overflow, and training can encourage balanced use. Counting benches is therefore not the same as measuring speed. Our fixture uses numeric scores and scalar expert functions to make the mapping visible; those functions are deliberately invented, not learned language skills. Finish a lay explanation with these limits so the metaphor helps without creating a false model of the implementation.",
+    "answer": "I explain MoE as a workshop that has many workbenches but sends each piece of work to only a few. In the actual model, the piece is a token representation, each bench is an expert neural transformation, and a learned router chooses the active experts and combines their outputs. This provides conditional use of a larger parameter pool. The analogy has limits: experts are not automatically named human specialists, and routing can vary by token and layer within the same prompt. Keeping all benches available still consumes weight memory, and dispatching across devices introduces communication and bottlenecks. If one expert receives too many tokens, capacity and balancing become important. I would use the metaphor to explain sparse activation, then replace it with the hidden-vector-to-router-to-expert-output flow for a technical follow-up.",
+    "example": "Question “Fix this Java loop” is several pieces of work. Tokens “Fix”, “Java” and “loop” can choose different benches at the same layer; that does not establish a whole-prompt Java specialist.",
+    "pitfalls": [
+      "Allowing the metaphor to imply explicit human-domain labels.",
+      "Saying each prompt is routed once for the whole network.",
+      "Comparing workbench counts without accounting for storage or queues."
+    ],
+    "followups": [
+      {
+        "question": "What does the analogy leave out?",
+        "answer": "Real layers use vectors, differentiable computations and learned parameters. Distributed dispatch, balancing losses and layer-by-layer routing are more complex than a person sending one parcel."
+      },
+      {
+        "question": "What if the dispatcher prefers one bench?",
+        "answer": "Expert load becomes skewed. Training and serving need suitable balancing/capacity policies; simply adding unused experts will not remove the hot expert bottleneck."
+      }
+    ],
+    "hints": [
+      "Explain conditional work first.",
+      "Map bench, piece and dispatcher to numerical components.",
+      "State exactly where the analogy breaks."
+    ],
+    "checks": [
+      {
+        "question": "The workbench corresponds to what?",
+        "options": [
+          "A separate human job title",
+          "A learned expert transformation",
+          "The complete internet"
+        ],
+        "answer": 1,
+        "explanation": "An expert is a trainable neural subnetwork."
+      },
+      {
+        "question": "One user question can take how many routes?",
+        "options": [
+          "Potentially different routes across tokens and layers",
+          "Exactly one route for all tokens forever",
+          "No numerical routes"
+        ],
+        "answer": 0,
+        "explanation": "Routers usually operate on token representations independently at each MoE layer."
+      }
+    ],
+    "sources": [
+      {
+        "title": "Switch Transformers",
+        "url": "https://arxiv.org/abs/2101.03961"
+      }
+    ]
+  },
+  {
+    "id": "client-08",
+    "day": 17,
+    "topic": "Router and gating",
+    "question": "How does the router/gating mechanism decide which experts to activate?",
+    "plain": "The router calculates scores from the token's current numerical representation. A common router is a learned linear map that outputs one score for every expert. A selection rule picks the highest one or few scores. Selected expert outputs are combined with defined weights. Training adjusts the router parameters so routing supports the model's objective, often with additional balancing controls. It is not normally a hand-written keyword rule. Equal scores, full experts and overloaded devices still need explicit behavior. The particular top-k and normalization policy are configuration choices; there is no single gating rule that all MoE models must follow.",
+    "mechanism": "Let h be a d-dimensional hidden vector and W_r an N-by-d learned matrix. Compute logits z = W_r h + b. Softmax produces p_e = exp(z_e)/sum_j exp(z_j); subtracting the maximum before exponentiation improves numerical stability without changing probabilities. A top-k rule selects indices with the largest scores. Selected gates may use original probabilities or renormalize within the chosen set, depending on the model. The output is a gated sum of selected expert transformations, plus any architecture-specific residual/shared paths.\nThe hard index choice is not smoothly differentiable everywhere. Training implementations define how loss gradients reach router probabilities and selected experts; auxiliary balancing terms, routing noise or alternative estimators may also be used. Saying the router learns through backpropagation does not mean ordinary gradients pass unchanged through a discrete sort operation. Examine the actual loss and dispatch implementation when explaining a specific model.\nCapacity is a second constraint, not just a score. A batch can contain many tokens selecting the same expert; a capacity policy must handle this explicitly. The fixture uses a learned-router-shaped affine map with fixed weights and bias, deterministic index-order tie breaking, selected-set normalization and explicit overflow flags. No token is silently discarded. It verifies arithmetic and accounting, not training. Observe router entropy, assignment counts, overflow and expert utilization alongside model quality. A confident score is not an authorization decision or evidence that an expert has a human-defined topic skill.",
+    "answer": "A typical router maps the current token hidden vector through learned parameters to expert logits, applies a score/probability transformation and selects top-1 or top-k experts. Their outputs are combined under the model's specified gate normalization. The router is learned with task objectives and often balancing controls; it is not usually a keyword classifier with manually assigned expert domains. Hard selection requires implementation-specific treatment for training gradients, so I would not claim every discrete routing step is differentiable. I would also explain tie behavior and capacity: the highest-scoring expert may already be overloaded. Dispatch and overflow policies must preserve the intended semantics and be measured. Our fixed-weight affine fixture exposes bias effects, stable softmax, tie ordering, selected-set weights and overflow accounting. It validates those contracts without pretending to learn expert specialization.",
+    "example": "For h=[1,0], W rows [1,0],[0,1],[-1,0] and b=[0,.5,0], logits=[1,.5,-1]. Top 2 selects 0,1; selected softmax weights are approximately .62246,.37754. The second gate is the complement of the first under this selected-set normalization. Changing the bias can change both selection and weights.",
+    "pitfalls": [
+      "Calling top-k sorting smoothly differentiable at all points.",
+      "Assuming gate weights are always renormalized the same way.",
+      "Silently dropping tokens when expert capacity is exceeded."
+    ],
+    "followups": [
+      {
+        "question": "Why can bias change a route?",
+        "answer": "The affine router adds one bias per expert before ranking. Even identical token vectors can select different experts after a bias or parameter update; fixed keyword labels are unnecessary."
+      },
+      {
+        "question": "Why do scores need numerical validation?",
+        "answer": "NaN or infinity can make ranking and normalization meaningless. Validate shape and finite values before interpreting routing outputs; record failures rather than emitting apparently valid assignments."
+      }
+    ],
+    "hints": [
+      "Compute h → logits before top-k.",
+      "Specify normalization and ties.",
+      "Add capacity accounting and the training-gradient caveat."
+    ],
+    "checks": [
+      {
+        "question": "Router scores commonly come from what?",
+        "options": [
+          "A learned map of hidden vectors",
+          "Mandatory hand-written topic labels",
+          "The response filename"
+        ],
+        "answer": 0,
+        "explanation": "Learned parameters transform contextual representations into expert scores."
+      },
+      {
+        "question": "Which necessary implementation contracts remain unspecified by taking the two largest logits?",
+        "options": [
+          "A universal accuracy guarantee",
+          "Tie, gate normalization and capacity policies",
+          "A requirement to call the internet"
+        ],
+        "answer": 1,
+        "explanation": "Selection alone does not define a complete safe dispatch contract."
+      }
+    ],
+    "sources": [
+      {
+        "title": "Switch Transformers",
+        "url": "https://arxiv.org/abs/2101.03961"
+      }
+    ]
+  },
+  {
+    "id": "client-09",
+    "day": 18,
+    "topic": "Mamba selective state spaces",
+    "question": "What is Mamba?",
+    "plain": "Mamba is a sequence-model architecture built around selective state-space computation. Instead of repeatedly comparing a token with every earlier token using ordinary attention, it updates an internal state as the sequence progresses. Crucially, the current input influences parts of that update, so the model can learn which information to carry forward and which to reduce. Think of a learned running summary, with limits: a finite state does not preserve every past token exactly. Mamba is an architecture choice, not a new optimization guarantee or a low-bit storage format. Its suitability depends on the task, trained checkpoint and actual implementation.",
+    "mechanism": "A simple recurrent state-space skeleton is h_t = A_bar h_(t-1) + B_bar x_t and y_t = C h_t + D x_t. The hidden state carries sequence information; transition and input/output maps determine how information is retained, inserted and exposed. Traditional linear time-invariant versions use fixed maps across the sequence, giving useful algebraic structure but limited content-dependent selection. Mamba makes important state-space parameters depend on the current input, allowing content-dependent behavior.\nIn the original formulation, a continuous-time state-space parameterization is discretized with input-dependent step sizes and maps. This is more specific than an arbitrary sigmoid-gated running average. Mamba blocks also contain surrounding projections, nonlinearities and convolutional processing. Efficient training relies on a hardware-aware selective scan rather than naively executing a Python loop for each token. Recurrent inference can maintain a fixed-size state per layer for a fixed architecture, instead of an ordinary attention KV cache growing with sequence length.\nThe day 18 fixture uses a scalar input-dependent retention coefficient to illustrate selection and state ownership. It omits full discretization, multidimensional learned parameters, gradients and optimized kernels; it is not a Mamba implementation. Because histories are compressed into a finite state, identical states can erase distinctions relevant to later questions. Test content retrieval, long-context behavior and task quality, not only asymptotic arithmetic. The published experiments are evidence under their configurations, not a promise that every Mamba checkpoint beats every Transformer on any device or task.",
+    "answer": "Mamba is a sequence architecture based on selective state-space models. It carries a recurrent hidden state and makes important update parameters depend on the current input, so information retention and propagation can respond to content. Its implementation combines a specific state-space parameterization with surrounding neural components and a hardware-aware scan for efficient training. During recurrent inference, state size can remain fixed with respect to sequence length for a fixed model configuration. That differs from an ordinary Transformer attention cache. I would not describe it as just an old RNN, a scalar running average or a guarantee of perfect long-term memory. I would evaluate the trained checkpoint on the intended task and hardware, including quality, throughput and memory. Our scalar fixture teaches selective state updates and reset boundaries; it does not implement full Mamba or demonstrate a real model speedup.",
+    "example": "Toy retention: h_t=a(x_t) h_(t-1)+(1-a(x_t)) x_t. A marked input can lower retention to replace old state. The fixture shows chunked continuation equals one full run when the exact prior state is passed. Resetting the second chunk instead changes the declared sequence, so its result is not a continuation of the original session.",
+    "pitfalls": [
+      "Calling a scalar gate a complete Mamba implementation.",
+      "Treating fixed recurrent state as exact storage of all past tokens.",
+      "Claiming the architecture prevents training minima."
+    ],
+    "followups": [
+      {
+        "question": "Why is selection important?",
+        "answer": "Input-dependent maps can make information propagation sensitive to content instead of following one fixed response across all tokens. The trained mechanism still has capacity and generalization limits."
+      },
+      {
+        "question": "Does linear-time description certify wall-clock performance?",
+        "answer": "No. Shapes, kernels, hardware, batch size and surrounding operations influence real latency. Compare actual serving and training workloads with reproducible configurations."
+      }
+    ],
+    "hints": [
+      "Begin with a state updated by each input.",
+      "Add input-dependent parameters.",
+      "Separate the teaching recurrence from the full selective scan."
+    ],
+    "checks": [
+      {
+        "question": "What is selective in Mamba?",
+        "options": [
+          "Important update parameters depend on input",
+          "The optimizer always finds the global minimum",
+          "All weights have one bit"
+        ],
+        "answer": 0,
+        "explanation": "Content-dependent state-space updates provide the selection mechanism."
+      },
+      {
+        "question": "A fixed-size recurrent state guarantees what?",
+        "options": [
+          "Exact arbitrary recall",
+          "A size bound for that state, not perfect history retention",
+          "No training loss"
+        ],
+        "answer": 1,
+        "explanation": "A finite state compresses history and may lose distinctions."
+      }
+    ],
+    "sources": [
+      {
+        "title": "Mamba: Linear-Time Sequence Modeling with Selective State Spaces",
+        "url": "https://arxiv.org/abs/2312.00752"
+      }
+    ]
+  },
+  {
+    "id": "client-10",
+    "day": 18,
+    "topic": "Mamba versus Transformer",
+    "question": "How is Mamba/State Space Model different from a Transformer?",
+    "plain": "A standard Transformer uses attention to connect positions by their current representations. A token can consult stored keys and values from earlier positions under its visibility mask. A state-space model passes information forward through a hidden state. Mamba adds input-dependent selection to that state update. This changes how history is accessed: direct attention over stored token information versus a learned compressed recurrent state. Full ordinary attention has quadratic token-pair interactions; recurrent updates can scale linearly in sequence length for fixed state dimension. Those statements describe mechanisms and scaling terms, not guaranteed speed or quality rankings across all implementations.",
+    "mechanism": "In ordinary attention, each position produces Q, K and V. The sequence computation forms scores between queries and permitted keys, then mixes values. Full causal attention still includes a triangular number of token pairs, which is quadratic in sequence length. Optimized exact-attention kernels can reduce intermediate memory traffic without removing all pair interactions. During autoregressive inference, cached keys and values grow with context in the ordinary configuration; each new query consults them.\nA selective state-space sequence model updates a bounded-size recurrent state using current input and previous state. The sequence-length dependence of its state does not grow like an ordinary attention cache for a fixed model. It can train using structured scans, so recurrent inference does not imply a strictly sequential slow Python training loop. Its content-dependent parameters influence what survives in the state. Compressing history can create a different retrieval trade-off from directly addressing preceding token representations.\nComparisons need clear boundaries. Training, prefill and one-token decode have different execution shapes. Hybrid models can mix attention and state-space blocks, and approximate or restricted attention changes baseline complexity. State dimension, feature dimension, batch, sequence length, precision and optimized kernels affect total cost. Neither mechanism guarantees superior reasoning or long-distance recall. A useful experiment measures identical task sets, token budgets, hardware and acceptance thresholds, including peak memory and tail latency. The scalar fixture proves chunk-state parity and reset isolation, not a Transformer-versus-Mamba benchmark.",
+    "answer": "The central difference is how sequence history enters the computation. A standard Transformer uses content-dependent attention over token keys and values; Mamba uses a selective recurrent state-space update that compresses history into a fixed-size state for a fixed architecture. Full attention has quadratic token-pair work during a sequence pass, while selective state updates have linear sequence-length scaling with fixed dimensions. Ordinary autoregressive attention caching grows with context; recurrent state can remain bounded. Optimized kernels, hybrids and restricted attention complicate a simple comparison. Mamba's state compression and attention's explicit historical access have different quality trade-offs, so I would test retrieval-sensitive tasks as well as latency and memory. I would distinguish training, prefill and decode measurements and avoid universal “faster and better” claims. The toy recurrence illustrates state mechanics, not a production architecture comparison.",
+    "example": "At context lengths 100 and 1000, full pair counts grow roughly 100 fold, while 1000 scalar recurrent updates are 10 times 100 updates. Actual runtime also includes dimensions, kernels and hardware; these counts are not timing results. Use identical feature dimensions and explicit sequence lengths when discussing these counts, then measure kernels before reporting any deployment speedup.",
+    "pitfalls": [
+      "Equating asymptotic terms with measured latency.",
+      "Ignoring attention variants and hybrid models.",
+      "Assuming recurrent state cannot lose useful historical detail."
+    ],
+    "followups": [
+      {
+        "question": "Does FlashAttention turn full attention into linear pair work?",
+        "answer": "It improves how exact attention is computed and stored, especially memory traffic, but the full attention pair interactions remain quadratic. Distinguish arithmetic structure from intermediate materialization."
+      },
+      {
+        "question": "Can Mamba and attention appear together?",
+        "answer": "Yes. An architecture can combine block types. Classify the specific model connectivity and state rather than treating model families as exclusive deployment categories."
+      }
+    ],
+    "hints": [
+      "Compare access to history.",
+      "Name sequence length and fixed dimensions in complexity claims.",
+      "Measure prefill, decode, quality and memory separately."
+    ],
+    "checks": [
+      {
+        "question": "Ordinary attention history is represented by what during cached decode?",
+        "options": [
+          "Keys and values from preceding tokens",
+          "Only one universal scalar",
+          "No retained state"
+        ],
+        "answer": 0,
+        "explanation": "Per-layer KV caches retain preceding token projections."
+      },
+      {
+        "question": "Which comparison is defensible?",
+        "options": [
+          "A loop proves all Mamba models win",
+          "Controlled task/hardware measurements with quality gates",
+          "Family names alone determine latency"
+        ],
+        "answer": 1,
+        "explanation": "Mechanism predicts trade-offs, but measurements establish workload suitability."
+      }
+    ],
+    "sources": [
+      {
+        "title": "Mamba: Linear-Time Sequence Modeling with Selective State Spaces",
+        "url": "https://arxiv.org/abs/2312.00752"
+      },
+      {
+        "title": "Attention Is All You Need",
+        "url": "https://arxiv.org/abs/1706.03762"
+      }
+    ]
+  },
+  {
+    "id": "client-11",
+    "day": 19,
+    "topic": "Loss landscape",
+    "question": "What are local minima and global minima in ML/deep-learning optimization?",
+    "plain": "A loss is a numerical measure of how badly a chosen model behaves on an objective. Imagine its value as terrain over parameter settings. A local minimum is no higher than nearby alternatives; a global minimum is no higher than any permitted alternative. Several global minima may exist. A flat gradient alone does not identify either one: a saddle can be flat at one point yet go down in another direction. Training loss is also different from real-world usefulness. A model that fits its training examples perfectly can generalize poorly or exploit an unsuitable objective. Always state which loss and parameter domain you mean.",
+    "mechanism": "For an objective L(theta), theta_star is a local minimum if some neighborhood around it contains no point with lower loss. It is global if L(theta_star) <= L(theta) for every feasible theta. Strict and non-strict definitions differ; a flat region can contain many non-strict minima. In a smooth unconstrained interior, a local minimum has zero gradient, but zero gradient is only a necessary condition. Boundaries and nonsmooth objectives require different conditions.\nSecond-order curvature helps classify simple stationary points. A positive-definite Hessian at a zero-gradient point is sufficient for a strict local minimum. An indefinite Hessian indicates a saddle: some directions rise and some fall. A positive-semidefinite Hessian alone can remain inconclusive because higher-order terms matter. For f(x,y)=x²-y², the origin has zero gradient and Hessian diagonal entries 2 and-2; moving along y reduces loss. For g(x)=(x²-1)², both x=-1 and x=1 achieve global value 0, while x=0 is a local maximum.\nDeep-network objectives are high-dimensional and nonconvex. A training plateau might reflect saddles, poor conditioning, saturation, learning-rate problems, data errors or a capacity limit. It cannot be diagnosed as a local minimum from a flat chart alone. Even reaching a global minimum of empirical training loss would not prove optimal validation performance, fairness or factual correctness. The day 19 lab classifies analytical toy points and compares initializations; it does not reconstruct or certify a real neural-network landscape.",
+    "answer": "A local minimum minimizes the stated objective within some neighborhood; a global minimum minimizes it over the full feasible parameter domain. The same objective may have several global solutions. For smooth interior points, zero gradient is necessary but not sufficient: a saddle can have zero gradient while offering a downhill direction. Hessian curvature can identify simple cases, but semidefinite curvature can be inconclusive. I would not diagnose a flat training trace as a local minimum without checking gradients, conditioning, optimization settings and data. I would also separate empirical training loss from held-out task quality. Minimizing a poorly chosen or overfit objective does not establish a good deployed model. In our toy, x²-y² at the origin is a saddle; (x²-1)² has two global minima. Those examples clarify definitions without implying that a production network has the same landscape.",
+    "example": "For (x²-1)², loss(-1)=loss(1)=0 and loss(0)=1. For x²-y², loss(0,0)=0 but loss(0,.1)=-.01. Zero gradient at the origin therefore does not establish a minimum. Compare these values before naming the stationary point. The quartic and saddle have different analytical geometry despite both having zero-gradient points.",
+    "pitfalls": [
+      "Using zero gradient as proof of a minimum.",
+      "Confusing lowest observed run loss with proven global optimality.",
+      "Equating training-loss optimality with generalization."
+    ],
+    "followups": [
+      {
+        "question": "Can a minimum be at a boundary with nonzero gradient?",
+        "answer": "Yes. A constrained optimum may occur at a boundary where feasible downhill directions are absent. The ordinary zero-gradient condition applies to a smooth unconstrained interior point."
+      },
+      {
+        "question": "Does positive-semidefinite Hessian settle every case?",
+        "answer": "No. For x⁴ and -x⁴ at zero, gradient and second derivative are both zero, yet one is a minimum and the other a maximum. Higher-order behavior matters."
+      }
+    ],
+    "hints": [
+      "Specify loss and feasible domain.",
+      "Compare neighborhood with entire domain.",
+      "Test a zero-gradient saddle counterexample."
+    ],
+    "checks": [
+      {
+        "question": "At the origin, x²-y² is what?",
+        "options": [
+          "A global minimum",
+          "A saddle",
+          "A strictly positive bowl"
+        ],
+        "answer": 1,
+        "explanation": "The y direction decreases loss while the x direction increases it."
+      },
+      {
+        "question": "A training global minimum proves what?",
+        "options": [
+          "The empirical objective is globally minimized, if actually established",
+          "Guaranteed perfect generalization",
+          "Guaranteed truthfulness"
+        ],
+        "answer": 0,
+        "explanation": "It concerns the stated objective, not every deployment property."
+      }
+    ],
+    "sources": [
+      {
+        "title": "Identifying and attacking the saddle point problem in high-dimensional non-convex optimization",
+        "url": "https://arxiv.org/abs/1406.2572"
+      }
+    ]
+  },
+  {
+    "id": "client-12",
+    "day": 19,
+    "topic": "Optimization troubleshooting",
+    "question": "How does a model handle/get out of a local minimum?",
+    "plain": "The model does not consciously notice a valley and escape. An optimization algorithm updates parameters from gradients and other stored quantities. Mini-batch randomness, momentum, learning-rate changes, initialization or deliberate perturbations can alter the path and sometimes leave an undesirable region. None guarantees reaching the best possible solution for a general deep network. Before trying escape tricks, check whether the problem is actually a local minimum: bad data, incorrect gradients, saturation, saddles or unstable step sizes can look like stalled learning. Judge changes on held-out quality, reproducibility and a fixed budget, rather than one lucky training-loss curve.",
+    "mechanism": "Ordinary gradient descent applies theta_next = theta - eta grad L(theta). At an exact stationary point, this update has no movement. Momentum retains a running velocity, so nonzero prior velocity can carry an iterate through a region with a small instantaneous gradient. Adaptive optimizers rescale updates using accumulated gradient statistics; their behavior depends on hyperparameters and does not supply a universal escape or global-optimum guarantee.\nStochastic mini-batches estimate a gradient using a subset of examples. Their noise can move an iterate differently from the full-batch gradient and sometimes help traverse flat or saddle regions. But noise can also impede convergence, and its direction is not guaranteed to target a better basin. Learning-rate schedules, warm restarts, controlled parameter perturbations and multiple seeds are practical tools with workload-dependent effects. A strict local minimum surrounded by higher loss is not escaped by an infinitesimal downhill-only rule; crossing a barrier may require a larger or noisy move.\nDiagnose first: verify the objective, target alignment, finite values, gradient flow and whether a tiny dataset can be fit. Record gradient norms, update norms, training/validation divergence and learning-rate history. Compare repeated runs under equal budgets. The fixture starts a quartic objective at a zero-gradient local maximum to show immobility, then adds a small perturbation and descends to a minimum. That is a demonstration of a stationary-point failure, not proof of escape from every local minimum. A successful run provides evidence for its objective and seed, not general optimality.",
+    "answer": "I would first challenge the diagnosis: a plateau is not proof of a local minimum. Check data and labels, loss implementation, gradient flow, finite values, learning rate, conditioning and validation behavior. Optimizers update parameters mechanically. Mini-batch noise, momentum, schedules, restarts, controlled perturbations or different initializations can change the path and sometimes help leave undesirable stationary regions, but none generally guarantees a global minimum for a deep nonconvex objective. Momentum only helps if its state provides useful movement; exact zero gradient with zero optimizer state can remain stationary. I would compare several seeded runs at equal compute, preserve the best validated checkpoint and use held-out metrics to choose changes. Our quartic fixture demonstrates a stalled stationary point and a perturbed trajectory, with an explicit boundary that it does not prove escape from a true local well.",
+    "example": "For g(x)=(x²-1)², gradient at x=0 is 0. Plain descent stays there. Starting at x=.1 with a stable step approaches 1. Here 0 is a maximum; calling it a local minimum would misdiagnose the experiment.",
+    "pitfalls": [
+      "Calling every stationary plateau a local minimum.",
+      "Promising SGD or Adam will always escape.",
+      "Selecting a hyperparameter change using training loss alone."
+    ],
+    "followups": [
+      {
+        "question": "Should I always increase the learning rate?",
+        "answer": "No. A larger step can diverge or erase useful progress. Check update magnitudes and loss stability; test a justified range under a controlled budget."
+      },
+      {
+        "question": "What is a useful first debugging test?",
+        "answer": "Fit a tiny, clean fixture with known labels and inspect finite gradients. Failure suggests implementation or optimization issues before expensive landscape speculation."
+      }
+    ],
+    "hints": [
+      "Check whether the point is really a minimum.",
+      "Name the exact update and optimizer state.",
+      "State methods as hypotheses with no universal guarantee."
+    ],
+    "checks": [
+      {
+        "question": "At zero gradient and zero momentum, plain descent does what?",
+        "options": [
+          "Always escapes",
+          "Does not move",
+          "Finds the global minimum instantly"
+        ],
+        "answer": 1,
+        "explanation": "Without an update signal, the deterministic rule stays at the same point."
+      },
+      {
+        "question": "Which evidence should choose a training change?",
+        "options": [
+          "One favorable training curve",
+          "Repeated controlled runs and held-out quality",
+          "A model family name"
+        ],
+        "answer": 1,
+        "explanation": "Validated task behavior and controlled comparisons reduce mistaken conclusions."
+      }
+    ],
+    "sources": [
+      {
+        "title": "Identifying and attacking the saddle point problem in high-dimensional non-convex optimization",
+        "url": "https://arxiv.org/abs/1406.2572"
+      }
+    ]
+  },
+  {
+    "id": "client-13",
+    "day": 19,
+    "topic": "Mamba training limitations",
+    "question": "Does Mamba also face local-minimum/optimization problems?",
+    "plain": "Yes. Mamba changes how a sequence is represented and processed, but its learned parameters still need training. A useful architecture does not remove nonconvex losses, numerical problems, poor initialization or unsuitable data. Its state-space transitions, input-dependent selection and surrounding neural layers must learn together. If training stalls, diagnose the observed evidence instead of assuming either “Mamba avoids minima” or “all stalls are minima.” A stable recurrent state size says something about inference storage, not about guaranteed training success. Compare real training behavior and held-out quality under reproducible settings, and describe any improvement as measured for that particular experiment.",
+    "mechanism": "A Mamba model contains learned projections, input-dependent state-space maps and other neural components. Their composition produces a parameterized predictor. Training minimizes a chosen loss over those parameters, ordinarily using gradient-based methods. Changing the sequence-mixing operator from attention to a selective state update does not transform a general neural objective into a globally convex function. Multiple stationary regions, poor conditioning and optimization sensitivity remain possible.\nSequence-state dynamics introduce specific quantities worth inspecting. Parameters controlling retention or discretization can produce strongly contracting behavior, saturation or difficult gradient propagation under some settings. Finite-value checks, state/update magnitude diagnostics and precision choices matter. These are hypotheses to investigate, not a claim that every Mamba run has a particular defect. Use the implementation's initialization and numerical conventions rather than replacing them casually with a textbook scalar recurrence.\nDebug in layers. Verify labels, loss masks and data splits. Fit a tiny synthetic task, inspect that intended parameters receive finite nonzero gradients, and compare loss/update scales. Check whether failures correlate with sequence length, precision or optimizer settings. Multiple seeds and controlled baselines help distinguish data problems from architecture-specific behavior. A scalar state fixture with fixed gates cannot establish any training claim because it has no learned loss or gradient path. The optimization fixture separately teaches stationary points; combining their lessons explains why recurrent efficiency and training convergence are independent properties. Report checkpoint quality and stability evidence without promising escape or global optimality.",
+    "answer": "Mamba still faces optimization difficulties. It is a parameterized neural sequence model trained on an objective; selective state-space computation does not imply convexity or guaranteed convergence to a global minimum. Its input-dependent maps, state dynamics and surrounding projections can be sensitive to initialization, precision, sequence length and optimizer settings. I would check ordinary data, loss and gradient problems first, then inspect state/update behavior and implementation-specific numerical conventions. A tiny controlled task, finite-gradient checks, multiple seeds and a matched baseline provide more evidence than a family-level claim. I would distinguish a saddle, flat region or numerical instability from a demonstrated local minimum. The bounded recurrent-state property concerns inference history storage; it says nothing by itself about loss geometry. Our untrained scalar recurrence makes no claim about real Mamba training outcomes.",
+    "example": "A Mamba training run has constant recurrent inference state but validation accuracy stays at chance. Check shuffled labels, loss masking and gradients before attributing the plateau to either state-space architecture or a trapped local minimum.",
+    "pitfalls": [
+      "Turning inference complexity into a convergence guarantee.",
+      "Treating a hand-coded gate as a learned Mamba training experiment.",
+      "Diagnosing landscape geometry from a single loss chart."
+    ],
+    "followups": [
+      {
+        "question": "Does removing attention remove backpropagation?",
+        "answer": "No. The model still learns parameters from loss signals. The computation graph changes, but gradient-based learning and its numerical requirements remain."
+      },
+      {
+        "question": "What would establish an architecture-specific improvement?",
+        "answer": "A reproducible comparison controlling data, objective, budget, precision and evaluation, with multiple runs and documented implementation settings. It would establish the measured result, not a universal theorem."
+      }
+    ],
+    "hints": [
+      "Separate architecture from objective and optimizer.",
+      "List ordinary training checks first.",
+      "Inspect state dynamics only with concrete numerical evidence."
+    ],
+    "checks": [
+      {
+        "question": "Mamba guarantees global optimization because it uses an SSM.",
+        "options": [
+          "True",
+          "False",
+          "Only when called a decoder"
+        ],
+        "answer": 1,
+        "explanation": "The architecture does not make arbitrary neural losses convex."
+      },
+      {
+        "question": "A fixed-state toy with no gradients proves what?",
+        "options": [
+          "Training convergence",
+          "Only its programmed state-update contract",
+          "Universal model accuracy"
+        ],
+        "answer": 1,
+        "explanation": "Without training, it cannot establish learned quality or optimizer behavior."
+      }
+    ],
+    "sources": [
+      {
+        "title": "Mamba: Linear-Time Sequence Modeling with Selective State Spaces",
+        "url": "https://arxiv.org/abs/2312.00752"
+      },
+      {
+        "title": "Identifying and attacking the saddle point problem in high-dimensional non-convex optimization",
+        "url": "https://arxiv.org/abs/1406.2572"
+      }
+    ]
+  },
+  {
+    "id": "client-14",
+    "day": 20,
+    "topic": "Low-bit language models",
+    "question": "What is a 1-bit LLM?",
+    "plain": "The phrase usually refers to using extremely low-precision values for many model weights, rather than making every numerical quantity in the system one bit. Binary weights have two possible states. BitNet b1.58 uses three states, minus one, zero and plus one; three choices have about 1.58 bits of theoretical information. Activations, scaling factors, embeddings, optimizer state and storage overhead may use other representations. Low-bit training is also different from rounding an existing model after training. The practical goal is efficient storage and computation while maintaining useful quality, but the outcome depends on training, supported operations, hardware and the chosen workload.",
+    "mechanism": "A real-valued linear layer computes y = W x. A low-bit design constrains or quantizes substantial parts of W while defining scaling and activation handling. In a binary case the stored symbols can indicate negative or positive contributions. With ternary symbols, each contribution is subtract, skip or add, then appropriate scaling reconstructs the intended numerical magnitude. Actual kernels and packing determine whether these symbolic simplifications deliver speed or memory improvements.\nOriginal BitNet introduced a binary-weight Transformer approach with specific training and layer machinery. BitNet b1.58 uses ternary weights {-1,0,+1}; log2(3) is about 1.585, the information required to distinguish three equally likely symbols in an ideal coding argument. That number is not a promise that each file stores every parameter at exactly 1.58 bits, or that activations and all other state have that precision. Simple two-bit packing leaves a spare code; scales, alignment and unquantized parameters add overhead.\nTraining-aware low-bit computation often maintains higher-precision latent parameters and uses a defined surrogate-gradient treatment for quantization. Post-training quantization instead starts from an already trained checkpoint and applies a separate conversion/calibration process. These are not interchangeable claims. Our fixture maps six real weights to ternary signs using a declared threshold and compares integer arithmetic and reconstruction error. It deliberately does not implement BitLinear, training-aware quantization or real LLM inference. A production assessment must evaluate quality, packed memory and supported kernel latency with a compatible trained checkpoint.",
+    "answer": "A 1-bit LLM generally describes very low-precision weight computation in major model components; it does not mean every tensor and training state is one bit. Original binary BitNet and ternary BitNet b1.58 should be distinguished. The latter uses {-1,0,+1}; log2(3) explains the 1.58 terminology, while actual storage also includes packing, scales and other parameters. Low-bit-aware training differs from post-training rounding of an existing checkpoint. I would ask which layers, activations and metadata are quantized, how training handles the discrete transform and which kernels are available on the target hardware. Then I would measure held-out quality, peak memory and latency. The scalar ternary lab illustrates add/subtract/skip arithmetic and quantization error; it is not a BitNet implementation or evidence that any existing Transformer can be converted losslessly.",
+    "example": "Weights [-.9,-.2,.01,.3,.8,1.1] with threshold .25 become [-1,0,0,1,1,1]. For input [2,3,4,5,6,7], ternary dot=16; float dot=11.64, so the declared unscaled toy error is 4.36. No scales or trained corrections are included. The nonzero error makes the conversion boundary explicit and prevents a lossless-conversion claim.",
+    "pitfalls": [
+      "Saying all model tensors and optimizer states are 1 bit.",
+      "Calling b1.58 binary instead of ternary.",
+      "Calling threshold rounding a trained BitNet implementation."
+    ],
+    "followups": [
+      {
+        "question": "Why is ternary not exactly one binary bit?",
+        "answer": "One bit distinguishes two states; ternary needs three. log2(3) is the ideal information count, while a straightforward fixed-width representation needs two bits per symbol before other overhead."
+      },
+      {
+        "question": "Are low-bit gains hardware-independent?",
+        "answer": "No. Packing, supported instructions, kernels, shapes and memory bandwidth determine real gains. A Python integer sum does not benchmark low-bit acceleration."
+      }
+    ],
+    "hints": [
+      "Separate binary from ternary symbols.",
+      "List scales and higher-precision state.",
+      "Distinguish low-bit-aware training from post-training conversion."
+    ],
+    "checks": [
+      {
+        "question": "BitNet b1.58 weights use which alphabet?",
+        "options": [
+          "Only 0 and 1",
+          "Minus 1,0 and plus 1",
+          "Arbitrary full-precision decimals"
+        ],
+        "answer": 1,
+        "explanation": "The ternary alphabet has three states."
+      },
+      {
+        "question": "log2(3) describes what?",
+        "options": [
+          "Exact memory of every deployed tensor",
+          "An ideal information count for three symbols",
+          "Guaranteed inference speedup"
+        ],
+        "answer": 1,
+        "explanation": "Packing and nonquantized components make actual memory a separate measurement."
+      }
+    ],
+    "sources": [
+      {
+        "title": "BitNet: Scaling 1-bit Transformers for Large Language Models",
+        "url": "https://arxiv.org/abs/2310.11453"
+      },
+      {
+        "title": "The Era of 1-bit LLMs: All Large Language Models are in 1.58 Bits",
+        "url": "https://arxiv.org/abs/2402.17764"
+      }
+    ]
+  },
+  {
+    "id": "client-15",
+    "day": 20,
+    "topic": "Orthogonal design axes",
+    "question": "Is Mamba related to 1-bit LLMs, or are they different concepts?",
+    "plain": "They describe different design choices. Mamba concerns how a model mixes sequence information using selective state-space updates. A 1-bit or ternary LLM concerns numerical representation and computation for weights and related quantities. Think of a vehicle's engine layout versus the material precision used to manufacture parts: they affect different properties, even though engineering choices can interact. BitNet's published designs are Transformer-based, so low-bit language modeling does not imply Mamba. A Mamba checkpoint is not automatically low-bit. Combining a sequence architecture with low-bit methods would require an appropriate implementation, training or conversion process and evidence of numerical stability and quality.",
+    "mechanism": "Place model decisions on separate axes. Sequence architecture determines connectivity and history processing: attention, selective state spaces or hybrids. Numerical representation determines how weights, activations and other state are stored and computed: floating point, integer quantization, binary or ternary methods. Training objective and adaptation are additional axes. A decoder-only Transformer can be dense or sparse MoE, high precision or quantized; a selective state-space model also has independent representation decisions.\nThe axes are conceptually distinct but not operationally independent. Low precision changes rounding, scaling and available kernels. Recurrent state dynamics can accumulate numerical effects, so compressing state or transition computation needs careful validation. Quantizing a projection is not necessarily the same as quantizing recurrent state or discretization parameters. A proposed hybrid must state exactly what is low-bit and what stays higher precision, how training/gradients handle it and how task behavior is checked.\nOriginal BitNet and b1.58 papers describe low-bit Transformer methods, which directly refutes the claim that 1-bit language models are another name for Mamba. Our lab compares ternary dot arithmetic while the day 18 lab compares scalar state propagation; neither performs a combined trained architecture. To choose a real deployment, create a matrix of architecture, checkpoint, representation, kernels, hardware and workload. Compare quality first at required thresholds, then latency and memory. Do not multiply unrelated theoretical gains or infer compatibility from two attractive labels. A supported trained implementation and controlled measurements are required before promising their combination.",
+    "answer": "Mamba and 1-bit LLMs are different concepts. Mamba names a sequence architecture based on selective state-space updates; low-bit language modeling concerns numerical representation and training/computation methods. BitNet's published approaches are Transformer-based, so binary or ternary weights do not imply Mamba, and Mamba does not imply low-bit weights. These axes may be combined in research or engineering, but compatibility and quality are not automatic. I would specify which projections, recurrent state and other quantities are quantized, which remain higher precision, and what kernels and training procedure support the design. Recurrent numerical effects deserve explicit tests. Then I would compare a compatible trained checkpoint against baselines under fixed quality, hardware and workload constraints. Our two separate toys teach state updates and ternary arithmetic; they establish no combined model quality or speed claim.",
+    "example": "A comparison table has rows Transformer and selective SSM, columns FP16 and low-bit. A checkpoint fills one cell only when its architecture, trained weights and supported execution actually exist; labels alone do not populate the matrix.",
+    "pitfalls": [
+      "Treating architecture and precision as the same taxonomy.",
+      "Assuming multiplying claimed gains predicts combined speed.",
+      "Quantizing recurrent state without checking accumulation and stability."
+    ],
+    "followups": [
+      {
+        "question": "Can a model be both MoE and low-bit?",
+        "answer": "Conceptually yes: routing/expert topology and numerical representation are separate choices. A concrete combination still requires supported training, kernels and a validated checkpoint."
+      },
+      {
+        "question": "What should a combined design report contain?",
+        "answer": "An exact component/precision map, training or conversion procedure, kernel/hardware configuration, quality gates, state stability checks and measured latency/memory against suitable baselines."
+      }
+    ],
+    "hints": [
+      "Name sequence mixing and numerical precision separately.",
+      "Use Transformer-based BitNet as the counterexample.",
+      "Require exact component mapping and measured compatibility."
+    ],
+    "checks": [
+      {
+        "question": "Mamba primarily changes which axis?",
+        "options": [
+          "Sequence architecture",
+          "Only weight bit width",
+          "Only filenames"
+        ],
+        "answer": 0,
+        "explanation": "Its central distinction is selective state-space sequence processing."
+      },
+      {
+        "question": "Combining low bits with Mamba guarantees what?",
+        "options": [
+          "Multiplied speedups",
+          "Nothing universal; validate the supported combination",
+          "No numerical errors"
+        ],
+        "answer": 1,
+        "explanation": "Interacting representations and kernels require empirical validation."
+      }
+    ],
+    "sources": [
+      {
+        "title": "Mamba: Linear-Time Sequence Modeling with Selective State Spaces",
+        "url": "https://arxiv.org/abs/2312.00752"
+      },
+      {
+        "title": "BitNet: Scaling 1-bit Transformers for Large Language Models",
+        "url": "https://arxiv.org/abs/2310.11453"
+      },
+      {
+        "title": "The Era of 1-bit LLMs: All Large Language Models are in 1.58 Bits",
+        "url": "https://arxiv.org/abs/2402.17764"
+      }
+    ]
+  }
+]

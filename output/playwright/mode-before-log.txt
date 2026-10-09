@@ -1,0 +1,7 @@
+### Result
+{"homeUnchanged":true,"modeSaved":"practice","recallAnswerGated":true}
+### Ran Playwright code
+```js
+await (async existingPage=>{const ctx=await existingPage.context().browser().newContext({viewport:{width:847,height:853}});try{const page=await ctx.newPage();await page.goto('http://127.0.0.1:8987/index.html');const before=await page.locator('#app').innerText();await page.getByRole('button',{name:'Challenge',exact:true}).click();const after=await page.locator('#app').innerText();const mode=await page.evaluate(()=>state.notes.studyMode);await page.locator('#nav [data-view="teacher"]').click();await page.locator('[data-action="teacher-stage"][data-index="0"]').click();const gated=await page.locator('#teacher-recall-support .suggested-answer').count()===0;return{homeUnchanged:before===after,modeSaved:mode,recallAnswerGated:gated}}finally{await ctx.close()}}
+)(page);
+```

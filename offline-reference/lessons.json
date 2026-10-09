@@ -1,0 +1,1687 @@
+[
+  {
+    "day": 1,
+    "objective": "Build dependable Python data boundaries; reason about values, memory and failure before model code.",
+    "modules": [
+      {
+        "title": "Typed records and absent values",
+        "explanation": "Type hints document contracts but do not validate runtime input. A dataclass groups named fields and generated methods; optional fields need explicit handling. None means missing, while zero and an empty string are present values. Validate external payloads before constructing trusted records.",
+        "workedExample": "Illustrative contract: user_id: str, score: float | None. Use if score is None; if not score incorrectly groups 0.0 with missing.",
+        "pitfall": "Annotations alone reject nothing at runtime.",
+        "teachBack": "Explain the boundary from JSON to a trusted record.",
+        "hints": [
+          "Check presence.",
+          "Validate types.",
+          "Separate zero."
+        ],
+        "check": {
+          "question": "Which check preserves a legitimate zero score?",
+          "options": [
+            "if score == False",
+            "if score is None",
+            "if not score"
+          ],
+          "answer": 1,
+          "explanation": "Identity comparison with None distinguishes missing data from valid numerical zero."
+        }
+      },
+      {
+        "title": "Mutability and function defaults",
+        "explanation": "Python evaluates default arguments when defining a function. A mutable default can therefore survive multiple calls. Aliasing means two names reference one object; assignment does not copy. Choose intentional ownership, and remember that a shallow copy still shares nested objects.",
+        "workedExample": "Use def collect(item, items=None): then items = [] if items is None else items. Each omitted argument gets its own list.",
+        "pitfall": "A shallow dict copy shares nested lists.",
+        "teachBack": "Explain two calls that contaminate each other.",
+        "hints": [
+          "Definition time.",
+          "Shared reference.",
+          "Allocate inside."
+        ],
+        "check": {
+          "question": "When is a function default evaluated?",
+          "options": [
+            "After return",
+            "Before every call",
+            "At definition"
+          ],
+          "answer": 2,
+          "explanation": "Defaults belong to the function object; mutable defaults persist unless explicitly replaced."
+        }
+      },
+      {
+        "title": "Generators and bounded memory",
+        "explanation": "A generator produces values on demand and retains suspended execution state. It avoids storing the whole output, but downstream list() or sorting can restore full materialization. Streaming correctness also needs cleanup, backpressure and clear handling of partial output after failure.",
+        "workedExample": "Read one log line, parse it, yield a record. A consumer aggregating 100 counters stays bounded; collecting every record does not.",
+        "pitfall": "Calling list(generator) removes the streaming benefit.",
+        "teachBack": "Describe where memory grows in your pipeline.",
+        "hints": [
+          "Follow consumers.",
+          "Count retained items.",
+          "Check cleanup."
+        ],
+        "check": {
+          "question": "Which consumer requires storing all generated records?",
+          "options": [
+            "list(records)",
+            "Counter update",
+            "Write each record"
+          ],
+          "answer": 0,
+          "explanation": "list eagerly retains every yielded record; incremental aggregation can retain only its running state."
+        }
+      },
+      {
+        "title": "Exceptions and decorators",
+        "explanation": "Catch exceptions where recovery or translation is meaningful. Preserve causes with raise DomainError(...) from exc. Use finally or a context manager for cleanup. Decorators wrap behavior; functools.wraps preserves metadata, while retry wrappers must distinguish transient failures from invalid input.",
+        "workedExample": "A file-reading function closes its handle via with. Its caller translates malformed records into a report; permission errors remain visible.",
+        "pitfall": "A broad except silently converts infrastructure failure into empty data.",
+        "teachBack": "Defend where you catch and where you propagate.",
+        "hints": [
+          "Name failure classes.",
+          "Preserve causes.",
+          "Bound retry."
+        ],
+        "check": {
+          "question": "What should invalid schema trigger?",
+          "options": [
+            "Silent empty result",
+            "Unlimited retry",
+            "Explicit validation failure"
+          ],
+          "answer": 2,
+          "explanation": "Retrying unchanged invalid input cannot repair it; report its contract violation clearly."
+        }
+      },
+      {
+        "title": "NumPy, pandas and join integrity",
+        "explanation": "NumPy broadcasting combines compatible shapes; align dimensions deliberately. A pandas join changes row counts when keys repeat. Establish expected cardinality, key uniqueness and missing-key policy before joining. Vectorization improves execution efficiency but does not establish semantic correctness.",
+        "workedExample": "Illustrative join: two customer rows match three purchase rows for one repeated key, producing six rows. Validate many-to-one when only one customer record per key is allowed.",
+        "pitfall": "Counting joined rows as unique customers inflates totals.",
+        "teachBack": "Explain a duplicate-key explosion and its guard.",
+        "hints": [
+          "Inspect keys.",
+          "Specify cardinality.",
+          "Audit unmatched."
+        ],
+        "check": {
+          "question": "A two-by-three duplicate-key join produces how many matches?",
+          "options": [
+            "Three",
+            "Two",
+            "Six"
+          ],
+          "answer": 2,
+          "explanation": "Every matching left row pairs with every matching right row: 2 × 3 = 6."
+        }
+      }
+    ],
+    "review": [
+      "Explain None versus an empty collection with a concrete consumer.",
+      "Trace one allocation-heavy pipeline; identify what must stay materialized.",
+      "Write a five-minute summary without looking at hints."
+    ]
+  },
+  {
+    "day": 2,
+    "objective": "Translate uncertainty into defensible statistical claims and deployment decisions.",
+    "modules": [
+      {
+        "title": "Conditional probability and Bayes",
+        "explanation": "Conditional probability changes the population being considered. Bayes combines prior prevalence with likelihood: P(A|B) = P(B|A)P(A)/P(B). Strong sensitivity does not imply high positive predictive value when events are rare. State the denominator before interpreting any percentage.",
+        "workedExample": "Illustrative: 1,000 cases, 1% prevalence, 90% sensitivity and 10% false-positive rate yield 9 true positives and 99 false positives. PPV = 9/108 ≈ 8.3%.",
+        "pitfall": "Ignoring prevalence exaggerates alert usefulness.",
+        "teachBack": "Explain why 90% sensitivity yielded low precision.",
+        "hints": [
+          "Count cases.",
+          "Count false alerts.",
+          "Divide positives."
+        ],
+        "check": {
+          "question": "What is approximate precision in the example?",
+          "options": [
+            "99%",
+            "8.3%",
+            "90%"
+          ],
+          "answer": 1,
+          "explanation": "Only 9 of 108 positive alerts are true events; prevalence dominates the alert mix."
+        }
+      },
+      {
+        "title": "Distributions and sampling units",
+        "explanation": "A Bernoulli variable records one binary outcome; a binomial counts successes in fixed independent trials. A Poisson model can describe event counts under suitable rate assumptions. Real data may violate independence or have changing rates, so examine sampling and dependence before selecting formulas.",
+        "workedExample": "Ten messages from one customer are not ten independent customer outcomes. Aggregate by customer or use a design respecting clustered observations.",
+        "pitfall": "Treating repeated events as independent understates uncertainty.",
+        "teachBack": "Name the independent unit in your evaluation.",
+        "hints": [
+          "Define unit.",
+          "Find repeats.",
+          "Check dependence."
+        ],
+        "check": {
+          "question": "Which unit avoids counting repeat customer messages as independent people?",
+          "options": [
+            "Token",
+            "Customer",
+            "Message"
+          ],
+          "answer": 1,
+          "explanation": "Customer-level sampling respects the deployment entity when multiple messages share customer characteristics."
+        }
+      },
+      {
+        "title": "Confidence intervals without magic",
+        "explanation": "A frequentist 95% confidence procedure covers the fixed population parameter in 95% of repeated comparable samples under its assumptions. It is not a 95% posterior probability for this realized interval. Small samples, dependence and sampling bias can make simple intervals misleading.",
+        "workedExample": "Illustrative mean improvement 2 points with interval −1 to 5 leaves zero compatible with the procedure. It does not prove no improvement.",
+        "pitfall": "Cross-validation fold standard deviation is not automatically a confidence interval.",
+        "teachBack": "Explain what an interval permits and cannot establish.",
+        "hints": [
+          "Repeated sampling.",
+          "Check assumptions.",
+          "Include zero."
+        ],
+        "check": {
+          "question": "An interval spanning zero establishes what?",
+          "options": [
+            "Uncertainty includes no difference",
+            "Effect impossible",
+            "Guaranteed benefit"
+          ],
+          "answer": 0,
+          "explanation": "The estimate is uncertain enough to include zero; absence of significance does not establish equivalence."
+        }
+      },
+      {
+        "title": "Effect size and experiment design",
+        "explanation": "A small p-value does not measure business importance. Report effect size, uncertainty and decision cost. Random assignment balances confounders in expectation; predefine primary metrics and stopping rules. Observational comparisons need explicit causal assumptions because user selection can explain apparent improvements.",
+        "workedExample": "Illustrative treatment raises task completion from 60% to 63%: 3 percentage points absolute, 5% relative. Report both and check cost per additional completion.",
+        "pitfall": "Switching primary metrics after seeing results inflates apparent evidence.",
+        "teachBack": "Defend an experiment before inspecting outcomes.",
+        "hints": [
+          "Specify metric.",
+          "Compute absolute gain.",
+          "Name costs."
+        ],
+        "check": {
+          "question": "60% to 63% is what absolute improvement?",
+          "options": [
+            "5 percentage points",
+            "3 percentage points",
+            "63 percentage points"
+          ],
+          "answer": 1,
+          "explanation": "Absolute change is 63 − 60 = 3 points; relative change is 3/60 = 5%."
+        }
+      },
+      {
+        "title": "Model selection from task structure",
+        "explanation": "Begin with a baseline matching the task: prevalence prediction, linear model, simple rules or prior-period forecast. Compare candidates using valid splits, task metrics, latency and interpretability. Model complexity should address observed errors; adding layers cannot fix mislabeled targets or future-information leakage.",
+        "workedExample": "Illustrative tabular risk baseline uses logistic regression. Try a tree model after analyzing nonlinear errors, then compare utility and inference budget on untouched evaluation data.",
+        "pitfall": "Choosing by training score rewards memorization.",
+        "teachBack": "Explain why your selected model earns its complexity.",
+        "hints": [
+          "Start baseline.",
+          "Inspect errors.",
+          "Compare constraints."
+        ],
+        "check": {
+          "question": "What earns a more complex model promotion?",
+          "options": [
+            "Higher training accuracy",
+            "Better validated utility within constraints",
+            "More parameters"
+          ],
+          "answer": 1,
+          "explanation": "Complexity is justified by measured deployment-relevant improvement and acceptable operational cost."
+        }
+      }
+    ],
+    "review": [
+      "Compute one base-rate example by hand.",
+      "Separate statistical significance, effect size and operating cost.",
+      "Choose a baseline and explain why a complex model must beat it."
+    ]
+  },
+  {
+    "day": 3,
+    "objective": "Design leakage-safe evaluation, useful probabilities and accountable decisions.",
+    "modules": [
+      {
+        "title": "Prediction time and leakage",
+        "explanation": "A feature is valid only if available at the prediction timestamp under the deployment workflow. Split before learning preprocessing statistics; fit imputers, scalers and feature selection using training data. Pipelines enforce fitting boundaries, but cannot repair a feature that directly contains future information.",
+        "workedExample": "Illustrative churn prediction on Monday cannot use cancellation reason recorded Friday. Even a perfectly cross-validated pipeline leaks if that future field is included.",
+        "pitfall": "Leakage often survives code that looks structurally correct.",
+        "teachBack": "Name when each feature becomes available.",
+        "hints": [
+          "Fix timestamp.",
+          "Trace provenance.",
+          "Fit training only."
+        ],
+        "check": {
+          "question": "Which field leaks for Monday churn prediction?",
+          "options": [
+            "Friday cancellation reason",
+            "Prior usage",
+            "Account age"
+          ],
+          "answer": 0,
+          "explanation": "The cancellation reason is unavailable Monday and reveals later outcome information."
+        }
+      },
+      {
+        "title": "Group and time splits",
+        "explanation": "Split by the independent deployment unit. Customer overlap leaks entity-specific patterns; future forecasting needs historical training and later validation. A random split can produce excellent scores while testing an easier problem. Keep a final test set outside repeated architecture and threshold tuning.",
+        "workedExample": "Illustrative three visits per patient: group all visits for one patient in one partition when evaluating performance on unseen patients.",
+        "pitfall": "Stratification alone does not prevent entity overlap.",
+        "teachBack": "Defend the split against your intended deployment.",
+        "hints": [
+          "Identify entity.",
+          "Check time.",
+          "Protect test."
+        ],
+        "check": {
+          "question": "Unseen-patient deployment needs which split?",
+          "options": [
+            "Random visit split",
+            "Training-only score",
+            "Patient-group split"
+          ],
+          "answer": 2,
+          "explanation": "Grouping prevents the same patient from appearing in training and evaluation."
+        }
+      },
+      {
+        "title": "Thresholds and operating costs",
+        "explanation": "A score ranks cases; a threshold turns scores into actions. Precision, recall and queue size change with the cutoff. Choose thresholds on independent validation using missed-event cost, false-alert cost and capacity. A single aggregate accuracy number can hide unacceptable missed cases.",
+        "workedExample": "Illustrative 10 false positives at cost 2 plus 3 false negatives at cost 20 gives cost 80. Compare cutoffs against that utility and review capacity.",
+        "pitfall": "Tune cutoff on training labels and overfit decisions.",
+        "teachBack": "Explain who owns the costs and capacity limit.",
+        "hints": [
+          "Count errors.",
+          "Multiply costs.",
+          "Validate cutoff."
+        ],
+        "check": {
+          "question": "What is the example error cost?",
+          "options": [
+            "80",
+            "200",
+            "26"
+          ],
+          "answer": 0,
+          "explanation": "10 × 2 + 3 × 20 = 80 illustrative cost units."
+        }
+      },
+      {
+        "title": "Calibration versus discrimination",
+        "explanation": "Discrimination measures separating positive from negative cases; calibration compares predicted probabilities with observed frequencies. A reliability diagram groups predictions into bins. Fit calibration using data independent of estimator fitting. Small bins are noisy, and better Brier score alone does not isolate calibration improvement.",
+        "workedExample": "Illustrative 100 cases predicted near 0.8 contain only 50 events. Their probabilities are overconfident although their ranking may still be useful.",
+        "pitfall": "A high AUROC does not certify reliable probabilities.",
+        "teachBack": "Explain why rank quality and probability accuracy differ.",
+        "hints": [
+          "Compare frequency.",
+          "Inspect bins.",
+          "Reserve calibration data."
+        ],
+        "check": {
+          "question": "Near-0.8 predictions with 50% observed events indicate what?",
+          "options": [
+            "Good calibration",
+            "Underconfidence",
+            "Overconfidence"
+          ],
+          "answer": 2,
+          "explanation": "The predicted event rate exceeds observed frequency: 0.8 versus 0.5."
+        }
+      },
+      {
+        "title": "Error slices and fairness",
+        "explanation": "Inspect errors by relevant groups, input conditions and intersectional slices. Different base rates can make fairness objectives conflict; name the objective, harms and affected users. Report sample sizes and uncertainty. Avoid treating a small-sample disparity or one parity metric as complete evidence of fairness.",
+        "workedExample": "Illustrative speech system fails more on noisy audio. Slice by noise and language together; overall language averages can hide the interaction.",
+        "pitfall": "Aggregate improvement can conceal a harmed subgroup.",
+        "teachBack": "Choose a fairness objective and defend its tradeoff.",
+        "hints": [
+          "Define harms.",
+          "Count slice samples.",
+          "Compare intersections."
+        ],
+        "check": {
+          "question": "What should accompany a slice error rate?",
+          "options": [
+            "Training accuracy",
+            "Sample size and uncertainty",
+            "Only a color label"
+          ],
+          "answer": 1,
+          "explanation": "Small slices can have unstable rates; counts and uncertainty prevent overconfident comparisons."
+        }
+      }
+    ],
+    "review": [
+      "Draw train, calibration, threshold-validation and final-test boundaries.",
+      "Calculate a confusion matrix and expected action cost.",
+      "Explain one fairness tradeoff without claiming a universal metric."
+    ]
+  },
+  {
+    "day": 4,
+    "objective": "Explain and debug a PyTorch training loop from tensor contract through checkpoint.",
+    "modules": [
+      {
+        "title": "Tensor shapes and loss contracts",
+        "explanation": "Tensor shape represents semantic dimensions, not decoration. For multiclass classification, logits commonly have shape [batch, classes] and integer labels [batch]. Loss functions have specific contracts. Broadcasting a wrongly shaped target may compute a plausible number while optimizing the wrong objective.",
+        "workedExample": "Illustrative four examples and three classes use logits [4,3] and labels [4], with one class index per example. Inspect shapes before computing loss.",
+        "pitfall": "A valid operation may still use wrong semantic dimensions.",
+        "teachBack": "State what each axis and label value means.",
+        "hints": [
+          "Name axes.",
+          "Inspect dtype.",
+          "Check loss contract."
+        ],
+        "check": {
+          "question": "Four multiclass labels should have which shape?",
+          "options": [
+            "[4,3] one logit per label",
+            "[3]",
+            "[4]"
+          ],
+          "answer": 2,
+          "explanation": "Each example contributes one class index; the class axis belongs to logits."
+        }
+      },
+      {
+        "title": "Autograd and the training sequence",
+        "explanation": "Autograd records differentiable operations and computes gradients through the graph. A standard step performs forward pass, loss calculation, gradient reset, backward pass and optimizer update. Gradients accumulate into parameter buffers, so forgotten reset changes subsequent updates rather than merely wasting memory.",
+        "workedExample": "Illustrative two batches without optimizer.zero_grad() make the second gradient buffer contain both batches. Intentional accumulation needs scaled loss and a planned update interval.",
+        "pitfall": "Accidental accumulation changes optimization semantics.",
+        "teachBack": "Explain backward versus optimizer.step in one minute.",
+        "hints": [
+          "Compute loss.",
+          "Reset buffers.",
+          "Apply update."
+        ],
+        "check": {
+          "question": "Which operation changes parameters using their gradients?",
+          "options": [
+            "optimizer.step()",
+            "model.eval()",
+            "loss.item()"
+          ],
+          "answer": 0,
+          "explanation": "Backward computes gradients; optimizer.step applies the optimizer update to parameters."
+        }
+      },
+      {
+        "title": "Training mode and inference gradients",
+        "explanation": "model.train() and model.eval() control mode-sensitive modules such as dropout and batch normalization. They do not decide whether autograd records operations. torch.no_grad() disables gradient recording within its context. Validation generally needs evaluation mode and disabled gradients as separate choices.",
+        "workedExample": "Illustrative validation uses model.eval() plus with torch.no_grad(): predictions = model(x). Restore model.train() before returning to training.",
+        "pitfall": "Calling eval alone still permits graph construction.",
+        "teachBack": "Explain the two independent switches.",
+        "hints": [
+          "Module behavior.",
+          "Gradient recording.",
+          "Restore training."
+        ],
+        "check": {
+          "question": "Does model.eval() disable autograd?",
+          "options": [
+            "Only for linear layers",
+            "No",
+            "Always"
+          ],
+          "answer": 1,
+          "explanation": "Evaluation mode changes relevant module behavior; gradient recording is controlled separately."
+        }
+      },
+      {
+        "title": "Diagnosing failure before scaling",
+        "explanation": "Try to overfit a tiny clean batch to check optimization and label wiring. Inspect nonfinite losses, gradients, label ranges and devices before increasing data or model size. A decreasing training loss confirms some fitting, not correctness of evaluation or usefulness on unseen data.",
+        "workedExample": "Illustrative 16 clean examples fail to fit. Inspect incorrect class labels and frozen parameters before renting a larger accelerator.",
+        "pitfall": "More compute hides a broken training contract.",
+        "teachBack": "Give your first three checks for a flat loss.",
+        "hints": [
+          "Check labels.",
+          "Check gradients.",
+          "Check updates."
+        ],
+        "check": {
+          "question": "A tiny-batch overfit result proves what?",
+          "options": [
+            "Basic fitting capability",
+            "Leakage-free generalization",
+            "Production quality"
+          ],
+          "answer": 0,
+          "explanation": "It checks whether this pipeline can fit simple data; generalization requires separate valid evaluation."
+        }
+      },
+      {
+        "title": "Checkpoints and reproducible resume",
+        "explanation": "A resumable checkpoint includes model parameters, optimizer state, progress and relevant scheduler or scaler state. Record dataset, split, code, dependencies and random-state policy. Loading weights alone supports inference but may not continue the same optimization trajectory, especially for stateful optimizers.",
+        "workedExample": "Illustrative Adam resume restores moment estimates plus weights and epoch. A checkpoint manifest names the exact training data and validation split.",
+        "pitfall": "Saving only weights is not full training resume.",
+        "teachBack": "Distinguish an inference artifact from a resume artifact.",
+        "hints": [
+          "Save optimizer.",
+          "Identify data.",
+          "Record progress."
+        ],
+        "check": {
+          "question": "What is essential for faithful Adam continuation?",
+          "options": [
+            "A screenshot",
+            "Only final accuracy",
+            "Optimizer state with weights"
+          ],
+          "answer": 2,
+          "explanation": "Adam updates depend on stored moment estimates; weights alone omit that training state."
+        }
+      }
+    ],
+    "review": [
+      "Annotate shapes and dtypes for every loop boundary.",
+      "Describe gradient accumulation and validation behavior.",
+      "Use tiny-batch overfit as a diagnostic, then test generalization separately."
+    ]
+  },
+  {
+    "day": 5,
+    "objective": "Reason about transformers, context budgets, structured generation and model adaptation.",
+    "modules": [
+      {
+        "title": "Tokenization and context accounting",
+        "explanation": "Tokens are model vocabulary units, not words or characters. Tokenization changes across languages, code and model families. Context includes instructions, retrieved evidence, history and generated output. Truncation can remove the decisive fact, so budget context by priority rather than blindly filling the window.",
+        "workedExample": "Illustrative budget: 8,000 tokens = 1,000 instructions + 4,000 evidence + 1,000 history + 2,000 output. Reserve output before packing evidence.",
+        "pitfall": "Character count is not a reliable token count.",
+        "teachBack": "Explain what gets dropped when context is full.",
+        "hints": [
+          "Count all parts.",
+          "Reserve output.",
+          "Prioritize evidence."
+        ],
+        "check": {
+          "question": "Does an 8,000-token context permit 8,000 input plus 2,000 output?",
+          "options": [
+            "Yes",
+            "No, combined budget matters",
+            "Only with JSON"
+          ],
+          "answer": 1,
+          "explanation": "Input and generated output consume the applicable context budget; check the chosen runtime contract."
+        }
+      },
+      {
+        "title": "Attention from queries, keys and values",
+        "explanation": "Scaled dot-product attention computes softmax(QKᵀ/√d_k)V. Queries ask what is relevant; keys identify matches; values carry information. A mask prevents forbidden positions from contributing. Multiple heads can learn different relations; attention weights alone are not a complete causal explanation.",
+        "workedExample": "Illustrative sequence length 5: Q and K with width 4 produce a [5,5] score matrix. Causal masking hides positions after the current token.",
+        "pitfall": "Forgetting the mask leaks future tokens during decoder training.",
+        "teachBack": "Explain every matrix dimension in attention.",
+        "hints": [
+          "Match Q and K.",
+          "Scale scores.",
+          "Mask then softmax."
+        ],
+        "check": {
+          "question": "What shape is the attention score matrix here?",
+          "options": [
+            "[5,5]",
+            "[4,4]",
+            "[5,4]"
+          ],
+          "answer": 0,
+          "explanation": "Q [5,4] multiplied by Kᵀ [4,5] yields scores [5,5]."
+        }
+      },
+      {
+        "title": "Encoder, decoder and positional information",
+        "explanation": "Encoders can attend across their input to build representations. Autoregressive decoders predict successive tokens using causal attention. Encoder-decoder models connect decoder queries to encoded input via cross-attention. Positional mechanisms supply order; without order information, attention alone cannot represent sequence position as intended.",
+        "workedExample": "Illustrative translation: encoder reads the source; decoder generates the target with causal self-attention and cross-attention to the source representation.",
+        "pitfall": "Calling every transformer an autoregressive chatbot confuses architectures.",
+        "teachBack": "Explain when each architecture fits the task.",
+        "hints": [
+          "Input representation.",
+          "Causal output.",
+          "Cross-attention bridge."
+        ],
+        "check": {
+          "question": "Which operation connects a translation decoder to encoded source text?",
+          "options": [
+            "Random shuffling",
+            "Cross-attention",
+            "Gradient reset"
+          ],
+          "answer": 1,
+          "explanation": "Cross-attention lets decoder queries retrieve information from encoder representations."
+        }
+      },
+      {
+        "title": "KV cache and generation memory",
+        "explanation": "A decoder can reuse past keys and values instead of recomputing them at each token. Cache memory grows with sequence length and concurrency. Approximate bytes = 2 × layers × KV_heads × head_dim × tokens × batch × bytes_per_value; runtime layout and architecture can alter details.",
+        "workedExample": "Illustrative 24 layers, 8 KV heads, dimension 64, 4,096 tokens, batch 1, two-byte values gives 201,326,592 bytes, about 192 MiB, for KV alone.",
+        "pitfall": "Weights fitting in memory does not guarantee serving fits.",
+        "teachBack": "Estimate memory before increasing concurrent sessions.",
+        "hints": [
+          "Two cached tensors.",
+          "Include sequence length.",
+          "Multiply concurrency."
+        ],
+        "check": {
+          "question": "Doubling batch with all else fixed does what to KV memory?",
+          "options": [
+            "Leaves it unchanged",
+            "Approximately doubles it",
+            "Halves it"
+          ],
+          "answer": 1,
+          "explanation": "Each concurrent sequence needs cached keys and values; memory scales with batch in this estimate."
+        }
+      },
+      {
+        "title": "Schemas, sampling and LoRA choices",
+        "explanation": "A schema constrains output structure; semantic checks still enforce valid meanings and authorization. Sampling settings influence variation but do not guarantee truth. LoRA learns low-rank updates while freezing base weights. Choose adaptation for measured behavioral failures; use retrieval for changing knowledge and permissions.",
+        "workedExample": "Illustrative extraction requires invoice_id, currency and amount. Reject missing IDs and unsupported currency even when JSON parses. Consider LoRA only after a labeled baseline exposes stable extraction errors.",
+        "pitfall": "Valid JSON is not valid business behavior.",
+        "teachBack": "Defend your adaptation choice and validation boundary.",
+        "hints": [
+          "Measure failure.",
+          "Check semantics.",
+          "Compare simpler baseline."
+        ],
+        "check": {
+          "question": "Changing permissioned documents primarily suggests which mechanism?",
+          "options": [
+            "Higher temperature",
+            "Memorizing documents in adapters",
+            "Retrieval with ACLs"
+          ],
+          "answer": 2,
+          "explanation": "Retrieval can refresh evidence and enforce access; adapting weights is not a document-permission boundary."
+        }
+      }
+    ],
+    "review": [
+      "Compute one attention matrix shape and one KV-cache estimate.",
+      "Choose prompt, retrieval or adaptation based on the observed failure.",
+      "Define how invalid structured output is rejected."
+    ]
+  },
+  {
+    "day": 6,
+    "objective": "Build reliable LLM applications with explicit prompts, validated outputs, measured adaptation and bounded resource use.",
+    "modules": [
+      {
+        "title": "LLM application contracts and validated outputs",
+        "explanation": "Treat generation as one component inside a deterministic application. Define inputs, evidence, allowed output fields and failure states. Validate structure first, then business meaning, provenance and authorization. Use bounded repair attempts for malformed output; preserve an explicit failure when required information is unavailable rather than inventing a value.",
+        "workedExample": "Illustrative Python validator accepts amount only when numeric, nonnegative and paired with an allowed currency. Parsed JSON containing amount = −200 fails semantics despite valid syntax.",
+        "pitfall": "Structured output does not establish correct business meaning.",
+        "teachBack": "Explain how your application distinguishes parse failure from unsupported claims.",
+        "hints": [
+          "Check structure.",
+          "Validate meaning.",
+          "Bound repair."
+        ],
+        "check": {
+          "question": "Valid JSON with an impossible negative invoice total needs what?",
+          "options": [
+            "Higher temperature",
+            "Automatic acceptance",
+            "Semantic validation failure"
+          ],
+          "answer": 2,
+          "explanation": "Parsing establishes structure; domain validation rejects a value outside the stated business contract."
+        }
+      },
+      {
+        "title": "Prompt design, demonstrations and versioned evaluation",
+        "explanation": "A useful prompt states task, constraints, available evidence and output contract. Demonstrations clarify edge cases, but their examples must not leak evaluation answers. Version prompts and compare them on a fixed test set covering ambiguity, missing facts and adversarial inputs. Delimiters improve readability; they do not make untrusted text authoritative or safe.",
+        "workedExample": "Illustrative extraction prompt includes one missing-date example returning null. Evaluation separately tests contradictory dates and unsupported guesses, checking whether the new prompt improves these cases.",
+        "pitfall": "One attractive response is not evidence that a prompt improved.",
+        "teachBack": "Defend a prompt change using failures and held-out cases.",
+        "hints": [
+          "Define contract.",
+          "Include edge cases.",
+          "Compare fixed tests."
+        ],
+        "check": {
+          "question": "A prompt change should be evaluated on what?",
+          "options": [
+            "Its length alone",
+            "One chosen success",
+            "A fixed representative test set"
+          ],
+          "answer": 2,
+          "explanation": "A stable test set with failure cases permits comparison; cherry-picked examples hide regressions."
+        }
+      },
+      {
+        "title": "LoRA mechanics and adaptation evidence",
+        "explanation": "LoRA represents a weight update as ΔW = BA with small rank r while freezing base weights. For a matrix with d_out rows and d_in columns, two low-rank factors add r(d_in + d_out) trainable values rather than d_in × d_out. Reduced parameters do not eliminate data quality, validation or deployment compatibility requirements.",
+        "workedExample": "Illustrative 1,024 × 1,024 matrix contains 1,048,576 weights. Rank 8 factors add 8 × (1,024 + 1,024) = 16,384 values, excluding any separately trained parameters.",
+        "pitfall": "Adapter efficiency does not prove improved task behavior.",
+        "teachBack": "Explain rank, frozen weights and the evaluation needed before adoption.",
+        "hints": [
+          "Factor the update.",
+          "Count parameters.",
+          "Test task quality."
+        ],
+        "check": {
+          "question": "How many low-rank values does the example add?",
+          "options": [
+            "8",
+            "16,384",
+            "1,048,576"
+          ],
+          "answer": 1,
+          "explanation": "The two factors contain r × d_in plus d_out × r values: 8 × 2,048 = 16,384."
+        }
+      },
+      {
+        "title": "Model selection under deployment constraints",
+        "explanation": "Compare models on the actual task, not a leaderboard alone. Evaluate quality, structured-output behavior, latency, memory, licensing and operational constraints. Route easy tasks to a cheaper or smaller model only when measured acceptance gates pass; uncertain routing also needs evaluation. An available local model is optional for this tutorial, which teaches through stored content.",
+        "workedExample": "Illustrative extraction baseline has 94% required-field accuracy; a larger candidate reaches 96% but misses the latency limit. Decide whether quality improvement warrants changing the product constraint or optimization plan.",
+        "pitfall": "A larger parameter count does not guarantee better fit.",
+        "teachBack": "Choose a model using constraints and a measured failure set.",
+        "hints": [
+          "Define gates.",
+          "Measure workload.",
+          "Compare tradeoffs."
+        ],
+        "check": {
+          "question": "Which model is automatically acceptable?",
+          "options": [
+            "Highest score regardless of latency",
+            "None without required gates",
+            "Largest model"
+          ],
+          "answer": 1,
+          "explanation": "Selection combines task quality and deployment constraints; a single ranking does not establish suitability."
+        }
+      },
+      {
+        "title": "Token budgets, batching and safe optimization",
+        "explanation": "Estimate resource use from tasks, calls, input tokens, output tokens and retries. Optimize measured waste before weakening quality requirements. Caching needs freshness and permission scope; batching trades efficiency against waiting and memory. Quantization may reduce storage or memory but requires evaluation of accuracy and runtime compatibility for the selected artifact.",
+        "workedExample": "Illustrative 100 tasks × 2 calls × (800 input + 200 output tokens) = 200,000 tokens. Removing one unnecessary call halves this estimate if its work is safely eliminated.",
+        "pitfall": "Token reduction that omits decisive evidence can damage correctness.",
+        "teachBack": "Defend one optimization with both resource and quality evidence.",
+        "hints": [
+          "Count all calls.",
+          "Include retries.",
+          "Recheck quality."
+        ],
+        "check": {
+          "question": "What is the illustrative total token use?",
+          "options": [
+            "20,000",
+            "100,000",
+            "200,000"
+          ],
+          "answer": 2,
+          "explanation": "100 × 2 × (800 + 200) = 200,000 tokens before retry overhead."
+        }
+      }
+    ],
+    "review": [
+      "Explain how a prompt version, output schema and semantic validator form one application contract.",
+      "Compare prompt-only, retrieval and LoRA using a concrete failure set.",
+      "Calculate token and call budgets, then defend an optimization against quality gates."
+    ]
+  },
+  {
+    "day": 7,
+    "objective": "Build permissioned retrieval with measurable relevance, lifecycle correctness and answer evidence.",
+    "modules": [
+      {
+        "title": "Embeddings, similarity and metric alignment",
+        "explanation": "An embedding maps content into a vector space learned by a model. Dot product, cosine and Euclidean distance rank differently unless appropriate normalization relationships hold. Match indexing and query preprocessing. A similarity score measures geometric proximity, not verified relevance or truth.",
+        "workedExample": "Illustrative vectors (1,0) and (10,0) have cosine 1 but different dot products with the same query. Normalize deliberately when cosine is the intended metric.",
+        "pitfall": "Mixing embedding models produces incompatible representations.",
+        "teachBack": "Explain the metric and normalization contract.",
+        "hints": [
+          "Check model identity.",
+          "Check normalization.",
+          "Interpret geometry."
+        ],
+        "check": {
+          "question": "What does cosine similarity ignore?",
+          "options": [
+            "Vector direction",
+            "Vector magnitude",
+            "All token meaning"
+          ],
+          "answer": 1,
+          "explanation": "Cosine compares direction through normalized dot product; absolute magnitude does not affect it."
+        }
+      },
+      {
+        "title": "ANN, lexical search and hybrid retrieval",
+        "explanation": "Approximate nearest-neighbor search trades some exact-neighbor recall for speed or memory. BM25 uses lexical matching and collection statistics, making exact identifiers useful. Hybrid retrieval combines complementary candidates. Evaluate fusion on labeled queries; neither semantic nor lexical retrieval wins for every query.",
+        "workedExample": "Illustrative query ERR-1042 benefits from exact lexical matching, while “why did checkout stall?” may retrieve paraphrased incident text semantically. Merge then evaluate candidate rankings.",
+        "pitfall": "ANN configuration can silently lower relevant-document recall.",
+        "teachBack": "Explain which errors each retrieval method repairs.",
+        "hints": [
+          "Inspect identifiers.",
+          "Measure recall.",
+          "Compare fusion."
+        ],
+        "check": {
+          "question": "Which query especially benefits from lexical retrieval?",
+          "options": [
+            "Unrelated random vector",
+            "Empty query",
+            "Exact error code ERR-1042"
+          ],
+          "answer": 2,
+          "explanation": "Lexical matching preserves exact identifiers that semantic proximity may not prioritize."
+        }
+      },
+      {
+        "title": "Chunking, metadata and reranking",
+        "explanation": "Chunk boundaries should preserve the evidence needed to answer. Small chunks may lose context; large chunks may bury useful facts. Store source ID, version, location and permissions. Reranking compares query-candidate relevance after retrieval; it cannot recover a relevant chunk absent from its candidate pool.",
+        "workedExample": "Illustrative contract paragraph defines a term in the previous section. Include enough overlap or parent context to avoid quoting the clause without its definition.",
+        "pitfall": "Overlap creates duplicates and can consume the context budget.",
+        "teachBack": "Defend chunk boundaries using labeled evidence needs.",
+        "hints": [
+          "Keep definitions.",
+          "Track source.",
+          "Inspect candidates."
+        ],
+        "check": {
+          "question": "Can reranking recover a document never retrieved?",
+          "options": [
+            "Yes, always",
+            "No",
+            "Only by sorting"
+          ],
+          "answer": 1,
+          "explanation": "Reranking reorders the supplied candidates; missing evidence needs a retrieval fix."
+        }
+      },
+      {
+        "title": "Retrieval and answer evaluation",
+        "explanation": "Use relevance labels to measure retrieval recall and ranking quality. Evaluate answer correctness, groundedness, completeness and abstention separately. A grounded answer can omit crucial facts. Freeze evaluation queries and adjudicate ambiguous labels; model judges need calibration against human judgments and variation checks.",
+        "workedExample": "Illustrative correct policy chunk retrieved, but answer omits the exception. Retrieval succeeds; completeness fails. Record both instead of changing embeddings blindly.",
+        "pitfall": "One end-to-end score conceals the failing stage.",
+        "teachBack": "Diagnose a failure using stage-specific evidence.",
+        "hints": [
+          "Check candidates.",
+          "Check citations.",
+          "Check omissions."
+        ],
+        "check": {
+          "question": "Retrieved correct evidence but omitted exception means which failure?",
+          "options": [
+            "Answer completeness",
+            "Necessarily retrieval",
+            "Index permissions"
+          ],
+          "answer": 0,
+          "explanation": "The evidence reached the model; the generated answer failed to include required content."
+        }
+      },
+      {
+        "title": "ACLs and index lifecycle",
+        "explanation": "Document authorization must hold before evidence reaches generation and every cache path. Preserve source versions, permission metadata and deletion signals during indexing. Build and validate a new index version, then promote deliberately. Re-embedding after a model change requires consistent query and document representations.",
+        "workedExample": "Illustrative deleted employee file remains in a cached chunk. Remove source, index and cache representations; test that user queries cannot recover the deleted content.",
+        "pitfall": "An authorized service account does not authorize every end user.",
+        "teachBack": "Trace revocation through retrieval, cache and traces.",
+        "hints": [
+          "Filter before context.",
+          "Version representations.",
+          "Test deletion."
+        ],
+        "check": {
+          "question": "Where must forbidden content be excluded?",
+          "options": [
+            "Only browser display",
+            "Before model context and cache reuse",
+            "Only final answer"
+          ],
+          "answer": 1,
+          "explanation": "Post-generation redaction is insufficient once unauthorized content has entered context or accessible caches."
+        }
+      }
+    ],
+    "review": [
+      "Separate retrieval failure from answer synthesis failure.",
+      "Create queries for stale, missing and unauthorized evidence.",
+      "Describe index promotion and deletion propagation."
+    ]
+  },
+  {
+    "day": 8,
+    "objective": "Design agents as bounded workflows with reliable tool contracts and observable recovery.",
+    "modules": [
+      {
+        "title": "Tool contracts and authority",
+        "explanation": "A model proposes an action; the execution boundary validates and authorizes it. Tools should expose narrow operations, typed arguments, resource scope and explicit outcomes. Schema validity prevents malformed requests, but identity-aware checks determine whether this user may affect this resource.",
+        "workedExample": "Illustrative tool preview_recipe accepts repository ID and allowlisted recipe ID. It cannot accept arbitrary shell text or choose another user’s workspace.",
+        "pitfall": "A system prompt is not an authorization mechanism.",
+        "teachBack": "Explain who enforces permission after model selection.",
+        "hints": [
+          "Narrow operation.",
+          "Validate arguments.",
+          "Authorize resource."
+        ],
+        "check": {
+          "question": "Who must enforce tool authorization?",
+          "options": [
+            "Model preference",
+            "Execution gateway",
+            "Retrieved document"
+          ],
+          "answer": 1,
+          "explanation": "The trusted gateway checks identity, operation and resource before executing a proposed action."
+        }
+      },
+      {
+        "title": "Planning, checkpoints and resume",
+        "explanation": "Represent workflow progress explicitly: planned, running, succeeded, failed or awaiting approval. Persist completed steps and their evidence before resuming. Resume validates branch, inputs and artifact identities; a checkpoint is not permission to reuse stale results after underlying state changes.",
+        "workedExample": "Illustrative build succeeded for commit A. Workspace changed to B; resumed workflow must rerun or invalidate that gate rather than claim B was tested.",
+        "pitfall": "Progress text without artifact identity is weak recovery evidence.",
+        "teachBack": "Explain how resume detects stale work.",
+        "hints": [
+          "Bind inputs.",
+          "Save receipts.",
+          "Check drift."
+        ],
+        "check": {
+          "question": "A build receipt for A proves what about modified B?",
+          "options": [
+            "B passed",
+            "All descendants passed",
+            "Nothing without renewed validation"
+          ],
+          "answer": 2,
+          "explanation": "A receipt covers its tested inputs; changed code requires a relevant gate for current inputs."
+        }
+      },
+      {
+        "title": "Retry, idempotency and ambiguous results",
+        "explanation": "Retry transient failures only within a deadline and attempt budget. Idempotency keys deduplicate logically repeated operations. A timeout may mean an action succeeded but its response was lost; query operation status before replaying a side effect. Permanent schema errors need correction, not repeated execution.",
+        "workedExample": "Illustrative job submission times out. Reconcile using its operation ID or idempotency key before creating a second job.",
+        "pitfall": "Retrying every exception can duplicate irreversible effects.",
+        "teachBack": "Distinguish safe read retry from uncertain write replay.",
+        "hints": [
+          "Classify failure.",
+          "Reconcile state.",
+          "Bound attempts."
+        ],
+        "check": {
+          "question": "After an ambiguous write timeout, first do what?",
+          "options": [
+            "Erase checkpoint",
+            "Repeat blindly",
+            "Inspect operation status"
+          ],
+          "answer": 2,
+          "explanation": "The first action may have completed; reconcile its identity and result before replay."
+        }
+      },
+      {
+        "title": "Isolation, cancellation and budgets",
+        "explanation": "Bound tool access by workspace, filesystem paths, network policy and process privileges. Limit steps, wall-clock duration and resource consumption. Cancellation must propagate to running work and expose final state. Local-only execution still needs isolation because generated commands can damage local assets.",
+        "workedExample": "Illustrative Python adapter runs an allowlisted tool in a temporary workspace with a timeout, captures output and returns a structured failure on cancellation.",
+        "pitfall": "A timeout that stops only the caller leaves runaway children.",
+        "teachBack": "Explain where cancellation and cleanup are enforced.",
+        "hints": [
+          "Scope workspace.",
+          "Track process.",
+          "Propagate cancellation."
+        ],
+        "check": {
+          "question": "Local execution removes which need?",
+          "options": [
+            "All isolation",
+            "Neither isolation nor budgets",
+            "All budgets"
+          ],
+          "answer": 1,
+          "explanation": "Local tools still consume resources and can alter valuable files, so limits and isolation remain necessary."
+        }
+      },
+      {
+        "title": "Traces and adversarial workflow evaluation",
+        "explanation": "Trace inputs, selected tools, authorization decisions, attempts, durations and output identities. Redact sensitive payloads and restrict trace access. Evaluate task success plus policy compliance, duplicate effects and recovery. Include poisoned documents and tool failures, not only cooperative demonstrations.",
+        "workedExample": "Illustrative injected document asks to export credentials. Successful test shows gateway rejection and an audit event, even if the model proposes the action.",
+        "pitfall": "Verbose logs can become another sensitive-data store.",
+        "teachBack": "Define success when the model makes an unsafe proposal.",
+        "hints": [
+          "Observe decision.",
+          "Redact payload.",
+          "Test boundary."
+        ],
+        "check": {
+          "question": "A rejected unauthorized tool proposal means what?",
+          "options": [
+            "All attacks impossible",
+            "Boundary worked for that test",
+            "Model is universally safe"
+          ],
+          "answer": 1,
+          "explanation": "The tested enforcement blocked this action; it does not establish universal model or system safety."
+        }
+      }
+    ],
+    "review": [
+      "Draw model, gateway and executor as separate trust boundaries.",
+      "Explain one ambiguous timeout and safe recovery path.",
+      "Build a failure-case matrix before discussing autonomy."
+    ]
+  },
+  {
+    "day": 9,
+    "objective": "Make model lineage, promotion, monitoring and rollback operationally complete.",
+    "modules": [
+      {
+        "title": "Lineage beyond a run metric",
+        "explanation": "A metric without data and configuration identity is difficult to reproduce. Track dataset version, split, code, dependency versions, parameters, seeds, model artifact and evaluation evidence. For LLM systems, include prompt, embedding model, index, retrieval settings and policy configuration as versioned dependencies.",
+        "workedExample": "Illustrative two identical model weights produce different answers after index promotion. Record index version with the response trace to explain the change.",
+        "pitfall": "Model version alone misses retrieval and prompt changes.",
+        "teachBack": "Trace all artifacts that could change a response.",
+        "hints": [
+          "Identify data.",
+          "Version configuration.",
+          "Bind response."
+        ],
+        "check": {
+          "question": "Which artifact can change a RAG answer without changing model weights?",
+          "options": [
+            "Only optimizer state",
+            "Index version",
+            "Screen resolution"
+          ],
+          "answer": 1,
+          "explanation": "Retrieved evidence changes with index content and configuration, affecting generated answers."
+        }
+      },
+      {
+        "title": "Registry and promotion gates",
+        "explanation": "A registry records model versions and references; promotion needs explicit evidence and ownership. Validate quality, security, latency, resource limits and rollback compatibility. An alias can identify a chosen version, but changing it is still a release action that requires the organization’s promotion controls.",
+        "workedExample": "Illustrative candidate improves recall but exceeds p95 latency budget. Reject or optimize before promotion despite the attractive offline metric.",
+        "pitfall": "A registered artifact is not automatically production-approved.",
+        "teachBack": "Name who accepts each gate and its evidence.",
+        "hints": [
+          "List constraints.",
+          "Attach receipts.",
+          "Keep rollback."
+        ],
+        "check": {
+          "question": "Higher quality but failed latency gate means what?",
+          "options": [
+            "Latency no longer matters",
+            "Automatic promotion",
+            "Unresolved release failure"
+          ],
+          "answer": 2,
+          "explanation": "Promotion must satisfy required operational constraints as well as quality objectives."
+        }
+      },
+      {
+        "title": "Training-serving skew",
+        "explanation": "Skew occurs when production feature computation differs from training. Compare timestamp logic, missing-value behavior, categories, normalization and dependency versions. Share feature contracts and test known examples through both paths. Identical code is insufficient if data sources or feature freshness differ.",
+        "workedExample": "Illustrative training computes seven completed days of usage; serving includes the current partial day. Same feature name now means a different quantity.",
+        "pitfall": "Feature names do not establish feature equivalence.",
+        "teachBack": "Design a parity test for one production feature.",
+        "hints": [
+          "Fix timestamp.",
+          "Compare values.",
+          "Check freshness."
+        ],
+        "check": {
+          "question": "Which example is training-serving skew?",
+          "options": [
+            "More training epochs",
+            "Different feature windows",
+            "New user behavior only"
+          ],
+          "answer": 1,
+          "explanation": "The same intended feature has different computation semantics across training and serving."
+        }
+      },
+      {
+        "title": "Drift and delayed labels",
+        "explanation": "Feature drift is a distribution change; performance degradation requires outcome evidence. Concept drift changes the relationship between inputs and targets. Labels may arrive weeks later, so combine proxy monitoring with mature-label evaluation. An alert initiates diagnosis; automatic retraining on unreviewed data can preserve bad labels or amplify harm.",
+        "workedExample": "Illustrative fraud labels mature after 30 days. Monitor immediate score and input distributions, then evaluate cohorts only when their outcome window is complete.",
+        "pitfall": "Missing recent labels do not mean recent performance is perfect.",
+        "teachBack": "Explain what can be known before labels mature.",
+        "hints": [
+          "Watch inputs.",
+          "Mark maturity.",
+          "Evaluate cohorts."
+        ],
+        "check": {
+          "question": "Can feature drift alone prove model accuracy fell?",
+          "options": [
+            "No",
+            "Yes",
+            "Only for trees"
+          ],
+          "answer": 0,
+          "explanation": "Distribution change is a warning; accuracy needs trustworthy outcome measurements or validated diagnostic evidence."
+        }
+      },
+      {
+        "title": "Canaries, rollback and feedback contamination",
+        "explanation": "A canary exposes limited traffic to a candidate while monitoring release gates. Rollback needs compatible artifacts and state, not merely old weights. Responses can alter future labels, creating feedback loops; keep evaluation provenance and distinguish organically observed outcomes from system-influenced decisions.",
+        "workedExample": "Illustrative new threshold suppresses reviews, reducing discovered positives. A later dataset appears safer because observation changed, not necessarily because underlying risk fell.",
+        "pitfall": "A model can change the labels used to judge itself.",
+        "teachBack": "Explain rollback when schema or index also changed.",
+        "hints": [
+          "Limit exposure.",
+          "Version dependencies.",
+          "Audit observation bias."
+        ],
+        "check": {
+          "question": "Fewer detected positives after fewer reviews proves what?",
+          "options": [
+            "Perfect calibration",
+            "Potential observation bias",
+            "Lower true risk"
+          ],
+          "answer": 1,
+          "explanation": "Reduced observation can lower recorded positives without changing underlying event prevalence."
+        }
+      }
+    ],
+    "review": [
+      "Draw an artifact dependency chain from data to served response.",
+      "Define a delayed-label monitoring policy.",
+      "Write promotion gates and a rollback receipt."
+    ]
+  },
+  {
+    "day": 10,
+    "objective": "Map workload requirements to cloud capabilities, identity boundaries and failure behavior.",
+    "modules": [
+      {
+        "title": "Managed models versus custom model control",
+        "explanation": "Managed foundation-model access reduces some infrastructure work; custom training and serving offer more control over weights, hardware and deployment. AWS Bedrock and SageMaker AI illustrate these differing needs. Choose by requirements and evidence, including model control, isolation, throughput and operational ownership.",
+        "workedExample": "Illustrative fresh document assistant starts with managed inference and permissioned retrieval. A specialized model requiring custom training may need a separate training and serving platform.",
+        "pitfall": "Service brand names do not prove workload fit.",
+        "teachBack": "Defend managed versus custom using three constraints.",
+        "hints": [
+          "Control needed.",
+          "Operational owner.",
+          "Measured workload."
+        ],
+        "check": {
+          "question": "A custom-weight training requirement most directly changes what?",
+          "options": [
+            "Platform control needs",
+            "Question wording",
+            "Font selection"
+          ],
+          "answer": 0,
+          "explanation": "Training custom weights requires capabilities and ownership beyond simply invoking a managed model endpoint."
+        }
+      },
+      {
+        "title": "Cross-cloud mapping as capability mapping",
+        "explanation": "Common capability families include object storage, container execution, managed training, search, identity and secret management. Illustrative mappings: S3/Blob Storage/Cloud Storage; EKS/AKS/GKE; SageMaker AI/Azure Machine Learning/Vertex AI. Mappings are starting points; APIs, authorization and deployment semantics differ.",
+        "workedExample": "Describe an ingestion pipeline as storage event → bounded worker → versioned index. Then select provider components and verify integration details before implementation.",
+        "pitfall": "A mapping table is not proof of feature parity.",
+        "teachBack": "Explain one provider difference your adapter must expose.",
+        "hints": [
+          "Name capability.",
+          "Check semantics.",
+          "Verify integration."
+        ],
+        "check": {
+          "question": "What does a cross-cloud table establish?",
+          "options": [
+            "Current prices",
+            "Candidate capability families",
+            "Exact parity"
+          ],
+          "answer": 1,
+          "explanation": "Similar service purposes help exploration but do not imply identical behavior, availability or cost."
+        }
+      },
+      {
+        "title": "Workload identity and end-user permissions",
+        "explanation": "Workload identity authenticates the application; resource roles authorize its operations. Short-lived credentials reduce exposure compared with embedded long-lived keys. End-user authorization remains separate. Azure managed identities and Google Workload Identity Federation illustrate identity paths; private networking alone does not grant document permissions.",
+        "workedExample": "Illustrative application identity reads the shared index. Every request still filters documents by the current user’s entitlement before assembling context.",
+        "pitfall": "A privileged service identity can accidentally erase tenant boundaries.",
+        "teachBack": "Trace both identities across retrieval and tools.",
+        "hints": [
+          "Authenticate workload.",
+          "Authorize operation.",
+          "Filter user scope."
+        ],
+        "check": {
+          "question": "Does a service account’s read access grant all users the same access?",
+          "options": [
+            "Yes",
+            "Only over private networks",
+            "No"
+          ],
+          "answer": 2,
+          "explanation": "Service permissions allow application operations; user-specific data access must still be enforced."
+        }
+      },
+      {
+        "title": "Availability and graceful degradation",
+        "explanation": "Define what must work during component failure. Use deadlines, bounded queues and circuit breakers to stop overload propagation. Replication helps only when dependencies and routing also survive. A degraded mode should preserve authorization and communicate unavailable capabilities rather than silently invent evidence.",
+        "workedExample": "Illustrative reranker unavailable: serve a tested retrieval-only path with lower-confidence labeling, or abstain if quality requirements forbid that fallback.",
+        "pitfall": "Retries without deadlines amplify dependency outages.",
+        "teachBack": "Explain your fallback and its quality boundary.",
+        "hints": [
+          "List dependencies.",
+          "Bound waiting.",
+          "Test fallback."
+        ],
+        "check": {
+          "question": "An unavailable retriever should trigger what?",
+          "options": [
+            "Unlimited queueing",
+            "Defined fallback or abstention",
+            "Fabricated citations"
+          ],
+          "answer": 1,
+          "explanation": "The system must acknowledge missing evidence and follow its tested availability policy."
+        }
+      },
+      {
+        "title": "Cost controls from measured units",
+        "explanation": "Estimate cost from workload units: request rate, tokens, storage, indexing, accelerator time and data transfer. Measure representative traffic, then use current provider quotes when purchasing. Include retries, peak concurrency and observability; a cheap unit price can still produce expensive total usage.",
+        "workedExample": "Illustrative 2,000 daily tasks × 3 model calls × 1,500 tokens = 9 million daily tokens before retries. Reduce unnecessary calls before changing providers.",
+        "pitfall": "Ignoring agent loops understates total consumption.",
+        "teachBack": "Explain the top two usage drivers and caps.",
+        "hints": [
+          "Count calls.",
+          "Include retries.",
+          "Cap spend units."
+        ],
+        "check": {
+          "question": "What is the illustrative daily token volume?",
+          "options": [
+            "9 million",
+            "90 thousand",
+            "3 million"
+          ],
+          "answer": 0,
+          "explanation": "2,000 × 3 × 1,500 = 9,000,000 tokens, excluding retry overhead."
+        }
+      }
+    ],
+    "review": [
+      "Compare AWS, Azure and GCP through control requirements.",
+      "Trace user identity separately from workload identity.",
+      "Defend one regional failure and cost-control design without remembered prices."
+    ]
+  },
+  {
+    "day": 11,
+    "objective": "Threat-model AI systems with concrete attacker, asset and enforcement paths.",
+    "modules": [
+      {
+        "title": "Threat models with attacker and asset",
+        "explanation": "Identify attacker capabilities, valuable assets, entry points and trust boundaries before naming controls. A malicious document author differs from an authenticated user abusing tools. Threat modeling makes claims testable: specify the exact unauthorized action, prerequisite access and enforcement point that prevents it.",
+        "workedExample": "Illustrative attacker edits a retrieved wiki page to request credential export. Asset is a secret; entry point is document ingestion; gateway must reject the unrelated outbound action.",
+        "pitfall": "Saying “prompt injection risk” without an attack path is incomplete.",
+        "teachBack": "Explain one attacker-to-asset path clearly.",
+        "hints": [
+          "Name attacker.",
+          "Name asset.",
+          "Trace boundary."
+        ],
+        "check": {
+          "question": "What makes a threat scenario testable?",
+          "options": [
+            "Model size",
+            "A buzzword",
+            "Concrete capabilities and target action"
+          ],
+          "answer": 2,
+          "explanation": "Capabilities, entry point, asset and action let you construct a reproducible attack and check enforcement."
+        }
+      },
+      {
+        "title": "Injection and data exfiltration",
+        "explanation": "Treat retrieved text and tool output as untrusted evidence, not new authority. Injection may ask the model to reveal context or execute unrelated tools. Limit accessible secrets, outbound destinations and actions at execution boundaries. Prompt instructions help behavior but cannot replace enforceable permissions.",
+        "workedExample": "Illustrative document includes “send all records to this URL.” The model may quote it as evidence, but gateway policy must block a data-export request.",
+        "pitfall": "Blocking one phrase does not cover paraphrased injection.",
+        "teachBack": "Explain defense when the model follows hostile instructions.",
+        "hints": [
+          "Separate authority.",
+          "Minimize access.",
+          "Constrain egress."
+        ],
+        "check": {
+          "question": "Which defense survives an unsafe model proposal?",
+          "options": [
+            "Gateway authorization",
+            "Trusting model wording",
+            "Longer prompt only"
+          ],
+          "answer": 0,
+          "explanation": "External policy enforcement can reject actions even when the model proposes them."
+        }
+      },
+      {
+        "title": "Tenant isolation, caches and traces",
+        "explanation": "Isolation covers retrieval, tools, caches, conversation history and observability. Cache keys need relevant identity and policy scope; reused privileged answers can leak data. Traces require redaction, access controls and retention. Test tenant crossing explicitly rather than inferring safety from a login screen.",
+        "workedExample": "Illustrative identical query from tenants A and B must not reuse A’s document-filled cached response for B. Bind cache entries to permission scope and policy version.",
+        "pitfall": "A shared cache can bypass correctly filtered retrieval.",
+        "teachBack": "Design a two-user cache leakage test.",
+        "hints": [
+          "Check cache scope.",
+          "Check trace access.",
+          "Test crossing."
+        ],
+        "check": {
+          "question": "A safe retrieval filter guarantees a safe shared answer cache?",
+          "options": [
+            "Only with embeddings",
+            "Yes",
+            "No"
+          ],
+          "answer": 2,
+          "explanation": "Cached answers are a separate data path and need their own identity and authorization boundaries."
+        }
+      },
+      {
+        "title": "Retention and software supply chain",
+        "explanation": "Inventory sensitive data in source documents, embeddings, caches, artifacts and logs. Define retention and deletion propagation. Pin and review tool dependencies, recipes and model artifacts; generated code can introduce vulnerable packages or unexpected execution. Verify provenance and scan changes before promotion.",
+        "workedExample": "Illustrative Python plugin downloads a recipe package. Pin its version, verify its source, run isolated preview and inspect the proposed dependency changes.",
+        "pitfall": "Embeddings and traces may still contain sensitive information.",
+        "teachBack": "Trace one deletion across all derived stores.",
+        "hints": [
+          "Inventory copies.",
+          "Pin inputs.",
+          "Review execution."
+        ],
+        "check": {
+          "question": "Deleting a source file completes deletion when what is true?",
+          "options": [
+            "Required derived stores honor deletion policy",
+            "Only UI hides it",
+            "Every derived copy is ignored"
+          ],
+          "answer": 0,
+          "explanation": "Deletion obligations extend to indexed, cached and logged representations according to documented retention rules."
+        }
+      },
+      {
+        "title": "Governance as release evidence",
+        "explanation": "NIST AI RMF organizes Govern, Map, Measure and Manage. Turn labels into owned actions: policy and accountability; intended use and affected users; evaluation and risk evidence; release decisions and incident response. Framework alignment is a management structure, not proof that technical controls passed.",
+        "workedExample": "Illustrative “Measure” artifact is a versioned adversarial report with failures and sample limits. “Manage” records the release decision, mitigations, owner and rollback trigger.",
+        "pitfall": "A framework checklist without evidence or owners is weak assurance.",
+        "teachBack": "Connect one risk to an owner and tested control.",
+        "hints": [
+          "Name owner.",
+          "Attach evidence.",
+          "Define response."
+        ],
+        "check": {
+          "question": "What proves a technical gate passed?",
+          "options": [
+            "Relevant execution evidence",
+            "A policy slogan",
+            "Framework name"
+          ],
+          "answer": 0,
+          "explanation": "Frameworks organize work; a tested gate needs evidence tied to its inputs and acceptance criteria."
+        }
+      }
+    ],
+    "review": [
+      "Describe one attack from entry point to asset.",
+      "Write a negative authorization test.",
+      "Map Govern, Map, Measure and Manage to owned artifacts."
+    ]
+  },
+  {
+    "day": 12,
+    "objective": "Modernize Java with behavior contracts; orchestrate other targets through Python tool adapters.",
+    "modules": [
+      {
+        "title": "Java behavior beyond successful compilation",
+        "explanation": "Compilation checks syntax and type compatibility, not complete runtime behavior. Modernization can change serialization, time handling, reflection, transaction boundaries, exceptions and concurrency. Inventory external contracts and identify intended versus forbidden behavior changes before choosing a transformation.",
+        "workedExample": "Illustrative API formerly omits null fields; new serializer emits them. Both versions compile, yet strict consumers may interpret omitted and null differently.",
+        "pitfall": "A green build does not prove API parity.",
+        "teachBack": "List three behaviors your migration must preserve.",
+        "hints": [
+          "Inspect contracts.",
+          "Find consumers.",
+          "Test behavior."
+        ],
+        "check": {
+          "question": "Two compiling APIs with different null serialization demonstrate what?",
+          "options": [
+            "Potential behavioral regression",
+            "Guaranteed parity",
+            "No relevant change"
+          ],
+          "answer": 0,
+          "explanation": "Consumers may depend on omitted-versus-null semantics even when both implementations compile."
+        }
+      },
+      {
+        "title": "Java concurrency and resource ownership",
+        "explanation": "Shared mutable state needs synchronization or a design avoiding unsafe sharing. Thread-safe collections do not make multi-step business invariants atomic. Resource lifetime matters too: use try-with-resources for appropriate AutoCloseable objects, and define executor ownership and shutdown when managing asynchronous work.",
+        "workedExample": "Illustrative checking a balance then updating it in separate operations allows competing requests to overspend. Protect the whole invariant, not only each map access.",
+        "pitfall": "Thread-safe components do not guarantee a thread-safe workflow.",
+        "teachBack": "Explain the atomic boundary for one invariant.",
+        "hints": [
+          "Identify shared state.",
+          "Group operations.",
+          "Own shutdown."
+        ],
+        "check": {
+          "question": "A concurrent map makes check-then-update atomic automatically?",
+          "options": [
+            "Yes",
+            "No",
+            "Only for strings"
+          ],
+          "answer": 1,
+          "explanation": "Separate operations can interleave; atomicity requires a suitable combined operation or wider synchronization."
+        }
+      },
+      {
+        "title": "Semantic transforms and preview-first changes",
+        "explanation": "Semantic transformations can match types and preserve syntax structure better than blind text replacement. OpenRewrite uses lossless semantic trees and recipes. Pin the tool and recipe, preview the diff, then compile and test. Supported mechanical changes still need business behavior gates.",
+        "workedExample": "Illustrative replace a deprecated API only when resolved type matches its intended library. A same-named local helper should remain unchanged.",
+        "pitfall": "Names alone are insufficient for safe cross-project replacement.",
+        "teachBack": "Defend a recipe with scope and parity evidence.",
+        "hints": [
+          "Resolve types.",
+          "Pin recipe.",
+          "Review diff."
+        ],
+        "check": {
+          "question": "Why use semantic matching?",
+          "options": [
+            "It proves all behavior",
+            "It removes testing",
+            "It distinguishes relevant typed constructs"
+          ],
+          "answer": 2,
+          "explanation": "Type-aware structure avoids some name collisions; behavior preservation still needs validation."
+        }
+      },
+      {
+        "title": "Python adapters for .NET and other targets",
+        "explanation": "Your implementation language stays Python or Java. A Python adapter can invoke an installed modernization tool or plugin using a typed request: target, version, scoped operation, timeout and output path. Return capability discovery, proposed diff, logs and gate receipts; expose unsupported targets explicitly.",
+        "workedExample": "Illustrative adapter supports assess and preview for an installed plugin. If apply is unsupported, it returns unsupported_operation rather than silently pretending to migrate.",
+        "pitfall": "An orchestration adapter does not create tool capabilities.",
+        "teachBack": "Explain the adapter’s success and failure contract.",
+        "hints": [
+          "Discover capability.",
+          "Bound operation.",
+          "Return receipts."
+        ],
+        "check": {
+          "question": "If the plugin cannot preview a target, adapter should do what?",
+          "options": [
+            "Claim completion",
+            "Invent a diff",
+            "Report unsupported capability"
+          ],
+          "answer": 2,
+          "explanation": "The adapter must expose real capability limits and preserve honest outcomes."
+        }
+      },
+      {
+        "title": "Graph coverage and parity contracts",
+        "explanation": "A code graph helps locate callers, dependencies and owners, but reflection, dynamic dispatch and cross-language calls may be unresolved. Empty callers do not establish unused code. Pair graph results with targeted searches and runtime or contract evidence where coverage is incomplete; define parity around observable behavior.",
+        "workedExample": "Illustrative reflection loads a handler by configured string. No graph edge appears; inspect configuration and execute a handler-resolution test before deleting the class.",
+        "pitfall": "A truncated graph walk is a partial view, not a clean bill.",
+        "teachBack": "Explain how you close one graph coverage gap.",
+        "hints": [
+          "Read limits.",
+          "Check configuration.",
+          "Test observable use."
+        ],
+        "check": {
+          "question": "Empty graph callers prove a class is unused?",
+          "options": [
+            "Only if old",
+            "Yes",
+            "No"
+          ],
+          "answer": 2,
+          "explanation": "Unresolved dynamic or external edges can hide real consumers; confirm before treating code as dead."
+        }
+      }
+    ],
+    "review": [
+      "Specify behavior before proposing a migration.",
+      "Preview one transformation and design parity tests.",
+      "Explain graph blind spots and adapter failure contracts."
+    ]
+  },
+  {
+    "day": 13,
+    "objective": "Defend principal-level architecture using capacity math, SLOs, tested recovery, unit economics and truthful leadership evidence.",
+    "modules": [
+      {
+        "title": "Capacity from arrival rate and service time",
+        "explanation": "Estimate arrival rate, service time and concurrency. Little’s law relates average number in system L to arrival rate λ and average time W: L = λW under suitable stable conditions. Averages do not describe tail latency or bursts; include queue limits and load-test evidence.",
+        "workedExample": "Illustrative stable 20 requests/second with 2 seconds average end-to-end time implies 40 average in-flight requests. Peak provisioning still needs burst and service-time variability analysis.",
+        "pitfall": "Multiplying averages does not determine a safe maximum.",
+        "teachBack": "Explain where your capacity estimate stops being evidence.",
+        "hints": [
+          "Define units.",
+          "Multiply averages.",
+          "Test peaks."
+        ],
+        "check": {
+          "question": "What is average concurrency in the example?",
+          "options": [
+            "400",
+            "10",
+            "40"
+          ],
+          "answer": 2,
+          "explanation": "L = 20 per second × 2 seconds = 40 requests in the system on average."
+        }
+      },
+      {
+        "title": "SLOs and error budgets",
+        "explanation": "An SLI measures observed service behavior; an SLO sets a target over a window. Define eligible requests and failure semantics, including latency and correctness constraints. Error budgets describe allowed unreliability relative to the target; they do not authorize privacy violations or unsafe actions.",
+        "workedExample": "Illustrative availability target 99.9% over 100,000 eligible requests allows 100 failed requests under that definition. Decide explicitly whether timeouts count as failures.",
+        "pitfall": "A health endpoint does not prove task availability.",
+        "teachBack": "Define one SLI denominator and failure condition.",
+        "hints": [
+          "Name user task.",
+          "Define window.",
+          "Count failures."
+        ],
+        "check": {
+          "question": "99.9% over 100,000 requests permits how many failures?",
+          "options": [
+            "100",
+            "1,000",
+            "10"
+          ],
+          "answer": 0,
+          "explanation": "Allowed fraction is 0.1%, so 100,000 × 0.001 = 100 failures."
+        }
+      },
+      {
+        "title": "Failure containment and backpressure",
+        "explanation": "Protect the system with bounded queues, admission control and dependency deadlines. A circuit breaker can stop repeated calls into a failing dependency; backpressure limits incoming work when downstream capacity is exhausted. Define retry ownership so every layer does not multiply attempts.",
+        "workedExample": "Illustrative three layers each retry three times can issue up to 27 deepest calls for one request. Give one layer bounded retry responsibility and propagate deadlines.",
+        "pitfall": "Independent retries at each layer amplify load.",
+        "teachBack": "Trace the request when a dependency slows.",
+        "hints": [
+          "Bound queue.",
+          "Propagate deadline.",
+          "Assign retry owner."
+        ],
+        "check": {
+          "question": "Three layers with three attempts each can produce how many deepest attempts?",
+          "options": [
+            "3",
+            "9",
+            "27"
+          ],
+          "answer": 2,
+          "explanation": "Nested attempt multiplication is 3 × 3 × 3 = 27 in the worst case."
+        }
+      },
+      {
+        "title": "Recovery objectives and tested restoration",
+        "explanation": "RPO is acceptable data-loss exposure; RTO is targeted time to restore service. Backups alone do not prove either. Restoration must include compatible application, model, index, policy and secrets configuration. Test restore procedures and measure actual recovery with representative data and failure scenarios.",
+        "workedExample": "Illustrative hourly backup suggests up to one hour of backup data exposure, but actual recovery also depends on replication, backup integrity and successful restoration.",
+        "pitfall": "An untested backup is not a demonstrated recovery capability.",
+        "teachBack": "Explain what your disaster-recovery drill must restore.",
+        "hints": [
+          "Set targets.",
+          "Restore dependencies.",
+          "Measure recovery."
+        ],
+        "check": {
+          "question": "What demonstrates a recovery target can be met?",
+          "options": [
+            "Measured restoration drill",
+            "An architecture slide",
+            "Backup filename"
+          ],
+          "answer": 0,
+          "explanation": "A representative restore test provides evidence of recoverability and elapsed recovery time."
+        }
+      },
+      {
+        "title": "Optimization by quality and cost frontier",
+        "explanation": "Compare options using task quality, latency, throughput and total resource cost. Optimize measured bottlenecks: retrieval size, calls, caching, batching or model selection. Every shortcut needs its own evaluation because lower token count or smaller models may reduce answer completeness or safety.",
+        "workedExample": "Illustrative cache saves 30% of repeated authorized queries. Confirm permission-scoped keys, freshness and answer quality before counting savings as acceptable efficiency.",
+        "pitfall": "Lower cost is not improvement if required quality fails.",
+        "teachBack": "Explain your cheapest option that still passes gates.",
+        "hints": [
+          "Measure bottleneck.",
+          "Change one factor.",
+          "Recheck quality."
+        ],
+        "check": {
+          "question": "What defines an acceptable optimization?",
+          "options": [
+            "Largest accelerator",
+            "Better tradeoff within required gates",
+            "Fewer tokens only"
+          ],
+          "answer": 1,
+          "explanation": "Optimization must preserve required quality and policy while improving cost or performance."
+        }
+      },
+      {
+        "title": "Real story structure without invented experience",
+        "explanation": "Use only real experience. Organize a story around situation, responsibility, decision, action, measured result and lesson. Separate your contribution from the team’s. If a topic is unpracticed, describe the proposed design and validation plan explicitly instead of presenting hypothetical outcomes as deployed evidence.",
+        "workedExample": "Template: “I owned __. We observed __ from __. I chose __ over __ because __. Evidence showed __. Remaining limitation was __.”",
+        "pitfall": "Invented scale or production ownership collapses under follow-up.",
+        "teachBack": "Tell a real story with one verifiable result.",
+        "hints": [
+          "Name ownership.",
+          "State evidence.",
+          "Admit limits."
+        ],
+        "check": {
+          "question": "For an unbuilt design, describe results as what?",
+          "options": [
+            "Guaranteed success",
+            "Proposed validation outcomes",
+            "Production achievements"
+          ],
+          "answer": 1,
+          "explanation": "Plans are proposals until executed; honest labels preserve trust and enable substantive follow-up."
+        }
+      },
+      {
+        "title": "Architecture decisions with alternatives",
+        "explanation": "A principal answer connects requirements, options, tradeoffs and evidence. Identify reversible versus costly choices and decision owners. Explain why rejected options fail a constraint, not why they are unfashionable. Define the measurement that would change your decision and the rollback path.",
+        "workedExample": "Illustrative choose retrieval over adaptation for frequently changing permissioned policies. Reconsider adaptation if stable formatting failures persist after schema validation and prompt baselines.",
+        "pitfall": "A list of tools without a decision rule is not architecture.",
+        "teachBack": "Defend your choice and state its falsifier.",
+        "hints": [
+          "Name constraint.",
+          "Compare options.",
+          "Define reconsideration."
+        ],
+        "check": {
+          "question": "A strong decision includes what?",
+          "options": [
+            "Only favorite tool",
+            "No uncertainty",
+            "Alternatives and conditions for reconsideration"
+          ],
+          "answer": 2,
+          "explanation": "Tradeoffs and falsifying evidence show reasoning beyond preference and make decisions adaptable."
+        }
+      },
+      {
+        "title": "Modernization roadmap and ownership",
+        "explanation": "Sequence assessment, behavior contracts, bounded changes, validation and rollout. Prioritize high-value low-risk slices that produce usable evidence. Define module ownership and review gates; dependent teams need interface and compatibility plans. Report progress as verified artifacts and remaining risks rather than percentages without denominators.",
+        "workedExample": "Illustrative first slice previews one supported dependency migration, compiles it and tests two critical flows. Broader framework migration waits for validated contracts and owner agreement.",
+        "pitfall": "A big-bang rewrite hides integration risk until late.",
+        "teachBack": "Explain the first slice and its stop condition.",
+        "hints": [
+          "Inventory first.",
+          "Bound slice.",
+          "Verify behavior."
+        ],
+        "check": {
+          "question": "What makes a slice reviewable?",
+          "options": [
+            "Scope, behavior criteria and evidence",
+            "Maximum code volume",
+            "A confident estimate"
+          ],
+          "answer": 0,
+          "explanation": "A bounded scope plus explicit acceptance evidence allows reviewers to judge completion and risk."
+        }
+      },
+      {
+        "title": "Capstone evidence and failure drills",
+        "explanation": "Combine permissioned retrieval, constrained tools, a previewed transformation, parity gates and rollback. Each claim needs its own evidence: retrieval labels, authorization rejection, diff, build, behavioral test and recovery record. Include ambiguous tool completion, stale index and revoked permissions as separate failure cases.",
+        "workedExample": "Illustrative capstone cannot apply a recipe after access revocation even if planning previously succeeded. Re-check authorization at execution and record the denial.",
+        "pitfall": "A successful happy-path demo does not establish recovery or isolation.",
+        "teachBack": "Defend one capstone claim with its exact artifact.",
+        "hints": [
+          "Bind claims.",
+          "Test failures.",
+          "Recheck authority."
+        ],
+        "check": {
+          "question": "Permission revoked after planning should lead to what?",
+          "options": [
+            "Reauthorize and reject if forbidden",
+            "Execute old plan",
+            "Hide the log"
+          ],
+          "answer": 0,
+          "explanation": "Saved plans preserve intent, not current permission; execution must enforce present authorization."
+        }
+      },
+      {
+        "title": "Interview rehearsal and self-correction",
+        "explanation": "Practice concise initial answers, then handle detailed follow-ups with diagrams, calculations and counterexamples. Use an explicit rubric: correctness, assumptions, tradeoffs, evidence and communication. Acknowledge a mistake, repair it and explain the changed conclusion. Rehearsal scores are preparation signals, not hiring predictions.",
+        "workedExample": "Illustrative opening: “I split by customer to match unseen-customer deployment.” Follow-up: explain temporal changes, small cohorts and why random rows inflate confidence.",
+        "pitfall": "Memorizing answer prose fails when assumptions change.",
+        "teachBack": "Answer, then change one assumption and revise.",
+        "hints": [
+          "State conclusion.",
+          "Show mechanism.",
+          "Test counterexample."
+        ],
+        "check": {
+          "question": "When an interviewer changes assumptions, do what?",
+          "options": [
+            "Recompute the decision",
+            "Repeat memorized answer",
+            "Claim assumptions irrelevant"
+          ],
+          "answer": 0,
+          "explanation": "A defensible answer adapts to changed constraints instead of treating memorized wording as universally correct."
+        }
+      }
+    ],
+    "review": [
+      "Compute workload, capacity and error budget before selecting infrastructure.",
+      "Defend one fallback and a measured restoration drill.",
+      "Tell one truthful story with evidence, ownership and limitations.",
+      "Present a five-minute decision with alternatives and conditions for reconsideration.",
+      "Defend the capstone under failed tools, revoked permissions and a stale index."
+    ]
+  }
+]

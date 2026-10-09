@@ -1,0 +1,78 @@
+{
+  "status": "PASS",
+  "scenarios": 48,
+  "questions": 96,
+  "assignments": 24,
+  "tracks": {
+    "Python": {
+      "scenarios": 6,
+      "assignments": 3
+    },
+    "Async Python": {
+      "scenarios": 6,
+      "assignments": 3
+    },
+    "FastAPI": {
+      "scenarios": 6,
+      "assignments": 3
+    },
+    "Django": {
+      "scenarios": 6,
+      "assignments": 3
+    },
+    "Flask": {
+      "scenarios": 6,
+      "assignments": 3
+    },
+    "RAG": {
+      "scenarios": 6,
+      "assignments": 3
+    },
+    "Agents": {
+      "scenarios": 6,
+      "assignments": 3
+    },
+    "Evaluation": {
+      "scenarios": 6,
+      "assignments": 3
+    }
+  },
+  "execution": [],
+  "reference_files": [
+    "scenario_python_csv.py",
+    "scenario_python_money.py",
+    "scenario_python_retry.py",
+    "scenario_async_queue.py",
+    "scenario_async_cleanup.py",
+    "scenario_async_singleflight.py",
+    "fastapi_tenant_quotes.py",
+    "requirements-tested.txt",
+    "fastapi_idempotent_jobs.py",
+    "fastapi_tenant_quotes.py",
+    "requirements-tested.txt",
+    "fastapi_bounded_lifespan.py",
+    "requirements-tested.txt",
+    "django_tenant_invoices.py",
+    "requirements-tested.txt",
+    "django_transaction_outbox.py",
+    "requirements-tested.txt",
+    "django_query_budget.py",
+    "requirements-tested.txt",
+    "flask_factory_inventory.py",
+    "requirements-tested.txt",
+    "flask_bounded_upload.py",
+    "requirements-tested.txt",
+    "flask_signed_webhook.py",
+    "requirements-tested.txt",
+    "rag_01_acl_citations.py",
+    "rag_02_incremental_index.py",
+    "rag_03_grounded_abstention.py",
+    "agents_01_exact_approval.py",
+    "agents_02_reconcile_writes.py",
+    "agents_03_workflow_budgets.py",
+    "evaluation_01_rank_metrics.py",
+    "evaluation_02_safety_slices.py",
+    "evaluation_03_cost_latency.py"
+  ],
+  "unique_reference_files": 25
+}

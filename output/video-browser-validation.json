@@ -1,0 +1,145 @@
+{
+  "status": "PASS",
+  "selectedTutorials": 45,
+  "dayGuidance": [
+    {
+      "day": 1,
+      "count": 2
+    },
+    {
+      "day": 2,
+      "count": 2
+    },
+    {
+      "day": 3,
+      "count": 2
+    },
+    {
+      "day": 4,
+      "count": 2
+    },
+    {
+      "day": 5,
+      "count": 2
+    },
+    {
+      "day": 6,
+      "count": 1
+    },
+    {
+      "day": 7,
+      "count": 2
+    },
+    {
+      "day": 8,
+      "count": 2
+    },
+    {
+      "day": 9,
+      "count": 2
+    },
+    {
+      "day": 10,
+      "count": 2
+    },
+    {
+      "day": 11,
+      "count": 2
+    },
+    {
+      "day": 12,
+      "count": 2
+    },
+    {
+      "day": 13,
+      "count": 2
+    },
+    {
+      "day": 14,
+      "count": 2
+    },
+    {
+      "day": 15,
+      "count": 2
+    },
+    {
+      "day": 16,
+      "count": 1
+    },
+    {
+      "day": 17,
+      "count": 1
+    },
+    {
+      "day": 18,
+      "count": 1
+    },
+    {
+      "day": 19,
+      "count": 1
+    },
+    {
+      "day": 20,
+      "count": 1
+    },
+    {
+      "day": 21,
+      "count": 2
+    },
+    {
+      "day": 22,
+      "count": 2
+    },
+    {
+      "day": 23,
+      "count": 2
+    },
+    {
+      "day": 24,
+      "count": 2
+    },
+    {
+      "day": 25,
+      "count": 2
+    },
+    {
+      "day": 26,
+      "count": 2
+    },
+    {
+      "day": 27,
+      "count": 1
+    },
+    {
+      "day": 28,
+      "count": 2
+    },
+    {
+      "day": 29,
+      "count": 2
+    },
+    {
+      "day": 30,
+      "count": 1
+    }
+  ],
+  "lessonGaps": [],
+  "missingMappings": {
+    "tracks": [],
+    "lessons": []
+  },
+  "clientQuestions": 50,
+  "jdDrills": 8,
+  "cases": 4,
+  "backupReload": true,
+  "viewports": [
+    1440,
+    847,
+    390
+  ],
+  "runtimeErrors": 0,
+  "remoteRequests": 0,
+  "offlineRequests": 0,
+  "learnerStorageUntouched": true,
+  "artifact_sha256": "b4e76dec8d2822c4c09f8814be871abd9deb5b775ad4463823e6e5b9e9ca6e1b"
+}

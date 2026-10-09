@@ -1,0 +1,79 @@
+{
+  "source": "self-assessed; replace with actual provenance",
+  "scores": {
+    "Python": {
+      "score": null,
+      "evidence": []
+    },
+    "Statistics": {
+      "score": null,
+      "evidence": []
+    },
+    "ML": {
+      "score": null,
+      "evidence": []
+    },
+    "Deep Learning": {
+      "score": null,
+      "evidence": []
+    },
+    "NLP": {
+      "score": null,
+      "evidence": []
+    },
+    "LLM": {
+      "score": null,
+      "evidence": []
+    },
+    "Prompt Engineering": {
+      "score": null,
+      "evidence": []
+    },
+    "RAG": {
+      "score": null,
+      "evidence": []
+    },
+    "AI Agents": {
+      "score": null,
+      "evidence": []
+    },
+    "MLOps": {
+      "score": null,
+      "evidence": []
+    },
+    "Cloud AI": {
+      "score": null,
+      "evidence": []
+    },
+    "DevOps": {
+      "score": null,
+      "evidence": []
+    },
+    "Java": {
+      "score": null,
+      "evidence": []
+    },
+    "Modernization": {
+      "score": null,
+      "evidence": []
+    },
+    "AI Security": {
+      "score": null,
+      "evidence": []
+    },
+    "System Design": {
+      "score": null,
+      "evidence": []
+    },
+    "Leadership": {
+      "score": null,
+      "evidence": []
+    }
+  },
+  "critical_boundaries": {
+    "tenant_isolation": "unassessed",
+    "tool_authorization": "unassessed",
+    "leakage_control": "unassessed",
+    "approval_binding": "unassessed"
+  }
+}

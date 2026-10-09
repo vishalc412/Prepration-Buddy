@@ -1,0 +1,168 @@
+{
+  "status": "PASS",
+  "client_questions": 50,
+  "client_checks": 100,
+  "jd_drills": 8,
+  "jd_followups": 16,
+  "client_followups": 100,
+  "extended_days": 16,
+  "extended_modules": 80,
+  "extended_labs": 16,
+  "daily_minutes": 240,
+  "reference_files": [
+    "day15_foundations.py",
+    "day16_foundations.py",
+    "day17_foundations.py",
+    "day18_foundations.py",
+    "day19_foundations.py",
+    "day20_foundations.py",
+    "day21_scoped_rag.py",
+    "day22_hallucination_metrics.py",
+    "day23_model_selection.py",
+    "day24_vector_baselines.py",
+    "day25_hybrid_chunking.py",
+    "day26_graph_boundaries.py",
+    "day27_ticket_contract.py",
+    "day28_budget_selection.py",
+    "day29_durable_state.py",
+    "day30_financial_gate.py"
+  ],
+  "executed_fixtures": 16,
+  "execution": [
+    {
+      "day": 15,
+      "file": "day15_foundations.py",
+      "sha256": "586a1c6b5c7757fdf1fe2bd61f3b2a307e1d8bc3a2b1540e5ac5d332e3116fa5",
+      "exit_code": 0,
+      "stdout_tail": "day15 PASS: causal visibility, normalized rows, future isolation, invalid inputs\n",
+      "stderr_tail": ""
+    },
+    {
+      "day": 16,
+      "file": "day16_foundations.py",
+      "sha256": "7dcbc30f9fc5e2870d58d9bf0602b5f5c25ad96794a81c4423726aca35b56b9f",
+      "exit_code": 0,
+      "stdout_tail": "day16 PASS: cumulative schedule, oracle identity, wrong-noise failure, invalid betas\n",
+      "stderr_tail": ""
+    },
+    {
+      "day": 17,
+      "file": "day17_foundations.py",
+      "sha256": "3a994a1c46430fbb24c338a20336484083e861d51541f69daf6cc6d83e311479",
+      "exit_code": 0,
+      "stdout_tail": "day17 PASS: affine bias, top-k, ties, normalized gates, explicit overflow\n",
+      "stderr_tail": ""
+    },
+    {
+      "day": 18,
+      "file": "day18_foundations.py",
+      "sha256": "f94f32af9a4a8cee4f820d6128f9c6ecb175530fb9a5799705a01227a021487a",
+      "exit_code": 0,
+      "stdout_tail": "day18 PASS: selective gate, chunk parity, session reset, history collision\n",
+      "stderr_tail": ""
+    },
+    {
+      "day": 19,
+      "file": "day19_foundations.py",
+      "sha256": "ce2651b22d9487f3ac67d5baf2c2d9d262c64b29a6998aec2239e19374958b2e",
+      "exit_code": 0,
+      "stdout_tail": "day19 PASS: stationary maximum, two global minima, saddle directions, unstable step\n",
+      "stderr_tail": ""
+    },
+    {
+      "day": 20,
+      "file": "day20_foundations.py",
+      "sha256": "d733f4938ccb2323c66e5005892728853265f4933d0361dc7a3b7658cd799539",
+      "exit_code": 0,
+      "stdout_tail": "day20 PASS: ternary alphabet, add/subtract/skip, explicit error, information vs packing\n",
+      "stderr_tail": ""
+    },
+    {
+      "day": 21,
+      "file": "day21_scoped_rag.py",
+      "sha256": "02dc3f2dd5aeb43ec4788a5aec5bdccbc6a225bbfb4cddab6cbb44dd545a8a8e",
+      "exit_code": 0,
+      "stdout_tail": "PASS day21: trusted scope, version/revocation, packing, extraction, abstention\n",
+      "stderr_tail": ""
+    },
+    {
+      "day": 22,
+      "file": "day22_hallucination_metrics.py",
+      "sha256": "dfbde2234346c657fe19d86a4e3a84cc132c255384c6e0fa93c0569da397bb30",
+      "exit_code": 0,
+      "stdout_tail": "SYNTHETIC FIXTURE ONLY: {'responses_total': 6, 'answers_emitted': 4, 'unsupported_answers': 2, 'unsupported_answer_rate': 0.5, 'claims_total': 8, 'unsupported_claims': 2, 'unsupported_claim_rate': 0.25, 'coverage': 0.6666666666666666, 'abstentions': 2, 'false_abstentions': 1, 'answer_rate_wilson95': (0.15003898915214947, 0.8499610108478506)}\nPASS day22: denominators, abstention, slices, uncertainty, invalid/empty inputs\n",
+      "stderr_tail": ""
+    },
+    {
+      "day": 23,
+      "file": "day23_model_selection.py",
+      "sha256": "fb44983813cf2a25583fa852c2458b6dd21e628e7732d22d051552077b95435e",
+      "exit_code": 0,
+      "stdout_tail": "SYNTHETIC baseline/candidate/routed: {'useful': 4, 'cost_units': 40, 'cost_per_useful': 10.0, 'attempts': 4, 'p95_ms': 700, 'passes_gate': True} {'useful': 3, 'cost_units': 8, 'cost_per_useful': 2.6666666666666665, 'attempts': 5, 'p95_ms': 200, 'passes_gate': False} {'useful': 4, 'cost_units': 24, 'cost_per_useful': 6.0, 'attempts': 4, 'p95_ms': 700, 'passes_gate': True}\nPASS day23: paired integrity, critical veto, cost accounting, router miss\n",
+      "stderr_tail": ""
+    },
+    {
+      "day": 24,
+      "file": "day24_vector_baselines.py",
+      "sha256": "1c18555aaecba84550d37c328725fde34130a623cb9642e3950c74b21a57fedb",
+      "exit_code": 0,
+      "stdout_tail": "PASS day24: exact cosine, scope parity, approximation miss, probe trade-off\n",
+      "stderr_tail": ""
+    },
+    {
+      "day": 25,
+      "file": "day25_hybrid_chunking.py",
+      "sha256": "419242862e4b008335356780d5e2606b5f05ad44f740649b91df7a7e1267caee",
+      "exit_code": 0,
+      "stdout_tail": "PASS day25: overlap coverage, scoped fusion, fixture rerank, whole qualifiers\n",
+      "stderr_tail": ""
+    },
+    {
+      "day": 26,
+      "file": "day26_graph_boundaries.py",
+      "sha256": "4e3f1012421dc2e54857ac7c4e1a25972874a82b32638091bf3da2abd01d621c",
+      "exit_code": 0,
+      "stdout_tail": "PASS: triple rules, open-world fixture, cycles, property graph and tenant scope\n",
+      "stderr_tail": ""
+    },
+    {
+      "day": 27,
+      "file": "day27_ticket_contract.py",
+      "sha256": "64dd4dec8566a3e8acec5e91207a9eec99bb2f543266bc3b298dae307e884234",
+      "exit_code": 0,
+      "stdout_tail": "PASS: strict ticket, envelopes, enums, scope and untrusted instruction boundary\n",
+      "stderr_tail": ""
+    },
+    {
+      "day": 28,
+      "file": "day28_budget_selection.py",
+      "sha256": "1c9e88cbcc03198d0638d0e755b1d1763d0c87fba6d8845929acf8e38ab43752",
+      "exit_code": 0,
+      "stdout_tail": "PASS: supplied-unit budget, scope, deterministic selection and output states\n",
+      "stderr_tail": ""
+    },
+    {
+      "day": 29,
+      "file": "day29_durable_state.py",
+      "sha256": "be68d86618edee7af963e3bd76aaf48b25b908b8613c954873688c6f9a5b109d",
+      "exit_code": 0,
+      "stdout_tail": "PASS: typed durable state, restart, exact replay, stale contender and region policy\n",
+      "stderr_tail": ""
+    },
+    {
+      "day": 30,
+      "file": "day30_financial_gate.py",
+      "sha256": "d2b4936d8bb56f158a3fd9e06f63a9695958a28299dc1f8422805bdc955e7477",
+      "exit_code": 0,
+      "stdout_tail": "PASS: bound approval, expiry, revocation, rollback, local outbox replay and audit\n",
+      "stderr_tail": ""
+    }
+  ],
+  "limits": [
+    "Length/schema checks do not prove factual accuracy or teaching effectiveness.",
+    "Primary-domain allowlist checks provenance shape, not page availability.",
+    "Only new Days 15\u201330 fixtures execute; no unchanged framework suites run.",
+    "Static AST guards and temporary cwd do not constitute an OS security sandbox."
+  ],
+  "embedded_parity": "PASS"
+}

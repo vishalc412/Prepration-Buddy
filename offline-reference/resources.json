@@ -1,0 +1,347 @@
+{
+  "verifiedOn": "2026-10-07",
+  "subjects": {
+    "python": {
+      "videos": [
+        {
+          "title": "Learn Python - Full Course for Beginners [Tutorial]",
+          "url": "https://www.youtube.com/watch?v=rfscVS0vtbw",
+          "creator": "freeCodeCamp.org / Mike Dane",
+          "note": "Foundation refresher: data types, collections, functions, exceptions and classes. Follow each selected topic with bundled Python scenarios; old setup screens may differ from current Python."
+        }
+      ],
+      "references": [
+        {
+          "title": "Python official tutorial",
+          "url": "https://docs.python.org/3/tutorial/"
+        },
+        {
+          "title": "CSV parsing reference",
+          "url": "https://docs.python.org/3/library/csv.html"
+        },
+        {
+          "title": "Decimal arithmetic and rounding",
+          "url": "https://docs.python.org/3/library/decimal.html"
+        }
+      ]
+    },
+    "async": {
+      "videos": [
+        {
+          "title": "AsyncIO, await, and async - Concurrency in Python",
+          "url": "https://www.youtube.com/watch?v=K56nNuBEd0c",
+          "creator": "Socratica",
+          "note": "Concept introduction to coroutines, concurrency and async/await. Use current asyncio docs for TaskGroup, cancellation and timeout details, then run bundled queue/cleanup/single-flight assignments."
+        }
+      ],
+      "references": [
+        {
+          "title": "asyncio tasks, cancellation and timeouts",
+          "url": "https://docs.python.org/3/library/asyncio-task.html"
+        },
+        {
+          "title": "Bounded asyncio queues",
+          "url": "https://docs.python.org/3/library/asyncio-queue.html"
+        }
+      ]
+    },
+    "fastapi": {
+      "videos": [
+        {
+          "title": "Python API Development - Comprehensive Course for Beginners",
+          "url": "https://www.youtube.com/watch?v=0sOvCWFmrtA",
+          "creator": "freeCodeCamp.org / Sanjeev Thiyagarajan",
+          "note": "API routes, validation, database integration, authentication and tests. Older course APIs/deployment choices can differ; current FastAPI docs and bundled tested requirements govern executable assignments."
+        }
+      ],
+      "references": [
+        {
+          "title": "FastAPI tutorial and user guide",
+          "url": "https://fastapi.tiangolo.com/tutorial/"
+        }
+      ]
+    },
+    "django": {
+      "videos": [
+        {
+          "title": "Python Django 7 Hour Course",
+          "url": "https://www.youtube.com/watch?v=PtQiiknWUcI",
+          "creator": "Traversy Media / Dennis Ivy",
+          "note": "Project-based Django views, ORM, forms and authentication. Title identifies course; choose relevant sections rather than replacing coding time. Current Django 5.2 docs govern this project's reference fixtures."
+        }
+      ],
+      "references": [
+        {
+          "title": "Django 5.2 official tutorial",
+          "url": "https://docs.djangoproject.com/en/5.2/intro/tutorial01/"
+        },
+        {
+          "title": "Publisher StudyBud course repository",
+          "url": "https://github.com/Traversy-Media/StudyBud"
+        }
+      ]
+    },
+    "flask": {
+      "videos": [
+        {
+          "title": "Learn Flask for Python - Full Tutorial",
+          "url": "https://www.youtube.com/watch?v=Z1RJmh_OqeA",
+          "creator": "freeCodeCamp.org / Coding with Jake",
+          "note": "Flask app and routing introduction. Older framework code can drift; use current Flask tutorial before extending app factory, upload and signed-webhook scenarios."
+        }
+      ],
+      "references": [
+        {
+          "title": "Flask stable official tutorial",
+          "url": "https://flask.palletsprojects.com/en/stable/tutorial/"
+        }
+      ]
+    },
+    "statistics": {
+      "videos": [
+        {
+          "title": "Population and Estimated Parameters, Clearly Explained!!!",
+          "url": "https://www.youtube.com/watch?v=vikkiwjQqfU",
+          "creator": "StatQuest with Josh Starmer",
+          "note": "Focused statistics lesson on population parameters and estimates. Pair with local sampling, confidence-interval and leakage exercises; this video does not cover every statistics topic."
+        }
+      ],
+      "references": [
+        {
+          "title": "NIST/SEMATECH statistical methods handbook",
+          "url": "https://www.itl.nist.gov/div898/handbook/"
+        }
+      ]
+    },
+    "ml": {
+      "videos": [
+        {
+          "title": "Machine Learning for Everybody – Full Course",
+          "url": "https://www.youtube.com/watch?v=i_LwzRVP7bg",
+          "creator": "freeCodeCamp.org / Kylie Ying",
+          "note": "Supervised/unsupervised model foundations and examples. Some neural-network sections use TensorFlow; this curriculum's implementation track remains Python/scikit-learn/PyTorch."
+        }
+      ],
+      "references": [
+        {
+          "title": "scikit-learn preprocessing and leakage pitfalls",
+          "url": "https://scikit-learn.org/stable/common_pitfalls.html"
+        }
+      ]
+    },
+    "pytorch": {
+      "videos": [
+        {
+          "title": "PyTorch for Deep Learning & Machine Learning – Full Course",
+          "url": "https://www.youtube.com/watch?v=V_xro1bcAuA",
+          "creator": "freeCodeCamp.org / Daniel Bourke",
+          "note": "Tensor fundamentals, training workflow, classification and model experiments. Select material matching current module; use current PyTorch docs for changed APIs and device behavior."
+        }
+      ],
+      "references": [
+        {
+          "title": "PyTorch Learn the Basics",
+          "url": "https://docs.pytorch.org/tutorials/beginner/basics/intro.html"
+        }
+      ]
+    },
+    "transformers": {
+      "videos": [
+        {
+          "title": "Let's build GPT: from scratch, in code, spelled out.",
+          "url": "https://www.youtube.com/watch?v=kCc8FmEb1nY",
+          "creator": "Andrej Karpathy",
+          "note": "Code-level transformer and language-model construction. Requires Python/PyTorch foundations. Rebuild a small component and explain causal attention rather than copying an entire training run."
+        }
+      ],
+      "references": [
+        {
+          "title": "Hugging Face LLM course: transformer models",
+          "url": "https://huggingface.co/learn/llm-course/chapter1/1"
+        }
+      ]
+    },
+    "llm": {
+      "videos": [
+        {
+          "title": "Deep Dive into LLMs like ChatGPT",
+          "url": "https://www.youtube.com/watch?v=7xTGNNLPyMI",
+          "creator": "Andrej Karpathy",
+          "note": "General-audience technical overview of LLM behavior and training. Pair with local prompting, structured-output and failure-case assignments; no provider account is required for bundled teaching."
+        }
+      ],
+      "references": [
+        {
+          "title": "Claude prompt engineering overview",
+          "url": "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview"
+        },
+        {
+          "title": "Hugging Face LLM course",
+          "url": "https://huggingface.co/learn/llm-course/chapter1/1"
+        }
+      ]
+    },
+    "rag": {
+      "videos": [
+        {
+          "title": "Learn RAG From Scratch – Python AI Tutorial from a LangChain Engineer",
+          "url": "https://www.youtube.com/watch?v=sVcwVQRHIc8",
+          "creator": "freeCodeCamp.org / Lance Martin",
+          "note": "RAG pipeline concepts and Python examples. Framework/provider calls in video are optional; bundled lexical fixtures run locally and do not prove embedding or LLM answer quality. Follow current retrieval docs for API drift."
+        }
+      ],
+      "references": [
+        {
+          "title": "LangChain retrieval concepts and current APIs",
+          "url": "https://docs.langchain.com/oss/python/deepagents/retrieval"
+        },
+        {
+          "title": "LangChain current RAG implementation guide",
+          "url": "https://docs.langchain.com/oss/python/deepagents/rag"
+        }
+      ]
+    },
+    "agents": {
+      "videos": [
+        {
+          "title": "Tips for building AI agents",
+          "url": "https://www.youtube.com/watch?v=LP5OCa20Zpg",
+          "creator": "Anthropic",
+          "note": "Creator discussion on agent design and pitfalls. Use as design context; apply local policy, approval, tool-budget and uncertain-effect scenarios before adopting a framework."
+        }
+      ],
+      "references": [
+        {
+          "title": "Anthropic: Building effective agents",
+          "url": "https://www.anthropic.com/engineering/building-effective-agents"
+        }
+      ]
+    },
+    "mlops": {
+      "videos": [
+        {
+          "title": "MLOps Course – Build Machine Learning Production Grade Projects",
+          "url": "https://www.youtube.com/watch?v=-dJPoLm_gtE",
+          "creator": "freeCodeCamp.org",
+          "note": "Project-oriented model operations introduction. Older ZenML and deployment APIs may differ; compare with current MLflow docs and test data/model lineage and rollback locally."
+        }
+      ],
+      "references": [
+        {
+          "title": "MLflow machine-learning documentation",
+          "url": "https://mlflow.org/docs/latest/ml/"
+        }
+      ]
+    },
+    "cloud": {
+      "videos": [
+        {
+          "title": "AWS Certified Cloud Practitioner Certification Course 2026 (CLF-C02) - Pass the Exam!",
+          "url": "https://www.youtube.com/watch?v=7HKot-brXFE",
+          "creator": "freeCodeCamp.org / Andrew Brown",
+          "note": "Broad cloud, security and AWS service concepts. Supplement architectural study; certification coverage is not a guarantee of principal-level readiness. Verify live pricing separately before real provisioning."
+        }
+      ],
+      "references": [
+        {
+          "title": "AWS Well-Architected Framework",
+          "url": "https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html"
+        }
+      ]
+    },
+    "security": {
+      "videos": [
+        {
+          "title": "OWASP TOP 10 for LLM01: Prompt Injection",
+          "url": "https://www.youtube.com/watch?v=dq5jD_qE1Cg",
+          "creator": "Vandana Verma",
+          "note": "Focused prompt-injection explanation from creator's LLM-security series. Follow current OWASP risk guidance; prompts alone cannot replace application authorization or egress policy."
+        }
+      ],
+      "references": [
+        {
+          "title": "OWASP Gen AI security risk catalog",
+          "url": "https://genai.owasp.org/llm-top-10/"
+        }
+      ]
+    },
+    "java": {
+      "videos": [
+        {
+          "title": "Java Tutorial for Beginners",
+          "url": "https://www.youtube.com/watch?v=eIrMbAQSU34",
+          "creator": "Programming with Mosh",
+          "note": "Optional Java language refresher; experienced architects can skip basics. Use Oracle migration guide for actual JDK upgrade decisions, compatibility tests and target-version behavior."
+        }
+      ],
+      "references": [
+        {
+          "title": "Oracle JDK 25 Migration Guide",
+          "url": "https://docs.oracle.com/en/java/javase/25/migrate/index.html"
+        }
+      ]
+    },
+    "leadership": {
+      "videos": [
+        {
+          "title": "A Guide To Managing Technical Teams",
+          "url": "https://www.youtube.com/watch?v=jMpCF0Z623s",
+          "creator": "Continuous Delivery / Dave Farley",
+          "note": "Technical leadership and team effectiveness discussion. Practice truthful decisions, tradeoffs and observed outcomes using local behavioral templates; no fabricated career achievements."
+        }
+      ],
+      "references": [
+        {
+          "title": "Google SRE: Organizational Change Management",
+          "url": "https://sre.google/workbook/organizational-change/"
+        }
+      ]
+    },
+    "evaluation": {
+      "videos": [
+        {
+          "title": "Deep Dive into LLM Evaluation with Weights & Biases",
+          "url": "https://www.youtube.com/watch?v=7EcznH0-of8",
+          "creator": "DeepLearning.AI / Weights & Biases workshop",
+          "note": "Evaluation workshop with RAG and LLM-evaluation topics. Older tooling can drift; use current metric definitions and keep retrieval, answer-quality, security and cost evidence separate. A model judge is not ground truth."
+        }
+      ],
+      "references": [
+        {
+          "title": "Ragas evaluation metric overview",
+          "url": "https://docs.ragas.io/en/stable/concepts/metrics/overview/"
+        },
+        {
+          "title": "scikit-learn evaluation leakage cautions",
+          "url": "https://scikit-learn.org/stable/common_pitfalls.html"
+        }
+      ]
+    }
+  },
+  "days": {
+    "1": "python",
+    "2": "statistics",
+    "3": "ml",
+    "4": "pytorch",
+    "5": "transformers",
+    "6": "llm",
+    "7": "rag",
+    "8": "agents",
+    "9": "mlops",
+    "10": "cloud",
+    "11": "security",
+    "12": "java",
+    "13": "leadership",
+    "14": "evaluation"
+  },
+  "tracks": {
+    "Python": "python",
+    "Async Python": "async",
+    "FastAPI": "fastapi",
+    "Django": "django",
+    "Flask": "flask",
+    "RAG": "rag",
+    "Agents": "agents",
+    "Evaluation": "evaluation"
+  }
+}

@@ -1,0 +1,11 @@
+repo_id,tenant_id,language,runtime_major,dependency_count,critical_cves,build_minutes,observed_at
+orders,tenant-a,java,17,42,1,4.5,2026-10-01T09:00:00Z
+orders,tenant-a,java,21,40,0,3.0,2026-10-03T09:00:00Z
+billing,tenant-a,dotnet,8,20,0,2.0,2026-10-02T09:00:00Z
+orders,tenant-b,java,17,30,2,6.0,2026-10-02T09:00:00Z
+portal,tenant-b,dotnet,8,15,0,1.5,2026-10-02T09:00:00Z
+ledger,tenant-a,java,21,25,0,5.0,2026-10-02T09:00:00Z
+ledger,tenant-a,java,21,25,1,8.0,2026-10-02T09:00:00Z
+worker,tenant-b,java,21,18,0,2.5,2026-10-02T09:00:00Z
+broken,tenant-a,java,21,10,0,-3.0,2026-10-02T09:00:00Z
+missing,,dotnet,8,12,0,2.0,not-a-date

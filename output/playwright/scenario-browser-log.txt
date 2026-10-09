@@ -1,0 +1,142 @@
+### Result
+{"status":"PASS","scenarios":48,"questions":96,"assignments":24,"tracks":8,"referenceFiles":34,"scenarioViewsExercised":48,"trackFiltersExercised":8,"remoteRequests":0,"runtimeErrors":0,"isolatedLearnerStorage":true,"verified":["48 populated scenarios","96 suggested answers","24 assignments","8 track and kind filters","local scenario search","progressive hints","Study and Practice answer access","open answer persists across hints","evidence/checks verification gate","draft change invalidates verification","reference file exact download","assignment brief download","backup exports/imports scenario state","scenario draft reload","existing progress preserved","related daily scenario discovery","scenario answer-library and teacher search","mobile no overflow","offline interaction","fresh standalone offline startup"]}
+### Ran Playwright code
+```js
+await (async existingPage => {
+  const browser=existingPage.context().browser();
+  const ctx=await browser.newContext({viewport:{width:1440,height:1000}});
+  let offlineCtx;
+  const errors=[],remote=[];
+  const check=(value,message)=>{if(!value)throw Error(message)};
+  const readDownload=async download=>{const stream=await download.createReadStream();let text='';for await(const chunk of stream)text+=chunk.toString();return text};
+  try {
+    await ctx.addInitScript(()=>{if(!localStorage.getItem('principal-ai-studio-v1'))localStorage.setItem('principal-ai-studio-v1',JSON.stringify({version:1,hours:6,answers:{b1:'Original learner answer'},code:{1:'# Original code'},notes:{capstone:'Original note'}}))});
+    const page=await ctx.newPage();
+    page.on('pageerror',e=>errors.push(e.message));
+    page.on('request',r=>{if(/^https?:/.test(r.url())&&!r.url().startsWith('http://127.0.0.1:8987/'))remote.push(r.url())});
+    await page.goto('http://127.0.0.1:8987/index.html');
+    const nav=async v=>{const b=page.locator('#nav [data-view="'+v+'"]');if(!await b.isVisible())await page.locator('#tools-menu>summary').click();await b.click()};
+    await nav('scenarios');
+    const coverage=await page.evaluate(()=>({scenarios:scenarioEntries().length,questions:scenarioEntries().reduce((n,s)=>n+s.questions.length,0),assignments:scenarioEntries().filter(s=>s.assignment).length,tracks:SCENARIO_TRACKS.length,referenceFiles:scenarioEntries().flatMap(s=>s.assignment?.files||[]).length}));
+    check(coverage.scenarios===48&&coverage.questions===96&&coverage.assignments===24&&coverage.tracks===8,'Scenario coverage wrong');
+    check(await page.locator('#scenario-list [data-action="scenario-select"]').count()===48,'Initial scenario list incomplete');
+    await page.locator('.case-steps [data-action="scenario-step"][data-step="discuss"]').click();
+    check(await page.locator('.scenario-suggested').count()===2,'Study references missing');
+    const ids=await page.evaluate(()=>scenarioEntries().map(s=>s.id));
+    for(const id of ids){
+      await page.locator('[data-action="scenario-select"][data-id="'+id+'"]').click();
+      check(await page.locator('#scenario-active h2').isVisible(),'Scenario missing '+id);
+      await page.locator('.case-steps [data-action="scenario-step"][data-step="discuss"]').click();
+      check(await page.locator('.scenario-suggested').count()===2,'Scenario answers missing '+id);
+      await page.locator('.case-steps [data-action="scenario-step"][data-step="review"]').click();
+      check(await page.locator('.scenario-reference').count()===1,'Reference solution missing '+id);
+      check(await page.locator('#scenario-active .learning-links a[href*="youtube.com/watch"]').count()>0,'Video missing '+id);
+      check(await page.locator('#scenario-active .learning-links a[href]:not([href*="youtube"])').count()>0,'Official docs missing '+id);
+    }
+    for(const track of ['Python','Async Python','FastAPI','Django','Flask','RAG','Agents','Evaluation']){
+      await page.getByLabel('Scenario track').selectOption(track);
+      check(await page.locator('#scenario-list [data-action="scenario-select"]').count()===6,'Track count wrong '+track);
+      await (async v=>{const f=page.getByLabel('Scenario kind');if(!await f.isVisible())await page.locator('.advanced-filters>summary').click();await f.selectOption(v)})('Assignments');
+      check(await page.locator('#scenario-list [data-action="scenario-select"]').count()===3,'Assignment count wrong '+track);
+      await (async v=>{const f=page.getByLabel('Scenario kind');if(!await f.isVisible())await page.locator('.advanced-filters>summary').click();await f.selectOption(v)})('Questions');
+      check(await page.locator('#scenario-list [data-action="scenario-select"]').count()===3,'Question count wrong '+track);
+      await (async v=>{const f=page.getByLabel('Scenario kind');if(!await f.isVisible())await page.locator('.advanced-filters>summary').click();await f.selectOption(v)})('All');
+    }
+    await page.locator('[data-action="scenario-clear"]').click();
+    await page.getByLabel('Search scenarios').fill('tenant');
+    const matches=await page.locator('#scenario-list [data-action="scenario-select"]').count();
+    check(matches>0&&matches<48,'Scenario search failed');
+    await page.locator('[data-action="scenario-clear"]').click();
+    await page.locator('[data-action="scenario-select"][data-id="python-01"]').click();
+    await page.locator('.case-steps [data-action="scenario-step"][data-step="discuss"]').click();
+    await page.locator('[data-action="scenario-hint"]').click();
+    check(await page.getByRole('heading',{name:'Teacher hints · 1/3',exact:true}).isVisible(),'Scenario hint did not advance');
+    await page.locator('[data-action="drive-mode"][data-mode="practice"]').click();
+    check(await page.locator('.scenario-suggested').count()===0,'Practice answer exposed');
+    check(await page.locator('[data-action="scenario-review"]').first().isDisabled(),'Practice review enabled without attempt');
+    await page.getByLabel('Your scenario answer 1',{exact:true}).fill('Synthetic scenario explanation: preserve invalid rows and validate input. UI test only.');
+    check(await page.locator('[data-action="scenario-review"]').first().isEnabled(),'Attempt did not enable review');
+    await page.locator('[data-action="scenario-review"]').first().click();
+    check(await page.locator('.scenario-suggested').count()===1,'Practice reference did not unlock');
+    check(await page.locator('.scenario-suggested').evaluate(el=>el.open),'Compare did not open answer');
+    await page.locator('[data-action="scenario-hint"]').click();
+    check(await page.locator('.scenario-suggested').evaluate(el=>el.open),'Hint lost open answer');
+    await page.locator('.case-steps [data-action="scenario-step"][data-step="build"]').click();
+    check(await page.locator('[data-action="scenario-complete"]').isDisabled(),'Unexecuted assignment can complete');
+    await page.getByLabel('Your Python code or local file references').fill('# Synthetic draft, not execution evidence');
+    await page.getByLabel('Run evidence and remaining limits').fill('Synthetic UI test evidence. No learner skill claim.');
+    for(const box of await page.locator('#scenario-active input[data-map="checks"]').all())await box.check();
+    check(await page.locator('[data-action="scenario-complete"]').isEnabled(),'Evidence/checks completion gate failed');
+    await page.locator('[data-action="scenario-complete"]').click();
+    check((await page.locator('#scenario-status').innerText())==='Verification recorded','Completion status not saved');
+    await page.getByLabel('Your Python code or local file references').fill('# Changed synthetic draft');
+    check((await page.locator('#scenario-status').innerText())!=='Verification recorded','Editing code retains stale verification');
+    check(await page.locator('[data-action="scenario-complete"]').isDisabled(),'Editing code retains old acceptance checks');
+    await page.locator('[data-action="scenario-open-reference"]').click();
+    await page.locator('.scenario-reference details > summary').first().click();
+    const expected=await page.evaluate(()=>scenarioCurrent().assignment.files[0]);
+    const dPromise=page.waitForEvent('download');
+    await page.locator('[data-action="scenario-download"]').first().click();
+    const downloaded=await dPromise;
+    check(downloaded.suggestedFilename()===expected.name,'Scenario download filename mismatch');
+    check((await readDownload(downloaded))===expected.code,'Downloaded reference differs from embedded code');
+    await page.locator('.case-steps [data-action="scenario-step"][data-step="build"]').click();
+    check((await page.getByLabel('Your Python code or local file references').inputValue())==='# Changed synthetic draft','Reference overwrote learner code');
+    const briefPromise=page.waitForEvent('download');
+    await page.locator('[data-action="scenario-brief-download"]').click();
+    check((await readDownload(await briefPromise)).includes('CHANGED CONSTRAINT'),'Assignment brief missing follow-up');
+    await page.locator('[data-action="drive-mode"][data-mode="study"]').click();
+    const backupPromise=page.waitForEvent('download');
+    await page.getByRole('button',{name:'Export progress ↗'}).click();
+    const backup=JSON.parse(await readDownload(await backupPromise));
+    check(backup.notes['scenario-hint-python-01']==='2'&&backup.code['scenario-python-01']==='# Changed synthetic draft','Backup missing scenario progress');
+    await page.reload();
+    await nav('scenarios');
+    await page.locator('.case-steps [data-action="scenario-step"][data-step="discuss"]').click();
+    check((await page.getByLabel('Your scenario answer 1').inputValue()).includes('Synthetic scenario'),'Scenario response not restored');
+    await page.locator('.case-steps [data-action="scenario-step"][data-step="build"]').click();
+    check((await page.getByLabel('Your Python code or local file references').inputValue())==='# Changed synthetic draft','Scenario code not restored');
+    check(await page.evaluate(()=>state.answers.b1==='Original learner answer'&&state.code[1]==='# Original code'&&state.notes.capstone==='Original note'),'Old progress corrupted');
+    page.once('dialog',d=>d.accept());
+    await page.locator('#import-file').setInputFiles({name:'scenario-backup.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(backup))});
+    check(await page.evaluate(()=>state.notes['scenario-hint-python-01']==='2'&&state.evidence['scenario-python-01'].includes('Synthetic')),'Scenario import failed');
+    await nav('teacher');
+    await page.getByLabel('Teacher day').selectOption('1');
+    await page.locator('[data-action="scenario-day"]').click();
+    check((await page.locator('#app').innerText()).includes('12 matching scenarios'),'Day1 related Python/Async cases missing');
+    await page.getByLabel('Scenario track').selectOption('Django');
+    check(await page.locator('#scenario-list [data-action="scenario-select"]').count()===6,'Changing track retains hidden day filter');
+    await nav('answers');
+    await page.getByLabel('Answer group').selectOption('Scenarios');
+    check(await page.getByRole('button',{name:'Open scenario studio →',exact:true}).count()===96,'Answer library lacks scenario questions');
+    await nav('teacher');
+    await page.getByLabel('Question or topic').fill('Django');
+    await page.locator('[data-action="teacher-search"]').click();
+    check((await page.locator('#teacher-search-results').innerText()).includes('Django'),'Local teacher cannot find scenario material');
+    await nav('scenarios');
+    await page.getByLabel('Scenario track').selectOption('FastAPI');
+    await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
+    const tools=page.locator('#tools-menu');if(await tools.evaluate(e=>e.open))await tools.locator('summary').click();
+    await page.screenshot({path:'output/playwright/scenario-desktop.png'});
+    await page.setViewportSize({width:390,height:844});
+    check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Mobile horizontal overflow');
+    await page.screenshot({path:'output/playwright/scenario-mobile.png',fullPage:true});
+    await ctx.setOffline(true);
+    await page.getByLabel('Scenario track').selectOption('RAG');
+    await page.locator('[data-action="scenario-hint"]').click();
+    await page.locator('[data-action="scenario-open-reference"]').click();
+    check(await page.locator('.scenario-reference').evaluate(el=>el.open),'Offline reference failed');
+    const html=await page.content();
+    offlineCtx=await browser.newContext({offline:true});
+    const offlinePage=await offlineCtx.newPage();
+    offlinePage.on('pageerror',e=>errors.push(e.message));
+    await offlinePage.setContent(html);
+    await offlinePage.locator('#nav [data-view="scenarios"]').click();
+    check(await offlinePage.locator('#scenario-list [data-action="scenario-select"]').count()===48,'Fresh offline scenarios failed');
+    check(errors.length===0,'Runtime errors: '+errors.join('; '));
+    check(remote.length===0,'Remote teaching dependencies');
+    return {status:'PASS',...coverage,scenarioViewsExercised:48,trackFiltersExercised:8,remoteRequests:remote.length,runtimeErrors:errors.length,isolatedLearnerStorage:true,verified:['48 populated scenarios','96 suggested answers','24 assignments','8 track and kind filters','local scenario search','progressive hints','Study and Practice answer access','open answer persists across hints','evidence/checks verification gate','draft change invalidates verification','reference file exact download','assignment brief download','backup exports/imports scenario state','scenario draft reload','existing progress preserved','related daily scenario discovery','scenario answer-library and teacher search','mobile no overflow','offline interaction','fresh standalone offline startup']};
+  } finally {if(offlineCtx)await offlineCtx.close();await ctx.close()}
+}
+)(page);
+```

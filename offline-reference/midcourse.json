@@ -1,0 +1,178 @@
+{
+  "day": {
+    "n": 14,
+    "title": "Mid-course checkpoint and retained foundations",
+    "topics": "Recall \u00b7 evidence \u00b7 failure drills \u00b7 advanced-topic bridge",
+    "deliverable": "Four-hour consolidation plan + honest evidence ledger",
+    "proficiency": "Connect Python, Java, ML, RAG and agents; identify gaps before advanced client topics.",
+    "theory": [
+      [
+        "Explain the pipeline before naming tools",
+        "At the midpoint, connect the original skills into one executable story: a Python ingestion boundary validates tenant and repository identity, produces versioned evidence, and sends bounded work to model or retrieval components. A Java service exposes existing business behavior while Python tools collect build and contract receipts for modernization. Describe inputs, outputs and authority at every hop. Learning an API name is useful only after you can explain the behavior it provides. Separate the training path from the serving path: the former fits parameters on permitted training data; the latter loads a versioned artifact and predicts on requests. A RAG index supplies evidence at inference time and does not automatically retrain the generator. Build a diagram with identity, artifact version, retrieval scope, request deadline, output validation and result storage. Label conceptual components you have not implemented. Days15\u201330 will deepen model internals and client-specific debugging, using this pipeline as the anchor."
+      ],
+      [
+        "Evidence is stronger than a completion badge",
+        "A local workbook records your declarations and fixed quiz choices. It does not independently execute your Python, judge arbitrary essays, or establish a production deployment. Keep a receipt for each claimed implementation: exact command, dependency versions, fixture inputs, assertions and observed output. Explain what those assertions cover and what remains untested. A successful parser fixture does not validate an actual provider response rate; a lexical retrieval example does not establish embedding relevance. Self-assessment should reward correct mechanism, working implementation, failure controls and honest limits. Keep the first attempt and follow-up separately so revision does not hide the original gap. When evidence is absent, mark the skill unassessed rather than giving yourself either zero or a confident pass. The existing scoring fixture can aggregate human-entered scores and prioritize revision, but its numeric average cannot certify readiness. Preserve this habit when discussing claimed hallucination rates later: denominator, labeling policy, slice coverage and sampling uncertainty matter."
+      ],
+      [
+        "Choose revisions by mechanism and consequence",
+        "Spend four hours on a deliberate loop rather than rereading every page. Begin with twenty minutes of closed-book recall. Use fifty minutes to revisit the weakest mechanism, thirty to trace an example, seventy-five to implement or debug one bounded slice, forty to defend it under a changed constraint, and twenty-five to compare evidence and schedule another recall. Prioritize errors that invalidate a whole system: leaked validation data, missing tenant authorization, unbounded retries, unsupported claims or duplicated writes. Surface accuracy alone can hide such failures. Group weak concepts by cause. For example, confusion about generators and retained memory belongs with resource ownership; confusion about retries and unknown writes belongs with idempotency and reconciliation. Reuse the original scenario assignments as optional depth: some take longer than one seventy-five-minute block and should span days. The thirty-day route offers focused exposure and practice, not a claim that every additional assignment fits within one hundred twenty hours."
+      ]
+    ],
+    "lab": [
+      "Run the existing assessment fixture and record its limited evidence.",
+      "Re-run one weak original Python or Java fixture; keep command and failures.",
+      "Create a revision backlog with a concrete next action for each critical gap.",
+      "Use the new 240-minute study sequence; extra scenario assignments can span days."
+    ],
+    "checks": [
+      "Assessment distinguishes entered scores, missing evidence and fixed checks.",
+      "No failed critical boundary is hidden by an average.",
+      "Next revision has a concrete mechanism, fixture and follow-up."
+    ],
+    "scenario": "You know definitions but struggle when the interviewer changes deadlines or asks what was actually deployed.",
+    "design": "Connect the capstone request path and identify the three least-supported claims before the advanced half of the course.",
+    "questions": [
+      "Python: Write bounded input processing and tests.",
+      "ML: Select splits, metrics and thresholds.",
+      "GenAI: Trace inference and distinguish RAG/fine-tuning.",
+      "Security: Defend each tool authority boundary.",
+      "Leadership: Explain a real failure and what you changed."
+    ],
+    "sources": [
+      "metrics",
+      "owasp",
+      "nist"
+    ],
+    "domains": [
+      "Python",
+      "ML",
+      "LLM",
+      "AI Agents",
+      "Security",
+      "System Design"
+    ],
+    "capstone": "Consolidate verified slices and preserve the revision backlog"
+  },
+  "lesson": {
+    "day": 14,
+    "objective": "Connect Python, Java, ML, RAG and agents; identify gaps before advanced client topics.",
+    "modules": [
+      {
+        "title": "Explain the pipeline before naming tools",
+        "explanation": "At the midpoint, connect the original skills into one executable story: a Python ingestion boundary validates tenant and repository identity, produces versioned evidence, and sends bounded work to model or retrieval components. A Java service exposes existing business behavior while Python tools collect build and contract receipts for modernization. Describe inputs, outputs and authority at every hop. Learning an API name is useful only after you can explain the behavior it provides. Separate the training path from the serving path: the former fits parameters on permitted training data; the latter loads a versioned artifact and predicts on requests. A RAG index supplies evidence at inference time and does not automatically retrain the generator. Build a diagram with identity, artifact version, retrieval scope, request deadline, output validation and result storage. Label conceptual components you have not implemented. Days15\u201330 will deepen model internals and client-specific debugging, using this pipeline as the anchor.",
+        "workedExample": "A request to analyze tenant T repository revision R is authorized before ingestion. Stored chunks carry T, R and source offsets. A model proposes a classification, the application validates it, and a Java adapter is executed only after policy approval and parity checks. A proposal never becomes execution merely because it is valid JSON.",
+        "pitfall": "Describing many frameworks without tracing one request, one denial and one failure.",
+        "teachBack": "Trace a request from identity to validated result. Mark implemented, locally simulated and proposed boundaries separately.",
+        "hints": [
+          "Start with the caller and permitted resource.",
+          "Name the data and version at each hop.",
+          "Trace one timeout and show which component owns recovery."
+        ],
+        "check": {
+          "question": "Does indexing evidence for RAG automatically retrain the generator?",
+          "options": [
+            "Yes; every chunk updates weights.",
+            "No; retrieval supplies context at inference unless an explicit training process changes weights.",
+            "Only when a vector database is used."
+          ],
+          "answer": 1,
+          "explanation": "Index construction and model training are different processes. An index changes retrieved evidence; model parameters require a distinct training or adaptation operation."
+        }
+      },
+      {
+        "title": "Evidence is stronger than a completion badge",
+        "explanation": "A local workbook records your declarations and fixed quiz choices. It does not independently execute your Python, judge arbitrary essays, or establish a production deployment. Keep a receipt for each claimed implementation: exact command, dependency versions, fixture inputs, assertions and observed output. Explain what those assertions cover and what remains untested. A successful parser fixture does not validate an actual provider response rate; a lexical retrieval example does not establish embedding relevance. Self-assessment should reward correct mechanism, working implementation, failure controls and honest limits. Keep the first attempt and follow-up separately so revision does not hide the original gap. When evidence is absent, mark the skill unassessed rather than giving yourself either zero or a confident pass. The existing scoring fixture can aggregate human-entered scores and prioritize revision, but its numeric average cannot certify readiness. Preserve this habit when discussing claimed hallucination rates later: denominator, labeling policy, slice coverage and sampling uncertainty matter.",
+        "workedExample": "Run a tenant-filter fixture with one allowed document and one forbidden document. Save the command and assertion output. You can claim that this fixture denied that document; you cannot claim every production permission combination has been tested.",
+        "pitfall": "Turning a checklist tick or toy pass into an invented deployment result.",
+        "teachBack": "Give one true local result, its boundary, and the next test needed before a broader claim.",
+        "hints": [
+          "Find the assertion, not the adjective.",
+          "State exactly which inputs ran.",
+          "Name a plausible untested failure case."
+        ],
+        "check": {
+          "question": "Which claim is supported by one passing local fixture?",
+          "options": [
+            "The entire production service is secure.",
+            "All interview skills are mastered.",
+            "The stated assertions passed for that fixture and environment."
+          ],
+          "answer": 2,
+          "explanation": "Execution evidence is scoped to the tested inputs and environment. Broader safety or mastery needs independent evidence."
+        }
+      },
+      {
+        "title": "Choose revisions by mechanism and consequence",
+        "explanation": "Spend four hours on a deliberate loop rather than rereading every page. Begin with twenty minutes of closed-book recall. Use fifty minutes to revisit the weakest mechanism, thirty to trace an example, seventy-five to implement or debug one bounded slice, forty to defend it under a changed constraint, and twenty-five to compare evidence and schedule another recall. Prioritize errors that invalidate a whole system: leaked validation data, missing tenant authorization, unbounded retries, unsupported claims or duplicated writes. Surface accuracy alone can hide such failures. Group weak concepts by cause. For example, confusion about generators and retained memory belongs with resource ownership; confusion about retries and unknown writes belongs with idempotency and reconciliation. Reuse the original scenario assignments as optional depth: some take longer than one seventy-five-minute block and should span days. The thirty-day route offers focused exposure and practice, not a claim that every additional assignment fits within one hundred twenty hours.",
+        "workedExample": "If you can explain attention but still retry an unknown payment timeout blindly, spend today\u2019s build on duplicate-effect prevention. Review attention tomorrow through a short recall instead of treating all gaps as equally urgent.",
+        "pitfall": "Optimizing the average score while leaving a critical safety boundary unresolved.",
+        "teachBack": "Pick your next four-hour revision using one actual error and justify what you defer.",
+        "hints": [
+          "Rank by consequence.",
+          "Separate recall from execution.",
+          "Make the next practice action small and measurable."
+        ],
+        "check": {
+          "question": "Which revision should come first?",
+          "options": [
+            "An unresolved tenant-access failure.",
+            "A preferred animation style.",
+            "Memorizing another model brand."
+          ],
+          "answer": 0,
+          "explanation": "A missing tenant boundary can invalidate otherwise accurate behavior. Prioritize critical failure mechanisms before optional breadth."
+        }
+      },
+      {
+        "title": "Prepare an answer that survives a follow-up",
+        "explanation": "Build interview answers in five moves: define the mechanism, apply it to a concrete case, state a trade-off, name a failure mode, and describe the measurement or test. The interviewer may shorten latency, lower cost, change privacy rules or demand evidence for your experience. Treat these as new constraints that may change the architecture. Do not defend a prior component choice merely because it appears in your first diagram. For example, a slow reranker might improve relevance yet violate a strict deadline; compare bounded candidate counts, a faster model and a fallback before discarding reranking entirely. If asked about a missing architecture diagram or code snippet, state the missing facts and reason from an explicitly assumed reference. Separate what you observed from what you infer. If you have not deployed a RAG service, explain the prototype you built and the checks required for production rather than copying a fictional personal achievement.",
+        "workedExample": "First answer: use hybrid retrieval and rerank the top candidates. Follow-up: deadline halves. Revised answer: profile stages, reduce reranking candidates, measure quality loss on held-out queries, and abstain when permitted evidence is insufficient.",
+        "pitfall": "Giving a confident architecture answer without requirements, units or evidence.",
+        "teachBack": "Answer a question in ninety seconds; then defend it when latency halves.",
+        "hints": [
+          "Say what problem the mechanism solves.",
+          "Pick one quantifiable constraint.",
+          "Explain which evidence would change your decision."
+        ],
+        "check": {
+          "question": "What is the best response to an unseen client diagram?",
+          "options": [
+            "Claim familiarity with its exact components.",
+            "State that the diagram is missing and label any assumed reference architecture.",
+            "Invent components and present them as supplied facts."
+          ],
+          "answer": 1,
+          "explanation": "The user supplied questions, not the diagram. An explicit assumption supports useful reasoning without a false claim of inspection."
+        }
+      },
+      {
+        "title": "Map foundations to the advanced client questions",
+        "explanation": "The second half of the route builds on the first. Array operations and probability explain attention scores, softmax routing and optimization. Training and evaluation concepts explain why encoder and decoder objectives differ, why local minima are not the only optimization challenge, and why low-bit weights change numeric representation rather than the sequence architecture. The original RAG and agent lessons become deeper examinations of chunking, approximate search, hallucination measurement, typed state and financial action controls. Python debugging then connects JSON decoding, schemas, token budgeting and response-envelope handling to actual failure fixtures. Keep a glossary in your own words and contrast neighboring concepts: embedding model versus vector index, RDF versus OWL, schema validity versus truth, request idempotency versus business authorization. Each contrast should include a concrete example and counterexample. If a new paper introduces unfamiliar math, follow the minimal symbols used in the worked exercise before returning to the full paper.",
+        "workedExample": "Mamba is about sequence computation through selective state updates. BitNet is about low-bit learned weights and supporting arithmetic. A model can combine architecture and numeric choices, so neither term answers the other\u2019s question. You will test that distinction on days18 and20.",
+        "pitfall": "Treating every new acronym as an interchangeable LLM product.",
+        "teachBack": "Make a contrast table for model, retrieval index, schema and execution policy; explain who owns each behavior.",
+        "hints": [
+          "Identify the layer: data, computation, representation or authority.",
+          "Ask what is learned and what is deterministic.",
+          "Use a counterexample where two concepts combine without becoming identical."
+        ],
+        "check": {
+          "question": "Which pair represents different system layers?",
+          "options": [
+            "An embedding model and its ANN index.",
+            "Two names for exactly the same retrieval object.",
+            "RDF and every possible model architecture."
+          ],
+          "answer": 0,
+          "explanation": "An embedding model maps content to vectors; an ANN index organizes those vectors for approximate neighbor retrieval."
+        }
+      }
+    ],
+    "review": [
+      "Trace a complete request with identity and version.",
+      "State one measured result and one untested boundary.",
+      "Contrast model architecture, search index and execution policy."
+    ]
+  }
+}

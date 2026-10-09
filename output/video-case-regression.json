@@ -1,0 +1,41 @@
+{
+  "status": "PASS",
+  "case_count": 4,
+  "coverage_entries": 154,
+  "gap_rows": 17,
+  "source_files": 22,
+  "fingerprints": {
+    "case-modernization/fixtures/after/BehaviorProbe.java": "5b300d99b0028793ba73579032dd7895f5bcc2a5ccd0ba52c13fa1226ecfa70d",
+    "case-modernization/fixtures/after/InvoiceService.java": "455438c2368d0e616763e15ba0060d424ac8f166fa95d8f0fa5fe4f7ccbce919",
+    "case-modernization/fixtures/after/PricePolicy.java": "6fe0938b694cb986d68ee5e0801ee99c519dff75e16ac229d99660823b2318e0",
+    "case-modernization/fixtures/after/ReceiptApi.java": "c3b077a742b1746c9159902174ff207a6e2a5aec606efd21b42ea7bd8c48dbcd",
+    "case-modernization/fixtures/before/BehaviorProbe.java": "5b300d99b0028793ba73579032dd7895f5bcc2a5ccd0ba52c13fa1226ecfa70d",
+    "case-modernization/fixtures/before/InvoiceService.java": "455438c2368d0e616763e15ba0060d424ac8f166fa95d8f0fa5fe4f7ccbce919",
+    "case-modernization/fixtures/before/PricePolicy.java": "80fac5c4f2cbdbb53262bd25f2fbdd95b451cf475889d7254cc6c06d5b0ead02",
+    "case-modernization/fixtures/before/ReceiptApi.java": "c3b077a742b1746c9159902174ff207a6e2a5aec606efd21b42ea7bd8c48dbcd",
+    "case-modernization/modernization_case.py": "51d107cc1de895ff06018be7070c82145abb267624c92d2ccb602c87a730fa1b",
+    "case-mcp/client.py": "19fdb0991efdb4054bff097c39bc6577ece3eb96accec3e3a20af5b0e09442d8",
+    "case-mcp/server.py": "6f7e65a0c6cf3d5ca5964aa658c7fc0618ab6d01723dc652ff410360650f3a24",
+    "case-enterprise/README.md": "4bf4c5435e38eb303b1b5fd9a4cef4ca26194a46c5e73010c322fa4a4cebb0b2",
+    "case-enterprise/pom.xml": "3b91b191df26f984c47e7e308443478842126710fc6c335374c562260108a9b4",
+    "case-enterprise/EnterpriseGateway.java": "47a986246b2068006cbe6b195d7bc888336b9d9bee17b8f779587091a1fa5a2d",
+    "case-enterprise/python_service.py": "28f623a052b60e59403cee8df069b9466d3549f3db8952770b438d5b16412f1d",
+    "case-enterprise/seed_sources.json": "d212b91ec2fa65431b0036e8729c25841105478c63e786e795d820c22114af0e",
+    "case-enterprise/requirements-tested.txt": "744a4e51ac762d306dd0e7c3d66e122dbee294fc5c466d354bf4c0f02e75a5c7",
+    "case-enterprise/integration_test.py": "9e933e70cfc73136f3b07a716c0b286d6153a7babcd1d976181212747260ea6b",
+    "case-enterprise/Dockerfile.python": "ccc501ba16b9831dd9ea9c7300a8f7f3441382c30afdc4c69b447ea46ddbb251",
+    "case-enterprise/Dockerfile.java": "bbd4cd48bfea5a3995b4fc00bf0d5f32035c63e40502442a3d9bb8933a6c2655",
+    "case-enterprise/deployment-exercise.yaml": "91074d0e2e0402a332b7452ce3a56b614cbf3e89cc28cee42e9ea872ef1e2861",
+    "case-evaluation/evaluate.py": "48be32e91ee927cb49d80c55293c0c66abb68f297159744415ce1be75a4be319"
+  },
+  "execution": [],
+  "limits": [
+    "Author/reviewer execution does not mark learner work complete.",
+    "Coverage links and length checks do not prove professional proficiency.",
+    "Actual framework packages/JDK/offline Maven cache are prepared prerequisites.",
+    "Local prototype tests do not certify production, OAuth or current MCP interoperability."
+  ],
+  "embedded_parity": "PASS",
+  "artifact_sha256": "b4e76dec8d2822c4c09f8814be871abd9deb5b775ad4463823e6e5b9e9ca6e1b",
+  "artifact_bytes": 2036349
+}

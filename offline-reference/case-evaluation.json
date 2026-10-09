@@ -1,0 +1,112 @@
+{
+  "id": "case-evaluation",
+  "title": "Build an evaluation gate, SQL trace store and adoption scorecard",
+  "days": [
+    3,
+    6,
+    7,
+    9,
+    13,
+    21,
+    22,
+    24,
+    28,
+    30
+  ],
+  "requirements": [
+    "Model selection and smaller-model evaluation",
+    "RAG retrieval and hallucination evaluation",
+    "Quality thresholds and regression tests",
+    "Trace, token, latency and cost accounting",
+    "Pilot adoption and business-impact measurement"
+  ],
+  "context": "A sponsor asks you to replace an expensive model with a cheaper option while keeping the support assistant reliable. Comparing provider prices or ten plausible answers cannot justify that decision. This case supplies a fixed ten-item benchmark, an actual tenant-filtered lexical retriever and three synthetic candidate-output sets. One cheap candidate has perfect category labels while citing another tenant’s policy and making an unsupported claim. Your job is to define what counts as acceptable, enforce non-negotiable security gates, retain inspectable traces and choose an eligible candidate. You then compare pilot cohorts without claiming causality from invented numbers.",
+  "architecture": "Versioned benchmark → tenant-filtered lexical retrieval → candidate fixture records → schema and identity checks → correctness/support/authorization judgments → SQL trace store → quality/latency/cost gates → eligible-candidate selection → comparable pilot scorecard. Candidate outputs, timings and prices are synthetic fixture inputs; no live inference occurs.",
+  "walkthrough": [
+    {
+      "title": "1. Separate retrieval quality from answer quality",
+      "body": "For each benchmark query, retrieve only documents belonging to the trusted tenant. Compute whether the relevant gold document appears in the top-two results. This is retrieval recall at the chosen cutoff, not answer faithfulness. Candidate category labels are independently compared with gold labels. Cited document IDs must belong to the actual retrieved, tenant-authorized context. Claim IDs are checked against manually authored support annotations in those cited documents. This fixture evaluates explicit ground-truth labels; it is not a general-purpose semantic hallucination detector, embedding model or ANN implementation."
+    },
+    {
+      "title": "2. Make the denominator and acceptance policy explicit",
+      "body": "A response is acceptable only when its category is correct, at least one claim and authorized citation exist, every claim is supported, and no tenant-boundary violation occurs. Total cost includes all benchmark requests, including failures. Divide that cost by accepted responses, rather than averaging only successful calls. If every output abstains, zero observed unsupported claims cannot become zero hallucination risk: the unsupported rate and cost per accepted response are undefined, and the release gate fails. Label accuracy can remain perfect while security or grounding makes a candidate unsuitable."
+    },
+    {
+      "title": "3. Record traces and enforce gates",
+      "body": "The program validates record identity, duplicate IDs, enum values, citation collections, nonnegative integer token counts and finite latency/cost numbers. It records retrieval and citation IDs, measured-as-input fixture values, acceptance decisions and query hashes, then writes ten trace rows to SQLite with a primary-key constraint. Hashing is not anonymization for low-entropy sensitive text; a production retention policy must consider that risk. Hard security thresholds are evaluated before selecting the cheapest eligible candidate. The named thresholds are illustrative policy choices, not universal enterprise standards or permission to release code."
+    },
+    {
+      "title": "4. Explain confidence, pilot outcomes and regression changes",
+      "body": "A zero-error ten-item sample still has a positive upper Wilson bound. The calculation assumes a binomial sampling model; correlated claims and nonrepresentative fixtures need different uncertainty analysis and broader evaluation. Report dataset version, sampling strategy, slices, abstention behavior and known blind spots before quoting a rate. The pilot scorecard compares active minutes per accepted task, adoption among eligible users and escaped defects per accepted task. Changing task complexity, reviewer strictness or cohort composition invalidates a simple productivity comparison. Thirty percent reduction in synthetic active time is arithmetic, not your achieved production result."
+    }
+  ],
+  "assignment": {
+    "objective": "Write your own evaluator before opening the reference. Turn business expectations into explicit acceptance rules and prove that cheap-but-unsafe candidate outputs fail.",
+    "steps": [
+      "Session 1: define benchmark schema, gold documents, acceptance rubric and slice coverage; implement tenant-filtered retrieval.",
+      "Session 2: compute labels, claim support, recall, abstention and all-request cost per accepted answer.",
+      "Session 3: add SQLite traces and regression tests for malformed records, duplicate IDs and tenant-crossing citations.",
+      "Session 4: change latency/cost thresholds and task cohorts; explain the changed model-selection and pilot conclusions to a CTO."
+    ]
+  },
+  "acceptance": [
+    "Cheap-bad candidate is rejected despite label accuracy of one.",
+    "One tenant-crossing citation blocks the release gate.",
+    "All-abstain outputs keep unsupported-rate and accepted-cost denominators unknown.",
+    "Malformed finite-number/type inputs and duplicate benchmark IDs are rejected.",
+    "Tenant-filtered lexical retrieval returns the correct allowed document.",
+    "Ten inspectable trace rows persist in SQLite; no live model or cloud call occurs.",
+    "The cheapest eligible candidate is selected only after fixed quality/security gates.",
+    "Pilot arithmetic uses accepted-task and eligible-user denominators and states its causal limits."
+  ],
+  "hints": [
+    "Write “acceptable answer” as a Boolean contract before computing a weighted score.",
+    "Charge failed and abstained requests to total cost; do not hide them by changing the denominator.",
+    "Test all-abstain and correct-label/wrong-citation cases before comparing candidate names."
+  ],
+  "answer": "I would decide whether a smaller model is sufficient using a versioned representative benchmark, independent quality and security judgments, and cost per accepted task. Retrieval recall, category accuracy, grounded claims and abstention answer different questions. A single authorization failure can disqualify a candidate even when its average accuracy is high. This local case runs the evaluation and trace pipeline over synthetic outputs; it proves those accounting and gate mechanisms, not a provider’s model quality. A production pilot needs real task slices, human adjudication, cohort comparability, latency and cost traces, drift monitoring and a rollback decision. I would communicate uncertainty and observed limits with every metric.",
+  "followups": [
+    {
+      "question": "Why can a candidate with 100% category accuracy still fail?",
+      "answer": "Its correct labels may accompany unsupported explanations or cross-tenant citations. Category correctness is only one acceptance dimension. The fixture deliberately separates it from grounding, authorization and cost so a good-looking average cannot conceal a critical boundary failure."
+    },
+    {
+      "question": "Would zero unsupported claims across ten requests establish a zero hallucination rate?",
+      "answer": "No. It establishes zero observed failures for that sample and rubric. Sampling uncertainty, domain slices, claim dependence and abstention coverage remain relevant. The fixture displays a Wilson interval under stated assumptions and refuses to invent a rate when no claims were assessed. Report the denominator and adjudication procedure before claiming an achieved deployed rate."
+    }
+  ],
+  "sources": [
+    {
+      "title": "OpenAI evaluation practices",
+      "url": "https://developers.openai.com/api/docs/guides/evaluation-best-practices"
+    },
+    {
+      "title": "Python SQLite transaction interface",
+      "url": "https://docs.python.org/3/library/sqlite3.html"
+    },
+    {
+      "title": "DORA improvement and metrics",
+      "url": "https://dora.dev/guides/dora-metrics/"
+    }
+  ],
+  "run": [
+    "python3 evaluate.py"
+  ],
+  "limits": [
+    "Requires Python 3.10+; uses only the standard library and temporary SQLite database.",
+    "Candidate outputs, label/claim annotations, timing, token and price inputs are synthetic; this program does not benchmark or call an LLM.",
+    "Lexical retrieval is implemented. Semantic embeddings, vector-database integration and production-scale ANN are separate exercises.",
+    "Fixed gates do not authorize a deployment or financial action. Human review, real metrics, representative datasets and privacy controls remain required for a production claim."
+  ],
+  "files": [
+    {
+      "name": "evaluate.py",
+      "language": "python",
+      "code": "\"\"\"Offline evaluation/trace and adoption lab. Synthetic candidate records, not live LLM inference.\"\"\"\nimport hashlib\nimport json\nimport math\nimport sqlite3\nimport tempfile\nfrom pathlib import Path\n\nTENANT = 'alpha'\nDOCUMENTS = [\n    {'id': 'd1', 'tenant': 'alpha', 'text': 'Refund policy permits refunds within thirty days.', 'claims': {'refund-30'}},\n    {'id': 'd2', 'tenant': 'alpha', 'text': 'Password resets require verified account ownership.', 'claims': {'verify-owner'}},\n    {'id': 'd3', 'tenant': 'beta', 'text': 'Refund policy permits refunds within ninety days.', 'claims': {'refund-90'}},\n]\nDATASET = [\n    {'id': f'q{i}', 'query': 'refund policy' if i < 5 else 'password resets',\n     'gold_label': 'refund' if i < 5 else 'account', 'gold_doc': 'd1' if i < 5 else 'd2'}\n    for i in range(10)\n]\n\ndef retrieve(query, tenant, k=2):\n    if not isinstance(query, str) or not query.strip() or type(k) is not int or k < 1:\n        raise ValueError('nonempty query and positive integer k required')\n    if not isinstance(tenant, str) or not tenant.strip():\n        raise ValueError('trusted tenant required')\n    terms = set(query.lower().split())\n    ranked = sorted((d for d in DOCUMENTS if d['tenant'] == tenant),\n                    key=lambda d: (-len(terms & set(d['text'].lower().split())), d['id']))\n    return [d for d in ranked if terms & set(d['text'].lower().split())][:k]\n\n\ndef finite(value, field):\n    if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or value < 0:\n        raise ValueError(f'{field} must be a nonnegative finite number')\n    return float(value)\n\n\ndef percentile(values, p):\n    if not values:\n        return None\n    return sorted(values)[max(0, math.ceil(p*len(values))-1)]\n\n\ndef wilson(successes, total, z=1.96):\n    if type(successes) is not int or type(total) is not int or not 0 <= successes <= total:\n        raise ValueError('invalid count')\n    if not total:\n        return None\n    proportion = successes/total\n    denom = 1+z*z/total\n    center = (proportion+z*z/(2*total))/denom\n    radius = z*math.sqrt(proportion*(1-proportion)/total+z*z/(4*total*total))/denom\n    return [max(0, center-radius), min(1, center+radius)]\n\n\ndef evaluate(records, tenant=TENANT):\n    if not isinstance(records, list) or len(records) != len(DATASET):\n        raise ValueError('one record per benchmark item required')\n    expected = {q['id']: q for q in DATASET}\n    seen = set()\n    totals = {'correct': 0, 'accepted': 0, 'claims': 0, 'unsupported': 0, 'retrieved_gold': 0,\n              'security_incidents': 0, 'cost': 0., 'tokens': 0}\n    timings, traces = [], []\n    for row in records:\n        if not isinstance(row, dict) or set(row) != {'id', 'tenant', 'label', 'citations', 'claims', 'latency_ms', 'cost_usd', 'tokens'}:\n            raise ValueError('record contract mismatch')\n        if not isinstance(row['id'], str) or row['id'] not in expected or row['id'] in seen:\n            raise ValueError('benchmark identity duplicate or unknown')\n        seen.add(row['id'])\n        if not isinstance(row['tenant'], str) or not row['tenant'].strip():\n            raise ValueError('record tenant required')\n        if not isinstance(row['label'], str) or row['label'] not in {'refund', 'account', 'abstain'} or not isinstance(row['citations'], list) or not isinstance(row['claims'], list):\n            raise ValueError('invalid label or collection')\n        if not all(isinstance(v, str) and v for v in row['citations']+row['claims']):\n            raise ValueError('citations and claims must be nonempty strings')\n        if len(row['claims']) != len(set(row['claims'])) or len(row['citations']) != len(set(row['citations'])):\n            raise ValueError('duplicate claims or citations distort denominator')\n        if type(row['tokens']) is not int or row['tokens'] < 0:\n            raise ValueError('tokens must be nonnegative integer')\n        latency = finite(row['latency_ms'], 'latency_ms')\n        cost = finite(row['cost_usd'], 'cost_usd')\n        gold = expected[row['id']]\n        retrieved = retrieve(gold['query'], tenant)\n        allowed = {d['id']: d for d in retrieved}\n        cited = [allowed[c] for c in row['citations'] if c in allowed]\n        security = row['tenant'] != tenant or any(c not in allowed for c in row['citations'])\n        totals['security_incidents'] += int(security)\n        totals['retrieved_gold'] += int(gold['gold_doc'] in allowed)\n        supported_claims = set().union(*(d['claims'] for d in cited)) if cited else set()\n        unsupported = sum(c not in supported_claims for c in row['claims'])\n        correct = row['label'] == gold['gold_label']\n        # Label accuracy alone does not make a response acceptable.\n        accepted = correct and bool(row['claims']) and bool(cited) and not unsupported and not security\n        totals['correct'] += int(correct)\n        totals['accepted'] += int(accepted)\n        totals['claims'] += len(row['claims'])\n        totals['unsupported'] += unsupported\n        totals['cost'] += cost\n        totals['tokens'] += row['tokens']\n        timings.append(latency)\n        traces.append({'request_id': row['id'], 'query_hash': hashlib.sha256(gold['query'].encode()).hexdigest(),\n                       'retrieval_ids': list(allowed), 'citation_ids': row['citations'],\n                       'accepted': bool(accepted), 'latency_ms': latency, 'cost_usd': cost, 'tokens': row['tokens']})\n    n = len(DATASET)\n    result = {'dataset_version': 'synthetic-support-v1', 'requests': n,\n              'label_accuracy': totals['correct']/n, 'retrieval_recall_at_2': totals['retrieved_gold']/n,\n              'accepted': totals['accepted'], 'accepted_rate': totals['accepted']/n,\n              'claim_count': totals['claims'], 'unsupported_count': totals['unsupported'],\n              'unsupported_claim_rate': totals['unsupported']/totals['claims'] if totals['claims'] else None,\n              'unsupported_wilson_interval': wilson(totals['unsupported'], totals['claims']) if totals['claims'] else None,\n              'security_incidents': totals['security_incidents'], 'p95_ms': percentile(timings, .95),\n              'cost_usd': totals['cost'], 'cost_per_accepted_usd': totals['cost']/totals['accepted'] if totals['accepted'] else None,\n              'tokens': totals['tokens'], 'traces': traces}\n    result['gate_pass'] = (result['label_accuracy'] >= .9 and result['accepted_rate'] >= .8\n                           and result['unsupported_claim_rate'] is not None and result['unsupported_claim_rate'] <= .1\n                           and result['security_incidents'] == 0 and result['p95_ms'] <= 1000\n                           and result['cost_per_accepted_usd'] is not None and result['cost_per_accepted_usd'] <= .02)\n    return result\n\n\ndef candidate(kind):\n    rows = []\n    for q in DATASET:\n        rows.append({'id': q['id'], 'tenant': TENANT, 'label': q['gold_label'],\n                     'citations': [q['gold_doc']], 'claims': ['refund-30' if q['gold_label']=='refund' else 'verify-owner'],\n                     'latency_ms': 120 if kind != 'expensive' else 600, 'cost_usd': .002 if kind != 'expensive' else .03, 'tokens': 110})\n    if kind == 'cheap_bad':\n        rows[0]['claims'] = ['refund-90']\n        rows[1]['citations'] = ['d3']  # Even one authorization failure blocks the gate.\n    return rows\n\n\ndef choose(reports):\n    eligible = [(name, report) for name, report in reports.items() if report['gate_pass']]\n    return min(eligible, key=lambda pair: (pair[1]['cost_per_accepted_usd'], pair[0]))[0] if eligible else None\n\n\ndef adoption(before, after):\n    # Counts are comparable only if cohort/task mix and review standard match.\n    required = {'accepted', 'active_minutes', 'escaped_defects', 'users', 'eligible_users'}\n    for row in (before, after):\n        if set(row) != required or any(type(row[k]) is not int or row[k] < 0 for k in required):\n            raise ValueError('pilot counts must be nonnegative integers')\n        if row['users'] > row['eligible_users'] or not row['accepted'] or not row['eligible_users']:\n            raise ValueError('pilot denominators invalid')\n    old, new = before['active_minutes']/before['accepted'], after['active_minutes']/after['accepted']\n    return {'before_minutes_per_accepted': old, 'after_minutes_per_accepted': new,\n            'relative_active_time_reduction': (old-new)/old if old else None,\n            'after_adoption_rate': after['users']/after['eligible_users'],\n            'after_defects_per_accepted': after['escaped_defects']/after['accepted'],\n            'limit': 'Synthetic cohorts; no causal productivity or enterprise adoption claim.'}\n\n\ndef main():\n    reports = {k: evaluate(candidate(k)) for k in ('cheap_bad', 'cheap_good', 'expensive')}\n    assert choose(reports) == 'cheap_good'\n    assert reports['cheap_bad']['label_accuracy'] == 1 and not reports['cheap_bad']['gate_pass']\n    assert not reports['expensive']['gate_pass']\n    all_abstain = candidate('cheap_good')\n    for row in all_abstain:\n        row.update(label='abstain', citations=[], claims=[])\n    report = evaluate(all_abstain)\n    assert report['unsupported_claim_rate'] is None and report['cost_per_accepted_usd'] is None and not report['gate_pass']\n    for field, value in (('cost_usd',float('nan')),('latency_ms',float('inf')),('tokens',True),('tenant',None)):\n        broken = candidate('cheap_good')\n        broken[0][field] = value\n        try:\n            evaluate(broken)\n            raise AssertionError('invalid fixture must fail')\n        except ValueError:\n            pass\n    duplicate = candidate('cheap_good')\n    duplicate[1]['id'] = duplicate[0]['id']\n    try:\n        evaluate(duplicate)\n        raise AssertionError('duplicate benchmark identity')\n    except ValueError:\n        pass\n    assert len(retrieve('refund policy', 'alpha')) == 1 and all(d['tenant']=='alpha' for d in retrieve('refund policy', 'alpha'))\n    assert wilson(0, 10)[1] > .2  # Zero observed errors is not proof of zero population risk.\n    pilot = adoption({'accepted':10,'active_minutes':300,'escaped_defects':0,'users':2,'eligible_users':5},\n                     {'accepted':10,'active_minutes':210,'escaped_defects':0,'users':4,'eligible_users':5})\n    assert math.isclose(pilot['relative_active_time_reduction'], .3)\n    with tempfile.TemporaryDirectory(prefix='prep-eval-') as folder:\n        db = sqlite3.connect(Path(folder)/'traces.sqlite')\n        db.execute('CREATE TABLE traces(request_id TEXT PRIMARY KEY, payload TEXT NOT NULL)')\n        db.executemany('INSERT INTO traces VALUES (?,?)', [(t['request_id'],json.dumps(t)) for t in reports['cheap_good']['traces']])\n        db.commit()\n        assert db.execute('SELECT COUNT(*) FROM traces').fetchone()[0] == 10\n        db.close()\n    compact = {k:{field:value for field,value in r.items() if field!='traces'} for k,r in reports.items()}\n    print(json.dumps({'status':'PASS','selected_candidate':choose(reports),'reports':compact,'pilot':pilot,\n                      'checks': ['tenant-filtered retrieval','correct label with unsupported claims rejected','one security incident blocks release',\n                                 'zero accepted/no claims denominators remain unknown','finite/type validation','duplicate identity rejected',\n                                 'durable SQL trace records','zero errors still has confidence interval','comparable pilot arithmetic'],\n                      'limits':['Synthetic outputs and claim labels; not live model quality','Lexical retrieval, not embeddings or ANN',\n                                'Manual governance/approval remains separate from quality gate']},indent=2))\n\nif __name__ == '__main__':\n    main()\n"
+    }
+  ],
+  "execution": {
+    "summary": "Reference author executed the standard-library evaluation harness. Strict-schema, citation authorization, retrieval, acceptance, cost, latency-fixture and model-selection assertions passed. Ten SQLite trace rows and pilot arithmetic were checked. Candidate outputs, prices and latency values are synthetic teaching fixtures; no live model quality, inference speed or business impact was measured.",
+    "receipt": "output/practical-validation.json"
+  }
+}

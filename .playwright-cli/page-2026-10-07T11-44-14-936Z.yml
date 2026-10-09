@@ -1,0 +1,138 @@
+- generic [ref=e2]:
+  - complementary "Studio navigation" [ref=e3]:
+    - generic [ref=e4]:
+      - generic [aria-hidden] [ref=e5]: P /
+      - generic [ref=e6]:
+        - strong [ref=e7]: Principal AI
+        - text: Interview studio
+    - navigation "Sections" [ref=e8]:
+      - button "01 Overview" [ref=e9] [cursor=pointer]:
+        - generic [ref=e10]: "01"
+        - text: Overview
+      - button "02 14-day roadmap" [ref=e11] [cursor=pointer]:
+        - generic [ref=e12]: "02"
+        - text: 14-day roadmap
+      - button "03 Baseline assessment" [ref=e13] [cursor=pointer]:
+        - generic [ref=e14]: "03"
+        - text: Baseline assessment
+      - button "04 Daily studio" [ref=e15] [cursor=pointer]:
+        - generic [ref=e16]: "04"
+        - text: Daily studio
+      - button "05 Interview room" [ref=e17] [cursor=pointer]:
+        - generic [ref=e18]: "05"
+        - text: Interview room
+      - button "06 Retest queue" [ref=e19] [cursor=pointer]:
+        - generic [ref=e20]: "06"
+        - text: Retest queue
+      - button "07 Capstone & stories" [ref=e21] [cursor=pointer]:
+        - generic [ref=e22]: "07"
+        - text: Capstone & stories
+      - button "08 Readiness & gaps" [ref=e23] [cursor=pointer]:
+        - generic [ref=e24]: "08"
+        - text: Readiness & gaps
+      - button "09 Research & references" [ref=e25] [cursor=pointer]:
+        - generic [ref=e26]: "09"
+        - text: Research & references
+    - generic [ref=e27]:
+      - generic [ref=e28]:
+        - generic [ref=e29]: Bootcamp progress
+        - generic [ref=e30]: 0 / 14
+      - paragraph [ref=e32]: Build. Explain. Defend.Evidence before confidence.
+      - text: 14 days · One capstone
+  - main [ref=e33]:
+    - generic [ref=e34]:
+      - generic [ref=e35]: Preparation / Overview
+      - generic [ref=e36]:
+        - status [ref=e37]: Local progress
+        - button "Export progress ↗" [ref=e38] [cursor=pointer]
+        - button "Import" [ref=e39] [cursor=pointer]
+    - generic [ref=e40]:
+      - generic [ref=e41]:
+        - generic [ref=e42]:
+          - paragraph [ref=e43]: Your 14-day transformation
+          - heading [level=1] [ref=e44]:
+            - text: From architectto
+            - emphasis [ref=e45]: AI principal.
+          - paragraph [ref=e46]: One production-shaped capstone. Daily coding. Hard questions. Measured gaps. Build the depth to defend your decisions.
+          - generic [ref=e47]:
+            - button "Start your baseline →" [ref=e48] [cursor=pointer]
+            - button "Open Day 1" [ref=e49] [cursor=pointer]
+        - generic "Capstone verification sequence" [ref=e50]:
+          - generic [ref=e51]:
+            - generic [ref=e52]: REPOSITORY EVIDENCE
+            - generic [ref=e53]: "01"
+          - generic [ref=e54]: ↓
+          - generic [ref=e55]:
+            - generic [ref=e56]: RETRIEVAL + BOUNDED AI
+            - generic [ref=e57]: "02"
+          - generic [ref=e58]: ↓
+          - generic [ref=e59]:
+            - generic [ref=e60]: BUILD / TEST / SECURITY
+            - generic [ref=e61]: "03"
+          - generic [ref=e62]: ↓
+          - generic [ref=e63]:
+            - generic [ref=e64]: REVIEW → APPROVE → RELEASE
+            - generic [ref=e65]: "04"
+      - generic [ref=e66]:
+        - generic [ref=e67]:
+          - generic [ref=e68]: 0 / 14
+          - generic [ref=e69]: Days completed
+          - generic [ref=e70]: Evidence checklist + scorecard
+        - generic [ref=e71]:
+          - generic [ref=e72]: 0 / 30
+          - generic [ref=e73]: Baseline questions attempted
+          - generic [ref=e74]: 0 self-rated · no inferred scores
+        - generic [ref=e75]:
+          - generic [ref=e76]: "0"
+          - generic [ref=e77]: Weak areas ready for retest
+          - generic [ref=e78]: Recall before new material
+        - generic [ref=e79]:
+          - generic [ref=e80]: 4 h / day
+          - generic [ref=e81]: Planned study budget
+          - generic [ref=e82]: 56 hours across 14 days
+      - generic [ref=e83]:
+        - generic [ref=e84]:
+          - generic [ref=e85]:
+            - heading "Your next moves" [level=2] [ref=e86]
+            - generic [ref=e87]: Action, not a syllabus
+          - generic [ref=e88]:
+            - generic [ref=e89]: "1"
+            - generic [ref=e90]:
+              - strong [ref=e91]: Answer before opening lessons
+              - paragraph [ref=e92]: 30 questions, six groups of five. “I don’t know” is useful evidence. Begin with Q1–5; save and return.
+          - generic [ref=e93]:
+            - generic [ref=e94]: "2"
+            - generic [ref=e95]:
+              - strong [ref=e96]: Rate honestly, then ask for coaching
+              - paragraph [ref=e97]: Rubrics unlock after each attempt. Scores are self-assessed until reviewed in this chat; answer length is not graded.
+          - generic [ref=e98]:
+            - generic [ref=e99]: "3"
+            - generic [ref=e100]:
+              - strong [ref=e101]: Build one daily capstone slice
+              - paragraph [ref=e102]: Write code locally, record tests and limitations, then defend it. This HTML stores attempts; it does not execute Python.
+          - generic [ref=e103]:
+            - generic [ref=e104]: "4"
+            - generic [ref=e105]:
+              - strong [ref=e106]: Retest yesterday’s weak areas
+              - paragraph [ref=e107]: Retrieve from memory before hints. Fix misconception, explain it again, then repeat after a delay.
+        - generic [ref=e108]:
+          - paragraph [ref=e109]: Role analysis
+          - heading "Three bars to clear." [level=2] [ref=e110]
+          - paragraph [ref=e111]: "Coding boundary: Python for data, ML, RAG, agents and adapters; Java for modernization fixtures. Other languages are targets of tools, not coding subjects."
+          - paragraph [ref=e112]: "AI/ML Engineer: Python, data and statistics, leakage-safe training, meaningful evaluation, and deployable models."
+          - paragraph [ref=e113]: "GenAI Engineer: retrieval quality, LLM behavior, bounded agents, evaluation, cost and security."
+          - paragraph [ref=e114]: "Principal Modernization Engineer: code/dependency evidence, behavior parity, platform controls, organizational adoption and defensible trade-offs."
+          - generic [ref=e115]: Your supplied profile suggests architecture and Java strength. It supplies no measured Python/ML proficiency or verified project outcomes. Baseline and actual work establish those.
+          - button "Explore skill matrix →" [ref=e116] [cursor=pointer]
+      - generic [ref=e117]:
+        - generic [ref=e118]:
+          - heading "Make the schedule yours" [level=2] [ref=e119]
+          - generic [ref=e120]: No automatic reminders
+        - generic [ref=e121]:
+          - generic [ref=e122]: Start date
+          - textbox "Start date" [ref=e123]: 2026-10-07
+          - generic [ref=e124]: Hours per day
+          - spinbutton "Hours per day" [ref=e125]: "4"
+          - button "Print this view" [ref=e126] [cursor=pointer]
+        - paragraph [ref=e127]: Default 4 hours/day. At ≤2 hours, prioritize A skills, one cloud, PyTorch, one RAG store and a narrow Java fixture. A full production platform cannot be built in 14 days; the interview story must distinguish prototype evidence from a production design.
+    - generic [ref=e128]: Independent preparation workbook · Created 7 October 2026 · No account, API key, analytics, or external scripts. Teaching content is available offline; official reference links need internet. Browser storage stays on this device.

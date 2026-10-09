@@ -1,0 +1,44 @@
+{
+  "status": "PASS",
+  "cases": 4,
+  "mappedTopics": 154,
+  "downloadProjects": [
+    {
+      "id": "case-modernization",
+      "name": "case-modernization-reference.zip",
+      "archive": "/Users/vishalchawla/ai-modernization-interview-bootcamp/output/practical-projects/case-modernization-reference.zip",
+      "sha256": "6aa39632823b1ddbc9a9dd3f1e63f5930e8ac7be87c4d18a97c9355d4d4ad4e3",
+      "source_files": 9
+    },
+    {
+      "id": "case-mcp",
+      "name": "case-mcp-reference.zip",
+      "archive": "/Users/vishalchawla/ai-modernization-interview-bootcamp/output/practical-projects/case-mcp-reference.zip",
+      "sha256": "8323c6a471cef96f317b20b19233ccf27da8c2446a6362201ad279bd8d9ddd9a",
+      "source_files": 2
+    },
+    {
+      "id": "case-enterprise",
+      "name": "case-enterprise-reference.zip",
+      "archive": "/Users/vishalchawla/ai-modernization-interview-bootcamp/output/practical-projects/case-enterprise-reference.zip",
+      "sha256": "4c33a107e0c0134a509fd66c920a59598b27fe726b99f7ffcf2eb2ceb39306b4",
+      "source_files": 10
+    },
+    {
+      "id": "case-evaluation",
+      "name": "case-evaluation-reference.zip",
+      "archive": "/Users/vishalchawla/ai-modernization-interview-bootcamp/output/practical-projects/case-evaluation-reference.zip",
+      "sha256": "2d75bc702f4b58650828f85ad0c8451b77d55e60813bd975f1fb0d7c1e7306bd",
+      "source_files": 1
+    }
+  ],
+  "viewports": [
+    1440,
+    847,
+    390
+  ],
+  "offlineRequests": 0,
+  "errors": [],
+  "remote": [],
+  "archive_parity": "PASS"
+}

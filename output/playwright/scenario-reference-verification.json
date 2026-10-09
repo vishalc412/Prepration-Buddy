@@ -1,0 +1,247 @@
+{
+  "status": "PASS",
+  "scenarios": 48,
+  "questions": 96,
+  "assignments": 24,
+  "tracks": {
+    "Python": {
+      "scenarios": 6,
+      "assignments": 3
+    },
+    "Async Python": {
+      "scenarios": 6,
+      "assignments": 3
+    },
+    "FastAPI": {
+      "scenarios": 6,
+      "assignments": 3
+    },
+    "Django": {
+      "scenarios": 6,
+      "assignments": 3
+    },
+    "Flask": {
+      "scenarios": 6,
+      "assignments": 3
+    },
+    "RAG": {
+      "scenarios": 6,
+      "assignments": 3
+    },
+    "Agents": {
+      "scenarios": 6,
+      "assignments": 3
+    },
+    "Evaluation": {
+      "scenarios": 6,
+      "assignments": 3
+    }
+  },
+  "execution": [
+    {
+      "scenario": "python-01",
+      "file": "scenario_python_csv.py",
+      "exit_code": 0,
+      "stdout": "PASS streaming CSV: 2 accepted, 4 quarantined, header rejected\n",
+      "stderr": ""
+    },
+    {
+      "scenario": "python-02",
+      "file": "scenario_python_money.py",
+      "exit_code": 0,
+      "stdout": "PASS Decimal ledger: rounding, unchanged replay, conflicts, invalid inputs\n",
+      "stderr": ""
+    },
+    {
+      "scenario": "python-03",
+      "file": "scenario_python_retry.py",
+      "exit_code": 0,
+      "stdout": "PASS bounded retries: ambiguous replay exactly one simulated effect; exhausted/permanent visible\n",
+      "stderr": ""
+    },
+    {
+      "scenario": "async-01",
+      "file": "scenario_async_queue.py",
+      "exit_code": 0,
+      "stdout": "PASS bounded queue: 101 ordered outcomes, explicit row failure, worker/queue bounds\n",
+      "stderr": ""
+    },
+    {
+      "scenario": "async-02",
+      "file": "scenario_async_cleanup.py",
+      "exit_code": 0,
+      "stdout": "PASS cleanup: normal, timeout, external cancellation, no leaked tasks\n",
+      "stderr": ""
+    },
+    {
+      "scenario": "async-03",
+      "file": "scenario_async_singleflight.py",
+      "exit_code": 0,
+      "stdout": "PASS single-flight: one shared call, isolated cancellation, capacity, failure retry, shutdown\n",
+      "stderr": ""
+    },
+    {
+      "scenario": "fastapi-01",
+      "file": "fastapi_tenant_quotes.py",
+      "exit_code": 0,
+      "stdout": "PASS: validation, authorization seam, tenant isolation, override cleanup\n",
+      "stderr": "/private/tmp/principal-scenario-validation/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n  from starlette.testclient import TestClient as TestClient  # noqa\n"
+    },
+    {
+      "scenario": "fastapi-02",
+      "file": "fastapi_idempotent_jobs.py",
+      "exit_code": 0,
+      "stdout": "PASS: replay, conflict, restart, ownership, conditional transition\n",
+      "stderr": "/private/tmp/principal-scenario-validation/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n  from starlette.testclient import TestClient as TestClient  # noqa\n"
+    },
+    {
+      "scenario": "fastapi-03",
+      "file": "fastapi_bounded_lifespan.py",
+      "exit_code": 0,
+      "stdout": "PASS: bounded queue, rejection, lifecycle, cooperative cancellation\n",
+      "stderr": "/private/tmp/principal-scenario-validation/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n  from starlette.testclient import TestClient as TestClient  # noqa\n"
+    },
+    {
+      "scenario": "django-01",
+      "file": "django_tenant_invoices.py",
+      "exit_code": 0,
+      "stdout": "PASS: tenant-scoped ORM reads/writes, role permission, validation\n",
+      "stderr": ""
+    },
+    {
+      "scenario": "django-02",
+      "file": "django_transaction_outbox.py",
+      "exit_code": 0,
+      "stdout": "PASS: rollback, commit callback, transaction-committed outbox, unique/check constraints; no restart proof\n",
+      "stderr": ""
+    },
+    {
+      "scenario": "django-03",
+      "file": "django_query_budget.py",
+      "exit_code": 0,
+      "stdout": "PASS: query budget 51->1, payload parity, bounded page, relation isolation\n",
+      "stderr": ""
+    },
+    {
+      "scenario": "flask-01",
+      "file": "flask_factory_inventory.py",
+      "exit_code": 0,
+      "stdout": "PASS: app isolation, blueprint routing, strict validation, JSON errors\n",
+      "stderr": ""
+    },
+    {
+      "scenario": "flask-02",
+      "file": "flask_bounded_upload.py",
+      "exit_code": 0,
+      "stdout": "PASS: body/file bounds, generated names, UTF-8, empty/rejected uploads\n",
+      "stderr": ""
+    },
+    {
+      "scenario": "flask-03",
+      "file": "flask_signed_webhook.py",
+      "exit_code": 0,
+      "stdout": "PASS: raw-byte signature, freshness, durable replay, conflict and validation\n",
+      "stderr": ""
+    },
+    {
+      "scenario": "rag-01",
+      "file": "rag_01_acl_citations.py",
+      "exit_code": 0,
+      "stdout": "{\n  \"hits\": [\n    {\n      \"citation\": \"alpha:orders.md@v2#c1\",\n      \"source\": \"orders.md\",\n      \"version\": 2,\n      \"text\": \"orders java 17 contract serialization\"\n    }\n  ],\n  \"scored_sources\": [\n    \"orders.md\",\n    \"portal.md\"\n  ],\n  \"method\": \"lexical token overlap; no embeddings\"\n}\nPASS 7 ACL/version/dedup/citation fixtures\n",
+      "stderr": ""
+    },
+    {
+      "scenario": "rag-02",
+      "file": "rag_02_incremental_index.py",
+      "exit_code": 0,
+      "stdout": "{\n  \"epoch\": 4,\n  \"acl_epoch\": 1,\n  \"live_hits\": 0,\n  \"quarantined\": 1\n}\nPASS 7 incremental/cache/quarantine/deletion fixtures\n",
+      "stderr": ""
+    },
+    {
+      "scenario": "rag-03",
+      "file": "rag_03_grounded_abstention.py",
+      "exit_code": 0,
+      "stdout": "{\n  \"status\": \"supported_fixture_extraction\",\n  \"claims\": [\n    {\n      \"field\": \"runtime_major\",\n      \"value\": 17,\n      \"citation\": \"alpha:orders@v2#runtime\"\n    }\n  ]\n}\nPASS 9 grounded/abstention/tenant fixtures\n",
+      "stderr": ""
+    },
+    {
+      "scenario": "agents-01",
+      "file": "agents_01_exact_approval.py",
+      "exit_code": 0,
+      "stdout": "PASS 10 exact-approval/receipt/drift fixtures; no actual Java tests or deploy\n",
+      "stderr": ""
+    },
+    {
+      "scenario": "agents-02",
+      "file": "agents_02_reconcile_writes.py",
+      "exit_code": 0,
+      "stdout": "{\"status\": \"reconciled_existing\", \"tenant\": \"alpha\", \"key\": \"run-1\", \"artifact\": \"hash-v1\"}\nPASS 5 timeout/restart/replay/mismatch/tenant fixtures\n",
+      "stderr": ""
+    },
+    {
+      "scenario": "agents-03",
+      "file": "agents_03_workflow_budgets.py",
+      "exit_code": 0,
+      "stdout": "{\n  \"state\": \"reported\",\n  \"budget\": {\n    \"steps\": 5,\n    \"milliseconds\": 500,\n    \"tokens\": 100,\n    \"bytes\": 500\n  },\n  \"receipts\": [\n    {\n      \"action\": \"inspect\",\n      \"status\": \"simulated_executed\"\n    },\n    {\n      \"action\": \"plan\",\n      \"status\": \"simulated_executed\"\n    },\n    {\n      \"action\": \"propose\",\n      \"status\": \"simulated_executed\"\n    },\n    {\n      \"action\": \"validate\",\n      \"status\": \"simulated_executed\"\n    },\n    {\n      \"action\": \"report\",\n      \"status\": \"simulated_executed\"\n    }\n  ]\n}\nPASS 8 bounded-workflow fixtures; costs/time are supplied simulation units\n",
+      "stderr": ""
+    },
+    {
+      "scenario": "evaluation-01",
+      "file": "evaluation_01_rank_metrics.py",
+      "exit_code": 0,
+      "stdout": "{\n  \"k\": 2,\n  \"queries\": 3,\n  \"mean_paired_recall_delta\": -0.3333333333333333,\n  \"baseline_MRR_at_k\": 0.6666666666666666,\n  \"candidate_MRR_at_k\": 0.6666666666666666,\n  \"regressions\": [\n    \"q2\"\n  ],\n  \"pairs\": [\n    {\n      \"id\": \"q1\",\n      \"baseline\": {\n        \"recall_at_k\": 0.5,\n        \"reciprocal_rank_at_k\": 0.5\n      },\n      \"candidate\": {\n        \"recall_at_k\": 0.5,\n        \"reciprocal_rank_at_k\": 1.0\n      },\n      \"recall_delta\": 0.0\n    },\n    {\n      \"id\": \"q2\",\n      \"baseline\": {\n        \"recall_at_k\": 1.0,\n        \"reciprocal_rank_at_k\": 1.0\n      },\n      \"candidate\": {\n        \"recall_at_k\": 0.0,\n        \"reciprocal_rank_at_k\": 0.0\n      },\n      \"recall_delta\": -1.0\n    },\n    {\n      \"id\": \"q3\",\n      \"baseline\": {\n        \"recall_at_k\": 1.0,\n        \"reciprocal_rank_at_k\": 0.5\n      },\n      \"candidate\": {\n        \"recall_at_k\": 1.0,\n        \"reciprocal_rank_at_k\": 1.0\n      },\n      \"recall_delta\": 0.0\n    }\n  ]\n}\nPASS 6 rank-metric/paired-input fixtures\n",
+      "stderr": ""
+    },
+    {
+      "scenario": "evaluation-02",
+      "file": "evaluation_02_safety_slices.py",
+      "exit_code": 0,
+      "stdout": "{\n  \"promote\": false,\n  \"total_n\": 10,\n  \"aggregate_accuracy\": 0.8,\n  \"slices\": {\n    \"java\": {\n      \"n\": 8,\n      \"correct\": 8,\n      \"accuracy\": 1.0,\n      \"sample_sufficient\": true\n    },\n    \"dotnet\": {\n      \"n\": 2,\n      \"correct\": 0,\n      \"accuracy\": 0.0,\n      \"sample_sufficient\": true\n    }\n  },\n  \"worst_slice_accuracy\": 0.0,\n  \"failed_boundaries\": [],\n  \"unresolved_boundaries\": []\n}\nPASS 14 aggregate/slice/safety/unknown/denominator fixtures\n",
+      "stderr": ""
+    },
+    {
+      "scenario": "evaluation-03",
+      "file": "evaluation_03_cost_latency.py",
+      "exit_code": 0,
+      "stdout": "{\n  \"accepted_fixture_configuration\": true,\n  \"baseline\": {\n    \"attempts\": 10,\n    \"completed\": 10,\n    \"failed\": 0,\n    \"correct_of_attempts\": 10,\n    \"quality_per_attempt\": 1.0,\n    \"p95_completed_ms\": 440,\n    \"estimated_fixture_cost\": 0.056,\n    \"cost_includes_failed_attempt_usage\": true\n  },\n  \"candidate\": {\n    \"attempts\": 10,\n    \"completed\": 10,\n    \"failed\": 0,\n    \"correct_of_attempts\": 10,\n    \"quality_per_attempt\": 1.0,\n    \"p95_completed_ms\": 244.0,\n    \"estimated_fixture_cost\": 0.026,\n    \"cost_includes_failed_attempt_usage\": true\n  },\n  \"judge\": \"not used; correctness supplied by fixture labels\",\n  \"production_quality\": \"unassessed\"\n}\nPASS 7 cost/latency/quality/denominator fixtures\n",
+      "stderr": ""
+    }
+  ],
+  "reference_files": [
+    "scenario_python_csv.py",
+    "scenario_python_money.py",
+    "scenario_python_retry.py",
+    "scenario_async_queue.py",
+    "scenario_async_cleanup.py",
+    "scenario_async_singleflight.py",
+    "fastapi_tenant_quotes.py",
+    "requirements-tested.txt",
+    "fastapi_idempotent_jobs.py",
+    "fastapi_tenant_quotes.py",
+    "requirements-tested.txt",
+    "fastapi_bounded_lifespan.py",
+    "requirements-tested.txt",
+    "django_tenant_invoices.py",
+    "requirements-tested.txt",
+    "django_transaction_outbox.py",
+    "requirements-tested.txt",
+    "django_query_budget.py",
+    "requirements-tested.txt",
+    "flask_factory_inventory.py",
+    "requirements-tested.txt",
+    "flask_bounded_upload.py",
+    "requirements-tested.txt",
+    "flask_signed_webhook.py",
+    "requirements-tested.txt",
+    "rag_01_acl_citations.py",
+    "rag_02_incremental_index.py",
+    "rag_03_grounded_abstention.py",
+    "agents_01_exact_approval.py",
+    "agents_02_reconcile_writes.py",
+    "agents_03_workflow_budgets.py",
+    "evaluation_01_rank_metrics.py",
+    "evaluation_02_safety_slices.py",
+    "evaluation_03_cost_latency.py"
+  ],
+  "unique_reference_files": 25
+}

@@ -1,0 +1,449 @@
+[
+  {
+    "id": "jd-accelerators",
+    "title": "Reusable accelerators: a product with bounded authority",
+    "days": [
+      10,
+      12,
+      13,
+      14,
+      29,
+      30
+    ],
+    "requirement": "Design reusable AI-powered engineering accelerators and modernization solutions.",
+    "explanation": "An engineering accelerator packages a repeatable engineering task with a clear contract, ownership, integration path and evidence that its output is usable. Start from a recurring bottleneck such as dependency assessment, migration previews or regression-test authoring. Define the supported input repository, task scope, allowed operations, output artifacts, failure classes and acceptance gates. Reusability means another team can safely use the same component with declared configuration; it does not mean one unrestricted agent can edit every system. Separate deterministic inventory and transformation from model-assisted explanation or proposal generation. If a supported OpenRewrite recipe performs a known Java change, use its preview as reviewable evidence rather than asking a model to invent equivalent source edits.\n\nTreat the accelerator as a maintained product. Record supported language/framework versions, contract revision, packaging, owner, upgrade process and deprecation policy. Define a compatibility suite with representative repositories and deliberately unsupported inputs. A source tree outside the allowed root, missing build tool or unsupported framework version should yield a clear refusal or assessment result instead of a best-effort mutation. Provide an artifact manifest linking input revision, configuration, proposed diff and gate receipts. The model may summarize those artifacts, but it cannot promote a failed gate into success.\n\nIllustrative architecture: a Java orchestration API admits an authorized repository and immutable task request; a Python worker performs analysis or evaluation; bounded transformation tools produce a local patch; a reviewer sees the diff and behavioral tests before release. Actual teams may choose fewer services. Add a network boundary only when ownership, scale or isolation justifies it. An accelerator that needs custom setup for every consumer is still a prototype until onboarding and compatibility are demonstrated.",
+    "answer": "I would begin with one frequent, measurable workflow and publish its contract before implementation. The first deliverable would be a read-only assessment or dry-run migration with source revision, allowed scope, patch and test receipts. I would compare it against the existing manual process, include unsupported-input tests and assign maintenance ownership. Expansion would depend on verified quality and adoption rather than generated-line counts. This is a proposed delivery approach; it is not a claim that I have already deployed such an accelerator.",
+    "scenario": "Two Java teams repeatedly upgrade the same library, but one uses a different framework major version. An illustrative accelerator supports the first matrix entry and rejects automatic changes for the second. It still produces an inventory and explicit unsupported reason. A business sponsor asks why it cannot just let the coding agent try: explain the missing behavior contract and evidence needed before extending support.",
+    "assignment": "Draft a one-page accelerator contract for dependency modernization: inputs, version matrix, preview artifact, write scope, expected failures, gate receipts, human owner and rollback. Add three supported and three unsupported fixture repositories as descriptions, without fabricating execution. Calculate one baseline-to-pilot metric using illustrative counts. Defend whether Java and Python require a service boundary or can be one local tool for the pilot.",
+    "hints": [
+      "Choose a repeatable bottleneck.",
+      "Separate proposal and effect.",
+      "Publish supported versions and gates."
+    ],
+    "checks": [
+      "Identify the supported and unsupported inputs.",
+      "Explain which artifact proves behavioral parity.",
+      "Name maintenance and release decision owners."
+    ],
+    "followups": [
+      {
+        "question": "Why not begin with an unrestricted modernization agent?",
+        "answer": "An unrestricted agent combines unclear scope, unsupported transformations and broad credentials. I would first establish a bounded task contract and representative parity tests. Broader automation would require separate evidence that authority, compatibility and recovery remain correct."
+      },
+      {
+        "question": "What makes the accelerator reusable rather than a demo?",
+        "answer": "Another team can onboard using documented configuration, run the declared compatibility checks, receive predictable artifacts and failures, and identify who maintains it. Reuse also needs versioning, support expectations and measured outcomes across more than the author’s sample repository."
+      }
+    ],
+    "sources": [
+      {
+        "title": "OpenRewrite Maven preview",
+        "url": "https://docs.openrewrite.org/reference/rewrite-maven-plugin"
+      },
+      {
+        "title": "DORA improvement process",
+        "url": "https://dora.dev/guides/dora-metrics/"
+      }
+    ]
+  },
+  {
+    "id": "jd-mcp-contract",
+    "title": "MCP contracts, transport and revision compatibility",
+    "days": [
+      9,
+      10,
+      12,
+      21,
+      29
+    ],
+    "requirement": "Build MCP clients and servers with tool/resource contracts, transport selection, error handling and version compatibility.",
+    "explanation": "MCP is an integration protocol, not a model and not an authorization engine. Distinguish the host application, its MCP client connector and the server exposing tools, resources or prompts. A tool is an invocable operation with an input contract; a resource supplies addressable context. Define inputs, output schema, effect boundaries, timeouts and business error classes before attaching an agent. Structured output should be validated by the consumer; an HTTP success or JSON-RPC result can still describe tool failure. Handle protocol errors separately from a valid tool result marked isError. Do not classify every failure as retryable.\n\nPin the protocol revision and SDK/client matrix. Research on 8 October 2026 found the official latest URL redirecting to revision 2026-07-28. Its core uses self-contained requests with per-request version and capability metadata. Earlier 2025-11-25 clients use the initialize lifecycle, so teaching initialization as universal current behavior is inaccurate. A compatibility test should demonstrate the supported era and fail clearly for unsupported negotiation or result forms. SDK availability and a starter property named stateless are not proof that all current revision behavior works.\n\nChoose stdio for a client-launched local process and Streamable HTTP for an independently deployed server when those operational requirements fit. Keep stdio stdout exclusively for protocol messages and put logs on stderr. For HTTP, validate Origin, authenticate requests and protect local listeners; streaming is response delivery rather than automatic durable execution. Test interrupted replies, deadline expiration and cancellation. A canceled response stream cannot prove that a downstream write was undone. This lesson is an architecture and contract exercise, not a fabricated MCP deployment.",
+    "answer": "I would expose a narrow preview_migration tool and a read-only assessment resource through a revision-pinned server. The client would validate inputs and structured results, distinguish tool failure from protocol failure, apply bounded deadlines and preserve correlation identifiers. I would select stdio for a managed local subprocess or HTTP for a shared service based on isolation and operation needs. I would prove compatibility with the actual client/SDK versions instead of assuming all MCP hosts implement the same revision.",
+    "scenario": "A client expects an older session initialization sequence while a new server implements self-contained requests. Another client reads an HTTP 200 response with isError=true as success. In this illustrative integration, both issues block rollout: one is a compatibility contract problem; the other is an outcome interpretation defect. Describe the evidence needed to fix each without inventing wire transcripts.",
+    "assignment": "Create a compatibility matrix with two client revisions, server/SDK version, stdio or HTTP, supported tools/resources, success result, tool error, protocol error and cancellation cases. Write sanitized example contract documents for preview_migration input and output without claiming they executed. Explain how your consumer handles isError and missing structured fields. Include the rule that stdout logging must not corrupt local protocol framing.",
+    "hints": [
+      "Pin revision and SDK separately.",
+      "Distinguish tool and protocol errors.",
+      "Choose transport from operational needs."
+    ],
+    "checks": [
+      "Explain current versus legacy request lifecycle.",
+      "Name how a tool failure reaches the caller.",
+      "Describe cancellation without promising rollback."
+    ],
+    "followups": [
+      {
+        "question": "Does an MCP server always need initialize?",
+        "answer": "The answer depends on the protocol revision. The researched 2026-07-28 core uses per-request metadata, while the 2025-11-25 lifecycle uses initialize. I would pin and test the supported client/server combinations rather than generalizing one era."
+      },
+      {
+        "question": "Is a JSON-RPC result automatically a successful action?",
+        "answer": "No. Tool results can mark execution failure, and structured content may violate the expected contract. The consumer must interpret the outcome and validate content before treating it as evidence. Transport completion does not establish downstream business success."
+      }
+    ],
+    "sources": [
+      {
+        "title": "MCP current specification",
+        "url": "https://modelcontextprotocol.io/specification/2026-07-28"
+      },
+      {
+        "title": "MCP transports",
+        "url": "https://modelcontextprotocol.io/specification/2026-07-28/basic/transports"
+      },
+      {
+        "title": "MCP tools",
+        "url": "https://modelcontextprotocol.io/specification/2026-07-28/server/tools"
+      },
+      {
+        "title": "Legacy lifecycle",
+        "url": "https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle"
+      },
+      {
+        "title": "stdio framing",
+        "url": "https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/stdio"
+      }
+    ]
+  },
+  {
+    "id": "jd-mcp-security",
+    "title": "MCP security: identity, scopes and downstream authority",
+    "days": [
+      9,
+      10,
+      12,
+      27,
+      29,
+      30
+    ],
+    "requirement": "Implement MCP authentication/authorization, secure deployment, least-privilege tool access and human-review controls.",
+    "explanation": "Authentication establishes who is calling; authorization determines which resource or effect that actor may access. MCP transport authorization is not a substitute for repository, tenant, tool and operation policy. For a protected HTTP server, follow the pinned MCP authorization specification, including the resource-server audience boundary. A token issued for another service must not be accepted and passed through to a downstream API. The official security guidance explicitly forbids that pattern because it can bypass security controls and create a confused deputy. Use appropriate downstream credentials or a documented delegation mechanism with its own policy rather than blindly forwarding bearer text.\n\nSeparate read-only assessment from mutation tools. A caller who may inspect a repository does not automatically have permission to apply a patch, open a release or execute shell commands. Validate canonical allowed roots, repository identity and operation scope on the server. Treat tool descriptions and annotations as untrusted unless sourced from a trusted server; readOnly hints do not enforce the implementation. A model-supplied tenant, path or grant cannot replace authenticated context. Return protected context only after access checks, and keep output logs free of credentials and unnecessary source content.\n\nBind human approval to the exact proposed diff or action and recheck current permissions at execution. Changed input revision, widened path scope or changed payload invalidates the decision. A remote server also needs TLS, appropriate listener exposure, origin checks and deployment controls. For stdio, process launch policy and inherited credentials are separate from the HTTP OAuth flow. Test wrong audience, expired credential, insufficient permission, unauthorized root and revoked approval with sanitized fixtures. None of these controls can be inferred from a successful demonstration request alone.",
+    "answer": "I would validate the authenticated caller and intended token audience, derive trusted tenant and repository scope, and enforce operation-specific policy before any tool work. I would keep preview separate from apply and bind apply approval to the reviewed artifact and current source revision. Downstream APIs would use a deliberate credential/delegation design. I would provide negative authorization tests and sanitized audit records rather than calling a tool annotation a security boundary.",
+    "scenario": "An attacker has a legitimate token for a downstream ticket API and sends it to the modernization MCP server, asking it to apply a patch outside the allowed repository. The illustrative server must reject the wrong audience and disallowed scope. A read-only-looking tool description cannot justify executing a mutation; inspect server behavior and policy separately.",
+    "assignment": "Draw the caller→MCP server→repository/downstream API trust boundaries. For each edge list authenticated identity, accepted audience, permitted scopes, tenant source, credentials and audit fields. Add five rejection fixtures covering audience, expiry, root scope, changed diff and revoked approver. Identify one secret-redaction test and explain why raw token passthrough or tool annotations cannot replace server authorization.",
+    "hints": [
+      "Audience is resource-specific.",
+      "Enforce server-side operation policy.",
+      "Bind approval to reviewed intent."
+    ],
+    "checks": [
+      "Identify attacker and protected effect.",
+      "Explain downstream credential separation.",
+      "Reject altered or revoked execution authority."
+    ],
+    "followups": [
+      {
+        "question": "Can I trust readOnlyHint to make a tool safe?",
+        "answer": "No. It describes intended behavior and may come from an untrusted server. Safety requires trusted implementation, permissions and observed behavior. I would test forbidden writes and enforce a server-side operation policy even when the tool advertises itself as read-only."
+      },
+      {
+        "question": "What if access is revoked after planning?",
+        "answer": "Planning records intent but does not preserve future authority. Execution must recheck current permission and reject if revoked. I would retain a denial receipt tied to the reviewed payload, without leaking protected data or silently trying another credential."
+      }
+    ],
+    "sources": [
+      {
+        "title": "MCP HTTP authorization",
+        "url": "https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization"
+      },
+      {
+        "title": "MCP security practices",
+        "url": "https://modelcontextprotocol.io/docs/2026-07-28/tutorials/security/security_best_practices"
+      },
+      {
+        "title": "MCP HTTP transport security",
+        "url": "https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http"
+      },
+      {
+        "title": "OWASP excessive agency",
+        "url": "https://genai.owasp.org/llmrisk/llm062025-excessive-agency/"
+      }
+    ]
+  },
+  {
+    "id": "jd-context",
+    "title": "Coding-agent instructions and context as tested assets",
+    "days": [
+      7,
+      8,
+      9,
+      12,
+      13,
+      27
+    ],
+    "requirement": "Design instructions, reusable prompt assets, context strategies and multi-step coding workflows with systematic evaluation.",
+    "explanation": "Repository instructions should describe how to build, test and review this project, with concise ownership boundaries and links to authoritative behavior contracts. Task instructions add the specific requirement, allowed scope, acceptance criteria and failure constraints. Retrieved code or documentation supplies evidence; it must not silently become an instruction with authority to expand permissions. Include the relevant symbols, callers, interfaces, tests and dependency versions needed for a decision rather than filling the context window with the whole tree. Context selection needs freshness and provenance: a stale generated summary can be less reliable than a short current source excerpt.\n\nVersion instruction and prompt assets alongside the code or controlled configuration they describe. Test a proposed instruction change on a fixed task set with the same environment and compare acceptance evidence. Longer instructions are not inherently better. Conflicting, stale or decorative rules can obscure the boundary that matters. GitHub documents repository-wide and path-specific instruction support; the exact supported files and precedence depend on the product surface, so verify the chosen coding platform instead of assuming cross-tool interchangeability. Its code review can miss problems and generate false positives, which is why human review and deterministic gates remain necessary.\n\nAn illustrative coding workflow admits a task, retrieves narrowly relevant context, proposes a patch, runs declared tests and presents a reviewable diff. The model must not modify its own acceptance criteria to make failure disappear. Record the instruction version, source revision, task identity, changed files and gate receipts. Include tasks that require refusing unsupported changes, detecting ambiguous requirements and preserving authorization checks. This is offline evaluation design; no live coding-agent account, successful provider integration or guaranteed interview result is implied.",
+    "answer": "I would create a concise repository guide plus task-specific acceptance criteria, retrieve current source evidence and version the context/instruction policy. I would evaluate changes on representative tasks, including negative cases, and judge actual patches and tests rather than the agent's summary. I would treat generated review as additional feedback, preserve human release review and make failures visible. Different coding environments would get explicitly verified adapters, not assumed instruction compatibility.",
+    "scenario": "A coding agent completes a controller change and reports success, but its retrieved summary omits a tenant check used by the caller. Another proposed instruction says to skip failing integration tests. In the illustrative exercise, source and acceptance contracts govern: restore the missing boundary and reject the instruction change that weakens validation rather than trusting the fluent report.",
+    "assignment": "Write one repository instruction asset and one bounded task prompt for a Java API change, with Python used for a contract fixture. List exactly which source/context artifacts the agent needs and why. Design three evaluation tasks: a valid small patch, a misleading stale context case and an attempted permission expansion. Specify the diff, test and refusal evidence required; mark all unexecuted tasks as proposed.",
+    "hints": [
+      "Context is evidence, not authority.",
+      "Version instructions and task criteria.",
+      "Evaluate patches and gates."
+    ],
+    "checks": [
+      "Explain freshness and provenance.",
+      "Identify unsupported platform assumptions.",
+      "Reject acceptance criteria weakened by the agent."
+    ],
+    "followups": [
+      {
+        "question": "How would you compare two instruction versions?",
+        "answer": "Run both against the same representative tasks and controlled repository/environment conditions. Compare task completion, behavioral tests, scope violations, review effort and failures. Keep a held-out task set so editing instructions to match visible examples does not look like general improvement."
+      },
+      {
+        "question": "Why is AI code review not the release gate?",
+        "answer": "It can miss relevant issues and report nonexistent ones. I would validate each finding against code and tests, use deterministic security/behavior checks, and require accountable human release review. A generated all-clear is feedback, not proof of correctness."
+      }
+    ],
+    "sources": [
+      {
+        "title": "Copilot customization",
+        "url": "https://docs.github.com/en/copilot/concepts/prompting/response-customization"
+      },
+      {
+        "title": "Copilot review instructions",
+        "url": "https://docs.github.com/en/copilot/how-tos/use-copilot-agents/request-a-code-review/use-code-review?tool=cli"
+      },
+      {
+        "title": "Copilot review limitations",
+        "url": "https://github.com/github/docs/blob/main/content/copilot/responsible-use/agents.md"
+      }
+    ]
+  },
+  {
+    "id": "jd-java-fullstack",
+    "title": "Java full stack, Python integration and the TypeScript bridge",
+    "days": [
+      1,
+      9,
+      12,
+      13,
+      21,
+      27,
+      29
+    ],
+    "requirement": "Deep Java full-stack expertise plus Python and JavaScript/TypeScript for enterprise APIs and AI integration.",
+    "explanation": "Keep Java and Python as the main practice languages requested by the user, while explicitly acknowledging the JD also requires demonstrated JavaScript or TypeScript proficiency. An illustrative full-stack workflow accepts a modernization assessment request in a Spring controller, invokes an application service and persists tenant-scoped task state through a repository. The controller validates the request DTO and maps declared outcomes to HTTP responses. The service enforces authorization and business invariants; the repository implements parameterized, scoped data access. The browser can hide an unauthorized button for usability, but the API must independently reject the operation.\n\nA short transactional service method creates the task and outbox record together. Do not hold a database transaction during a long model call. A worker processes the admitted task and the API later returns its permitted status. Spring's default proxy transaction behavior requires calls through the proxy; self-invocation does not magically activate an annotated method. Default rollback handling also distinguishes runtime and checked exceptions, so deliberate configuration and a rollback test are necessary. JWT validation verifies issuer, timing and configured audience; scope authorities alone still need object-level repository/tenant authorization.\n\nPython can implement a bounded analysis worker or contract evaluator behind the same request/result schema. Async functions do not make blocking model calls or filesystem work nonblocking automatically. Define deadlines, cancellation and retry behavior rather than using async as a scalability claim. The TypeScript bridge consumes a declared API schema and renders pending, completed, failed and unauthorized states. Treat network JSON as unknown data and validate or narrow it; a TypeScript assertion cannot validate bytes at runtime. An accessible status/error interface, safe rendering and rejected cross-tenant requests are part of full-stack evidence, not decoration. This lesson proposes a vertical slice; it does not claim that a Spring application or frontend was executed.",
+    "answer": "I would build one end-to-end task submission slice: validated Spring DTO/controller, policy-enforcing service, tenant-scoped repository and short transaction for task/outbox creation. Python would process the task under a versioned result contract; the frontend would validate the response and render explicit states. I would verify API authorization, rollback and browser error handling independently. Java/Python remain my learning route, while I would prepare the TypeScript integration gap visibly rather than implying those languages satisfy every JD requirement.",
+    "scenario": "The illustrative UI submits a repository assessment and immediately displays success, but the API only admitted asynchronous work. A second request changes the task identifier to another tenant's record. Correct the UI to show pending and the server to enforce object-level scope. Then inject a database failure between task and outbox insertion to test rollback through the real proxied service boundary.",
+    "assignment": "Specify POST /assessments and GET /assessments/{id}, including DTO fields, trusted principal/tenant source, status enums and error contract. Sketch Java controller→service→repository ownership and an atomic task/outbox transaction. Write a Python result-validation fixture plan. Add a TypeScript discriminated-union status contract and runtime network-data validation plan. Include browser pending/failure rendering, wrong-tenant API rejection and transactional rollback criteria; label unexecuted artifacts as proposed.",
+    "hints": [
+      "Keep policy on the server.",
+      "Separate admission from completion.",
+      "Runtime JSON needs validation."
+    ],
+    "checks": [
+      "Trace a full request through all layers.",
+      "Explain self-invocation and rollback pitfalls.",
+      "Name the visible TypeScript bridge assignment."
+    ],
+    "followups": [
+      {
+        "question": "Where should a model call sit relative to a transaction?",
+        "answer": "Usually outside the short transaction that admits or records work. I would atomically persist the task and outbox, let the worker call the provider with bounded deadlines, then record a validated outcome. A long remote call inside the transaction increases lock duration and does not make the provider effect atomic."
+      },
+      {
+        "question": "Why is a frontend type assertion insufficient?",
+        "answer": "TypeScript types guide compiled code but do not validate an arbitrary network response at runtime. I would start from unknown, apply a schema or explicit guards, and render the recognized state. The API remains responsible for authorization regardless of what the frontend shows."
+      }
+    ],
+    "sources": [
+      {
+        "title": "Spring REST controller",
+        "url": "https://spring.io/guides/gs/rest-service/"
+      },
+      {
+        "title": "Spring transactions",
+        "url": "https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html"
+      },
+      {
+        "title": "Spring JWT resource server",
+        "url": "https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html"
+      },
+      {
+        "title": "Python tasks and cancellation",
+        "url": "https://docs.python.org/3/library/asyncio-task.html"
+      },
+      {
+        "title": "TypeScript narrowing",
+        "url": "https://www.typescriptlang.org/docs/handbook/2/narrowing.html"
+      },
+      {
+        "title": "Python API response models",
+        "url": "https://fastapi.tiangolo.com/tutorial/response-model/"
+      }
+    ]
+  },
+  {
+    "id": "jd-evaluation",
+    "title": "Quality gates, trace evidence and cost per accepted task",
+    "days": [
+      6,
+      8,
+      9,
+      11,
+      13,
+      21,
+      22,
+      28,
+      29
+    ],
+    "requirement": "Establish evaluations, datasets, thresholds, telemetry, tracing and production reliability/latency/token/cost monitoring.",
+    "explanation": "Evaluation begins with the engineering task and accepted result, not the attractiveness of generated prose. Define representative tasks, a trusted expected behavior contract and a held-out set. Include routine cases, difficult dependency combinations, unsupported changes, stale context and adversarial permission requests. Separate tests of code behavior, retrieval relevance, structured output, tool selection and authorization so a high aggregate score cannot hide a critical failure. A model-based grader can help assess explanations, but calibrate it against accountable human judgments and never use it to authorize effects.\n\nSet release thresholds before viewing results. For a migration accelerator, require the declared build and behavioral gates, no unauthorized path mutation and a reviewed diff. For explanation quality, use labeled support and factuality criteria. Repeat nondeterministic trials where variation affects risk, and report sample sizes and failure counts rather than one successful run. A changed prompt, model, tool schema or retrieval index is a versioned change that should trigger the relevant regression set. These are curriculum recommendations; they do not predict this company's interview rounds.\n\nTracing connects task admission, context retrieval, model request, tool invocation and gate execution through correlation identifiers and spans. OpenTelemetry describes spans and propagated trace context; choose sanitized attributes and avoid raw secrets or unnecessary source text. Capture outcome class, attempts, duration, provider usage and component versions. Input/output token usage should come from the documented API response or a declared counting policy, with supplied fixture units labeled separately.\n\nMeasure cost per accepted task, not only per model call. Include retries, evaluation, review effort and platform expense in a clearly defined denominator. Use illustrative rate variables when no live prices are researched. Guardrails should bound request size, step count, deadline and retry amplification. A dashboard is useful only if someone owns the response to breached quality or cost thresholds.",
+    "answer": "I would define a versioned task dataset and predeclared gates for behavioral correctness, scope, reviewability and recovery. I would instrument each stage with sanitized trace identifiers and collect outcome, latency, attempts and token usage. I would compare cost per accepted task and reviewer effort against a baseline, using measured rates where available. Model grading would support calibrated quality assessment, while authorization and release gates remain deterministic and human-accountable.",
+    "scenario": "An illustrative pilot reports cheaper model calls, but repeated invalid patches require three retries and substantial reviewer correction. Ten requests cost 20 supplied currency units and produce only four accepted tasks: the model-call component is five units per accepted task before review and infrastructure. The successful-looking average call price hides the workflow loss and must not determine adoption alone.",
+    "assignment": "Create twelve labeled task descriptions split across normal, edge, unsupported and adversarial cases. Specify acceptance evidence and a release threshold for each critical invariant. Draw the trace stages and list safe attributes, versions and outcome classes. Compute illustrative cost per accepted task including retries and reviewer minutes using explicit assumed rates. Define who pauses rollout when safety, quality, latency or spend breaches a declared limit.",
+    "hints": [
+      "Score the engineering outcome.",
+      "Track versioned components and attempts.",
+      "Use accepted tasks as a cost denominator."
+    ],
+    "checks": [
+      "Distinguish critical gates from average scores.",
+      "Explain trace versus sensitive payload logging.",
+      "Calculate a declared cost denominator."
+    ],
+    "followups": [
+      {
+        "question": "How do you avoid optimizing only for the test set?",
+        "answer": "Keep representative held-out tasks and review dataset leakage when prompts or tools change. Inspect failures by category rather than tuning to visible answer wording. Add newly observed production cases through a controlled process and preserve older regressions to detect lost behavior."
+      },
+      {
+        "question": "What does a trace prove?",
+        "answer": "It shows recorded causal stages, timing and outcomes under the instrumentation policy. It does not prove a summary is truthful or a tool authorized. I would attach gate receipts and current policy decisions to relevant stages and distinguish missing instrumentation from an absent operation."
+      }
+    ],
+    "sources": [
+      {
+        "title": "Evaluation guidance",
+        "url": "https://developers.openai.com/api/docs/guides/evaluation-best-practices"
+      },
+      {
+        "title": "OpenTelemetry traces",
+        "url": "https://opentelemetry.io/docs/concepts/signals/traces/"
+      },
+      {
+        "title": "Input token counting",
+        "url": "https://developers.openai.com/api/docs/guides/token-counting"
+      },
+      {
+        "title": "Idempotent retry design",
+        "url": "https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/"
+      }
+    ]
+  },
+  {
+    "id": "jd-cloud-operation",
+    "title": "Operate one cloud path: identity, network and containers",
+    "days": [
+      11,
+      13,
+      14,
+      25,
+      29
+    ],
+    "requirement": "Hands-on operation on a major cloud with identity, networking, containers, observability and cost management.",
+    "explanation": "Choose one cloud for depth and explain its end-to-end operating path. An illustrative AWS deployment uses a private application network, a controlled ingress for the API, workload roles for approved storage/model access and a container worker with bounded concurrency. AWS IAM guidance recommends temporary credentials for workloads through roles and least-privilege permissions. Separate the human operator identity, CI deployment role and runtime workload identity. An application token authorizing a tenant operation is distinct from the cloud role used to call a platform service. Do not put cloud keys into source, container images, prompts or frontend bundles.\n\nDraw allowed ingress and egress, DNS, TLS termination and access to the database, artifact store and model endpoint. Private addressing alone does not authorize application requests or prevent all egress. Test actual connection rules. Kubernetes NetworkPolicy requires an enforcing network implementation; writing YAML without that support does not establish isolation. Probes also have different purposes: readiness controls traffic eligibility, liveness can restart a container and startup protects slow initialization before normal checks. Avoid using provider dependency failure as an indiscriminate restart trigger, which can amplify an outage.\n\nOperate containers with explicit resources, nonprivileged execution where appropriate, graceful termination and durable task state. Decide what happens when a worker stops after an outbox item was accepted but before acknowledgment. Define a timeout budget, approved retry route and reconciliation owner. Telemetry should show service and worker error classes, queue pressure, duration and accepted-task cost. A region fallback requires residency and capability checks; it is not an interchangeable hostname. Write a recovery drill and restoration criterion before calling the architecture resilient. This lesson is a proposed reference deployment; the offline browser tutorial neither provisions cloud resources nor demonstrates production operation.",
+    "answer": "I would defend one complete cloud path rather than list services from three vendors. I would map human, CI and runtime identities; use temporary least-privilege credentials; verify ingress/egress and application authorization; and operate the container worker with bounded resources and durable recovery. I would distinguish probe purposes and test termination, dependency failure and replay. I would present measured operating evidence only after those drills execute on the actual platform.",
+    "scenario": "A model endpoint becomes unavailable. The illustrative readiness check marks the generation-dependent route degraded, while the worker stops admitting unbounded retries. Restarting every pod would not fix the dependency. A permitted read-only assessment route may continue if its contract does not require generation. Reconcile accepted tasks and verify the fallback region's policy before moving sensitive workload data.",
+    "assignment": "Draw one AWS or chosen-cloud request path with ingress, TLS, workload role, private database, storage and model access. List least-privilege actions separately for CI and runtime. Describe a container startup/readiness/liveness policy and a verified-network test plan. Write termination and outage drills with accepted-task reconciliation, retry budget and restoration criteria. Mark infrastructure diagrams and policies as proposed until deployed receipts exist.",
+    "hints": [
+      "Pick one cloud for operational depth.",
+      "Separate identity from network reachability.",
+      "Test shutdown and dependency failure."
+    ],
+    "checks": [
+      "Identify human/CI/runtime identities.",
+      "Explain probe and network-policy evidence.",
+      "Defend a bounded outage recovery path."
+    ],
+    "followups": [
+      {
+        "question": "Why is private networking insufficient?",
+        "answer": "It reduces exposure but does not establish caller identity or object-level authorization. A compromised or overprivileged workload inside the network can still attempt protected operations. I would enforce API policy, workload permissions and deliberate egress controls, then test the actual allowed and denied paths."
+      },
+      {
+        "question": "How do you prove the worker survives restart?",
+        "answer": "Persist admitted tasks and outcomes outside the process, terminate at a defined intermediate state, restart and inspect replay/reconciliation behavior. Check duplicate effects and stale versions. A pod reaching Running or a local in-memory checkpoint is insufficient evidence of durable workflow recovery."
+      }
+    ],
+    "sources": [
+      {
+        "title": "AWS IAM practices",
+        "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html"
+      },
+      {
+        "title": "Kubernetes probes",
+        "url": "https://kubernetes.io/docs/concepts/workloads/pods/probes/"
+      },
+      {
+        "title": "Kubernetes network policy",
+        "url": "https://kubernetes.io/docs/concepts/services-networking/network-policies/"
+      },
+      {
+        "title": "Bounded retries",
+        "url": "https://docs.aws.amazon.com/wellarchitected/2024-06-27/framework/rel_mitigate_interaction_failure_limit_retries.html"
+      }
+    ]
+  },
+  {
+    "id": "jd-delivery-leadership",
+    "title": "Secure SDLC, pilot adoption and accountable leadership",
+    "days": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      25,
+      30
+    ],
+    "requirement": "Apply secure SDLC and supply-chain controls; lead pilots, adoption, mentoring and measured engineering outcomes.",
+    "explanation": "AI-generated code follows the same secure development responsibilities as other code, with additional untrusted-context and tool-authority risks. NIST SSDF organizes practices across preparation, software protection, secure production and vulnerability response. Use that lifecycle to assign owners rather than append a scanner after coding. Threat-model repository access, prompt injection, privileged tools, dependency sources, CI artifacts and release credentials. Require current authorization, secret protection, dependency/vulnerability/license checks and accountable human production review as specified by this JD. A passing scanner does not establish business correctness, and a generated reviewer does not replace an authorized release owner.\n\nProtect the delivery chain. GitHub warns about privileged workflows consuming untrusted pull-request code and recommends immutable action references and least-privilege credentials. Separate untrusted test execution from jobs that can release or access production secrets. Inventory dependencies and licenses; review exceptions with the appropriate owner instead of inventing legal conclusions. SLSA provenance describes artifact origins and build process evidence; an SBOM lists components, and neither alone proves an artifact is vulnerability-free. Verify the artifact digest and expected provenance before deployment, and retain rollback and incident response plans.\n\nPilot adoption is an experiment and a change-management task. Select a narrow workflow, baseline its delivery path and choose a representative volunteer cohort. Teach developers how to inspect output, reproduce failures and report friction. Track quality, review effort, cost, adoption and developer experience alongside delivery outcomes. Current DORA guidance distinguishes throughput and instability across five delivery metrics; generated-line or suggestion-acceptance counts are usage indicators rather than complete productivity evidence. Avoid attributing every before/after change to AI when team mix, task difficulty or release process also changed.\n\nSet explicit expand, revise and stop conditions. Share limitations and incident learnings; mentor teams through evidence reviews rather than mandating blind tool usage. A truthful leadership story identifies your ownership, decision, tradeoff and observed result. Proposed pilots should remain labeled proposed, with illustrative arithmetic and unexecuted gates clearly separated from real experience.",
+    "answer": "I would begin with a threat-modeled pilot and baseline, assign security/release/maintenance owners and keep human production review mandatory. I would isolate untrusted CI work, verify dependencies and artifact evidence, and test rollback. Adoption would expand only if accepted-task quality, reviewer effort, delivery outcomes and cost meet predeclared criteria. I would coach teams on reviewing AI output and report limitations without claiming causal productivity gains or experience that has not been demonstrated.",
+    "scenario": "An illustrative pilot speeds patch generation but increases review rework and failed releases. Leadership should investigate the bottleneck rather than celebrate generated lines. Meanwhile a PR modifies the workflow that can access release secrets. Separate its untrusted tests from privileged release jobs, review the policy change and verify the approved artifact before considering expansion. No real pilot result is asserted here.",
+    "assignment": "Prepare a pilot charter: workflow, baseline period, cohort, task matching, owner map, training plan and expand/revise/stop criteria. Add a threat model and CI trust-boundary diagram with dependency/license checks, provenance verification and mandatory release review. Define quality, delivery, cost and developer-experience measures. Use only real experience in your leadership narrative; otherwise give a proposed experiment and the evidence you would collect.",
+    "hints": [
+      "Protect the path from source to artifact.",
+      "Usage counts are not outcome proof.",
+      "Teach review and define stop conditions."
+    ],
+    "checks": [
+      "Distinguish SBOM, provenance and scans.",
+      "Name the human production release gate.",
+      "Defend baseline, adoption and leadership evidence."
+    ],
+    "followups": [
+      {
+        "question": "How would you explain a pilot that makes coding faster but delivery slower?",
+        "answer": "I would inspect review queues, task mix, rework and release failures before attributing the change. Faster code production can move the bottleneck downstream. I would revise the workflow or pause expansion if the declared quality and delivery criteria deteriorate, even when usage remains high."
+      },
+      {
+        "question": "What is the difference between SBOM and provenance?",
+        "answer": "An SBOM inventories components; provenance records how an artifact was produced and its relevant origin/build evidence. Both need verification and operational policy. Neither replaces vulnerability assessment, license review, behavioral testing or human approval of the exact release artifact."
+      }
+    ],
+    "sources": [
+      {
+        "title": "NIST SSDF",
+        "url": "https://csrc.nist.gov/pubs/sp/800/218/final"
+      },
+      {
+        "title": "GitHub Actions secure use",
+        "url": "https://docs.github.com/en/actions/reference/security/secure-use"
+      },
+      {
+        "title": "SLSA provenance",
+        "url": "https://slsa.dev/spec/v1.2/provenance"
+      },
+      {
+        "title": "Dependency inventory",
+        "url": "https://docs.github.com/en/code-security/concepts/supply-chain-security/dependency-graph"
+      },
+      {
+        "title": "DORA delivery metrics",
+        "url": "https://dora.dev/guides/dora-metrics/"
+      }
+    ]
+  }
+]

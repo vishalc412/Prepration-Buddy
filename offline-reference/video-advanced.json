@@ -1,0 +1,581 @@
+{
+  "verifiedOn": "2026-10-09",
+  "videos": [
+    {
+      "id": "transformers-cs224n",
+      "title": "Stanford CS224N NLP with Deep Learning | Winter 2021 | Lecture 9 - Self- Attention and Transformers",
+      "url": "https://www.youtube.com/watch?v=ptuGllU5SQQ",
+      "creator": "Stanford Online",
+      "topics": [
+        "architecture"
+      ],
+      "days": [
+        15
+      ],
+      "level": "intermediate",
+      "format": "course",
+      "why": "University teaching on attention and Transformer architecture makes the tensor operations easier to explain in an interview.",
+      "watchTask": "Draw queries, keys, values and the attention output. Mark which positions an encoder or causal decoder can attend to; explain the purpose of a mask.",
+      "practiceTask": "Using a small Python list of attention scores, apply a causal mask before softmax. Show why a future token must receive zero probability.",
+      "caution": "This is a 2021 foundation lecture. It does not establish current model rankings or cover every later architecture.",
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=ptuGllU5SQQ",
+          "note": "Stanford Online video metadata identifies the lecture and its attention/Transformer topic."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "diffusion-yang-song",
+      "title": "Diffusion and Score-Based Generative Models",
+      "url": "https://www.youtube.com/watch?v=wMmqCMwuM2Q",
+      "creator": "MITCBMM; MIT OpenCourseWare resource; Yang Song",
+      "topics": [
+        "diffusion"
+      ],
+      "days": [
+        16
+      ],
+      "level": "advanced",
+      "format": "course",
+      "why": "A researcher explains score-based generation, neural score estimation and sampling rather than presenting only an image-generation interface.",
+      "watchTask": "Sketch the forward noising process and reverse sampling. Explain what a score function estimates and why generation takes multiple steps.",
+      "practiceTask": "In Python, add Gaussian noise to a one-dimensional synthetic distribution at several noise levels. Describe what a denoising model would have to learn; no model download is needed.",
+      "caution": "Theory prerequisites include probability and calculus. The lecture is not a turnkey Stable Diffusion application tutorial.",
+      "evidence": [
+        {
+          "url": "https://ocw.mit.edu/courses/res-9-008-brain-and-cognitive-sciences-computational-tutorials/pages/diffusion-and-score-based-generative-models/",
+          "note": "MIT names Yang Song, describes score estimation and SDE/MCMC sampling, and links this exact video."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "moe-cs336",
+      "title": "Stanford CS336 Language Modeling from Scratch | Spring 2025 | Lecture 4: Mixture of experts",
+      "url": "https://www.youtube.com/watch?v=LPv1KfUXLCo",
+      "creator": "Stanford Online; Tatsunori Hashimoto",
+      "topics": [
+        "moe"
+      ],
+      "days": [
+        17
+      ],
+      "level": "advanced",
+      "format": "course",
+      "why": "A dedicated university MoE lecture supports a precise explanation of routing and sparse computation.",
+      "watchTask": "Separate stored parameters from parameters active for one token. Trace the router decision and explain why uneven expert traffic can matter.",
+      "practiceTask": "Create a Python fixture of 12 tokens routed to four experts. Count loads and compare balanced versus concentrated routing; write the capacity assumptions.",
+      "caution": "Sparse activation does not automatically imply lower end-to-end latency. Compare actual hardware, routing and communication costs.",
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=LPv1KfUXLCo",
+          "note": "Stanford Online identifies Lecture 4 as Mixture of experts."
+        },
+        {
+          "url": "https://cs336.stanford.edu/spring2025/index.html",
+          "note": "The archived university schedule lists Mixture of experts taught by Tatsu and links its slides."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "mamba-albert-gu",
+      "title": "The State Space Model Revolution, with Albert Gu",
+      "url": "https://www.youtube.com/watch?v=1zjMalKLHiA",
+      "creator": "The Cognitive Revolution; Albert Gu and Nathan Labenz",
+      "topics": [
+        "mamba"
+      ],
+      "days": [
+        18
+      ],
+      "level": "advanced",
+      "format": "author discussion",
+      "why": "A Mamba coauthor discusses selective state-space models, state size, training, inference and Mamba-2.",
+      "watchTask": "Write a state-update diagram. Explain what information is compressed into state and how this differs from retaining an attention KV cache.",
+      "practiceTask": "Implement a scalar recurrence s[t] = a*s[t-1] + b*x[t] in Python. Vary a and show how old inputs decay; identify why this is only a toy SSM, not a Mamba implementation.",
+      "caution": "This 2024 author discussion covers Mamba and Mamba-2. It is not a coding course, does not cover all later variants and does not prove universal superiority over attention.",
+      "evidence": [
+        {
+          "url": "https://www.cognitiverevolution.ai/the-state-space-model-revolution-with-albert-gu/",
+          "note": "Publisher page names Albert Gu and lists Mamba, state size, inference and Mamba-2 chapters."
+        },
+        {
+          "url": "https://www.youtube.com/watch?v=1zjMalKLHiA",
+          "note": "Publisher-linked exact watch URL and episode identity."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "optimization-cs231n",
+      "title": "Lecture 7 | Training Neural Networks II",
+      "url": "https://www.youtube.com/watch?v=_JB0AO7QxSA",
+      "creator": "Stanford University School of Engineering; CS231n",
+      "topics": [
+        "optimization"
+      ],
+      "days": [
+        19
+      ],
+      "level": "intermediate",
+      "format": "course",
+      "why": "The lecture connects optimization behavior with momentum and adaptive optimizers; its official slides explicitly discuss saddle points.",
+      "watchTask": "Compare a local minimum with a saddle using gradient and curvature. Explain how momentum changes the update without promising that it always escapes every saddle.",
+      "practiceTask": "For f(x,y)=x*x-y*y, calculate the gradient and Hessian. Run a few Python gradient-descent and momentum steps from near zero and describe the trajectories.",
+      "caution": "The lecture predates many recent optimizers. Use it for mechanism and diagnostic reasoning; optimizer choice still requires task-specific experiments.",
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=_JB0AO7QxSA",
+          "note": "Official university video identifies the neural-network training lecture."
+        },
+        {
+          "url": "https://cs231n.stanford.edu/slides/2017/cs231n_2017_lecture7.pdf",
+          "note": "Official lecture slides show saddle points and subsequent momentum/optimizer material."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "bitnet-research-overview",
+      "title": "AI Forum 2023 | Future of Foundation Models",
+      "url": "https://www.youtube.com/watch?v=f6m0MpbNicU",
+      "creator": "Microsoft Research; Furu Wei",
+      "topics": [
+        "bitnet"
+      ],
+      "days": [
+        20
+      ],
+      "level": "advanced",
+      "format": "author discussion",
+      "why": "A first-party research overview explicitly includes BitNet in the research agenda. It supplies historical context while the offline lesson provides the detailed mechanism.",
+      "watchTask": "Identify the BitNet portion and write which claim belongs to the original 2023 work. Keep it separate from later b1.58 and deployment results.",
+      "practiceTask": "Use Python to map illustrative weights to {-1,0,1}. Discuss scales, activation precision and accumulator precision; explain why ternary weights alone do not establish whole-system speed.",
+      "caution": "Supplemental historical overview, not a focused BitNet b1.58 coding tutorial. Do not infer b1.58 coverage, current model quality or CPU speedups from this talk. A focused first-party implementation-video gap remains.",
+      "evidence": [
+        {
+          "url": "https://www.microsoft.com/en-us/research/video/ai-forum-2023-future-of-foundation-models/",
+          "note": "Microsoft explicitly lists BitNet among the research shown and embeds this exact YouTube ID."
+        },
+        {
+          "url": "https://www.microsoft.com/en-us/research/event/ai-forum-2023/speakers/",
+          "note": "Microsoft identifies Furu Wei as the Future of Foundation Models speaker."
+        },
+        {
+          "url": "https://www.youtube.com/watch?v=f6m0MpbNicU",
+          "note": "YouTube public oEmbed metadata confirms exact title and Microsoft Research channel."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "rag-production-workshop",
+      "title": "Building Production-Grade LLM Apps",
+      "url": "https://www.youtube.com/watch?v=fo0F-DAum7E",
+      "creator": "DeepLearningAI; Pinecone and TruEra speakers",
+      "topics": [
+        "rag"
+      ],
+      "days": [
+        21
+      ],
+      "level": "intermediate",
+      "format": "implementation",
+      "why": "A production-oriented workshop connects application quality, evaluation, monitoring and recovery using retrieval tooling examples.",
+      "watchTask": "Draw the retrieval-to-answer path. List a retrieval failure, an answer failure and a recovery action; identify which evidence each needs.",
+      "practiceTask": "Create ten local questions with expected source IDs and answerable/unanswerable labels. Score retrieval recall separately from answer support using fixed sample outputs.",
+      "caution": "Examples use Canopy and TruLens from the workshop era. SDKs and products can change; the offline exercise does not require those services or a live model.",
+      "evidence": [
+        {
+          "url": "https://community.deeplearning.ai/t/workshop-building-production-grade-llm-apps/576569",
+          "note": "Publisher event page names Pinecone/TruEra, Canopy/TruLens, evaluation and monitoring topics."
+        },
+        {
+          "url": "https://www.youtube.com/watch?v=fo0F-DAum7E",
+          "note": "First-party video and public oEmbed metadata confirm title and DeepLearningAI channel."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "hallucination-metrics",
+      "title": "Mitigating LLM Hallucinations with a Metrics-First Evaluation Framework",
+      "url": "https://www.youtube.com/watch?v=u1pNrsR1txA",
+      "creator": "DeepLearningAI; Galileo speakers",
+      "topics": [
+        "hallucination"
+      ],
+      "days": [
+        22
+      ],
+      "level": "intermediate",
+      "format": "implementation",
+      "why": "This workshop focuses on measuring hallucination and context quality rather than relying only on a prompt that asks for accuracy.",
+      "watchTask": "Separate unsupported claims, missing required facts and irrelevant context. Explain why a model-based judge needs calibration against human-reviewed examples.",
+      "practiceTask": "Label six fixed answers against supplied evidence. Build a Python score table with unsupported-claim count and completeness, then inspect disagreements between rubric scores.",
+      "caution": "Vendor demonstrations are examples, not independent guarantees. Groundedness and factual correctness are different, and a judge can make mistakes.",
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=u1pNrsR1txA",
+          "note": "DeepLearningAI metadata names the metrics framework and describes data/context quality, hallucination evaluation and guardrail demonstrations."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "model-selection-llmops",
+      "title": "LLMOps (LLM Bootcamp)",
+      "url": "https://www.youtube.com/watch?v=Fquj2u7ay40",
+      "creator": "The Full Stack; Josh Tobin",
+      "topics": [
+        "model-selection"
+      ],
+      "days": [
+        23
+      ],
+      "level": "intermediate",
+      "format": "course",
+      "why": "The publisher explicitly teaches choosing a base LLM across quality, speed, cost, tunability and security.",
+      "watchTask": "Turn those five dimensions into decision criteria for one application. Explain why the highest general benchmark score may not win your workload.",
+      "practiceTask": "Score three fictional model candidates on a fixed local task set. Apply hard privacy and latency constraints before comparing weighted quality and illustrative costs.",
+      "caution": "The course is from 2023. Historical prices, named models and API examples are not current procurement evidence; retain the decision method.",
+      "evidence": [
+        {
+          "url": "https://fullstackdeeplearning.com/llm-bootcamp/spring-2023/llmops/",
+          "note": "Publisher identifies Josh Tobin, includes the base-LLM selection chapter and links this exact video."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "ann-hnsw-faiss",
+      "title": "HNSW for Vector Search Explained and Implemented with Faiss (Python)",
+      "url": "https://www.youtube.com/watch?v=QvKMwLjdK-s",
+      "creator": "James Briggs; published with Pinecone learning material",
+      "topics": [
+        "ann"
+      ],
+      "days": [
+        24
+      ],
+      "level": "advanced",
+      "format": "implementation",
+      "why": "A focused Python/Faiss tutorial explains HNSW graph search and its tuning tradeoffs.",
+      "watchTask": "Draw a small layered graph and trace a search. Separate construction settings from search-time effort, then connect each to recall, memory and latency.",
+      "practiceTask": "On a tiny local vector fixture, compute exact top-k neighbors. Compare simulated candidate subsets against the exact baseline and calculate recall@k before discussing speed.",
+      "caution": "This explains HNSW/Faiss; it is not evidence that Pinecone currently uses this index internally. Benchmark results depend on data and settings.",
+      "evidence": [
+        {
+          "url": "https://www.pinecone.io/learn/series/faiss/hnsw/",
+          "note": "Primary learning article embeds the exact video and documents HNSW implementation with Faiss."
+        },
+        {
+          "url": "https://www.youtube.com/watch?v=QvKMwLjdK-s",
+          "note": "Exact watch page identifies the HNSW explanation and Python implementation."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "ann-ivf-index-factory",
+      "title": "Composite Indexes and the Faiss Index Factory",
+      "url": "https://www.youtube.com/watch?v=GEhmmcx1lvM",
+      "creator": "James Briggs; Pinecone learning series",
+      "topics": [
+        "ann"
+      ],
+      "days": [
+        24
+      ],
+      "level": "advanced",
+      "format": "implementation",
+      "why": "A focused Faiss tutorial shows how indexing components can be composed, including inverted-file and quantization approaches.",
+      "watchTask": "Explain what a coarse partition does and why searching only some partitions can miss true neighbors. Separate IVF partitioning from PQ compression.",
+      "practiceTask": "Make a Python fixture of points assigned to coarse centroids. Compare one-list versus several-list probing and record missed exact neighbors; no downloaded embeddings are required.",
+      "caution": "The tutorial is historical. Factory syntax and supported combinations should be checked against the installed Faiss version before implementation.",
+      "evidence": [
+        {
+          "url": "https://www.pinecone.io/learn/series/faiss/composite-indexes/",
+          "note": "Primary article embeds this exact ID and teaches index-factory composites including IVF/PQ."
+        },
+        {
+          "url": "https://www.youtube.com/watch?v=GEhmmcx1lvM",
+          "note": "Public YouTube oEmbed confirms title and James Briggs creator."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "ann-faiss-index-comparison",
+      "title": "Best Indexes for Similarity Search in Faiss",
+      "url": "https://www.youtube.com/watch?v=3Wqh4iUupbM",
+      "creator": "James Briggs; Pinecone learning series",
+      "topics": [
+        "ann"
+      ],
+      "days": [
+        24
+      ],
+      "level": "advanced",
+      "format": "implementation",
+      "why": "A companion tutorial frames index choice as a measured recall, latency and memory tradeoff.",
+      "watchTask": "Write a benchmark table with an exact baseline, candidate indexes, dataset size and query workload. Identify what makes a comparison unfair.",
+      "practiceTask": "Given fictional measurements, reject any index below the required recall floor, then compare remaining latency and memory. Label all supplied measurements illustrative.",
+      "caution": "Best means best for a measured workload, not a universal winner. The historical examples do not establish current vendor performance.",
+      "evidence": [
+        {
+          "url": "https://www.pinecone.io/learn/series/faiss/composite-indexes/",
+          "note": "Primary article embeds this companion video while discussing composite-index tradeoffs."
+        },
+        {
+          "url": "https://www.youtube.com/watch?v=3Wqh4iUupbM",
+          "note": "Public YouTube oEmbed confirms exact title and James Briggs creator."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "hybrid-weaviate",
+      "title": "RAG++ course: Hybrid search with Weaviate",
+      "url": "https://www.youtube.com/watch?v=RFfTJjKSbts",
+      "creator": "CoreWeave channel; Weights & Biases RAG++ course",
+      "topics": [
+        "hybrid"
+      ],
+      "days": [
+        25
+      ],
+      "level": "intermediate",
+      "format": "implementation",
+      "why": "A dedicated course segment introduces hybrid retrieval using Weaviate rather than treating embeddings as the only retrieval signal.",
+      "watchTask": "Find a query where an exact identifier favors lexical search and one where paraphrase favors vector search. Describe how combining rankings can help.",
+      "practiceTask": "Fuse two fixed local rankings using reciprocal rank fusion: sum 1/(c+rank), with c explicitly chosen. Compare results against lexical-only and dense-only lists.",
+      "caution": "The video uses provider integrations. The exercise uses offline rankings; SDK names and configuration may differ from the recording.",
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=RFfTJjKSbts",
+          "note": "Creator video identifies the Weights & Biases RAG++ hybrid-search course segment; current public oEmbed attribution is CoreWeave."
+        },
+        {
+          "url": "https://docs.weaviate.io/weaviate/search",
+          "note": "Vendor documentation describes keyword, vector and hybrid search capabilities."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "rerank-cohere-pinecone",
+      "title": "Semantic search and reranking with Cohere and Pinecone",
+      "url": "https://www.youtube.com/watch?v=e7x1wJlmDjs",
+      "creator": "Pinecone",
+      "topics": [
+        "hybrid",
+        "rag"
+      ],
+      "days": [
+        25,
+        21
+      ],
+      "level": "intermediate",
+      "format": "implementation",
+      "why": "A focused vendor-engineer demonstration shows semantic retrieval followed by reranking on financial documents.",
+      "watchTask": "Separate first-stage candidate recall from second-stage relevance ordering. Explain why a reranker cannot recover a relevant document absent from its candidates.",
+      "practiceTask": "Use a fixed shortlist of five local documents with relevance labels. Compare initial and reranked order using reciprocal rank; inspect an excluded relevant document.",
+      "caution": "The recording uses Cohere Rerank 3.5 and hosted services. Reranking does not enforce ACLs, exact numerical constraints or financial authorization.",
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=e7x1wJlmDjs",
+          "note": "Pinecone video metadata names semantic search/reranking and describes the financial-data example."
+        },
+        {
+          "url": "https://github.com/pinecone-io/examples/blob/master/learn/search/semantic-search/cohere-rerank/compaq-reranking.ipynb",
+          "note": "Publisher notebook accompanies the reranking example."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "chunking-tokenizers",
+      "title": "LangChain Data Loaders, Tokenizers, Chunking, and Datasets - Data Prep 101",
+      "url": "https://www.youtube.com/watch?v=eqOfr4AGLk8",
+      "creator": "James Briggs",
+      "topics": [
+        "hybrid",
+        "tokens"
+      ],
+      "days": [
+        25,
+        28
+      ],
+      "level": "intermediate",
+      "format": "implementation",
+      "why": "A coding tutorial focuses on document preparation, token-aware chunk lengths, overlap and recursive splitting.",
+      "watchTask": "Explain why character count and token count differ. Show how overlap can preserve boundary context while increasing storage and repeated prompt content.",
+      "practiceTask": "Split a local policy document at headings, then compare with fixed-size chunks. Count characters and use supplied token counts to calculate overlap overhead and context budget.",
+      "caution": "LangChain APIs in this 2023 recording may be outdated. The offline task uses strings and provided counts; it does not claim an exact tokenizer from character heuristics.",
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=eqOfr4AGLk8",
+          "note": "Creator metadata identifies data loaders, tokenizers, chunking and datasets, with token-length and recursive-chunking chapters."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "graphs-cypher-sparql",
+      "title": "Going Meta Ep1: Cypher and SPARQL side by side",
+      "url": "https://www.youtube.com/watch?v=NQqWBnyQlS4",
+      "creator": "Neo4j; Jesús Barrasa",
+      "topics": [
+        "graphs"
+      ],
+      "days": [
+        26
+      ],
+      "level": "intermediate",
+      "format": "implementation",
+      "why": "A hands-on comparison loads a dataset into a property graph and an RDF store, then compares Cypher and SPARQL queries.",
+      "watchTask": "Represent one person-company relationship as both a property graph and RDF triples. Explain labels/properties versus predicates and identifiers.",
+      "practiceTask": "Write a Cypher pattern and a SPARQL triple pattern returning the same small local fixture. State the assumptions needed for their results to agree.",
+      "caution": "Property graphs and RDF are distinct data models. Similar query results do not mean identical semantics or automatic OWL reasoning.",
+      "evidence": [
+        {
+          "url": "https://neo4j.com/videos/going-meta-a-series-on-graphs-semantics-and-knowledge/",
+          "note": "Neo4j identifies Episode 1 and the side-by-side RDF/property-graph query exercise."
+        },
+        {
+          "url": "https://github.com/jbarrasa/goingmeta",
+          "note": "Presenter repository supplies episode code and materials."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "graphs-ontology-reasoning",
+      "title": "Going meta - Ep4: Ontology based reasoning 101",
+      "url": "https://www.youtube.com/watch?v=XX7Ppc5T0GE",
+      "creator": "Neo4j; Jesús Barrasa",
+      "topics": [
+        "graphs"
+      ],
+      "days": [
+        26
+      ],
+      "level": "intermediate",
+      "format": "implementation",
+      "why": "A focused episode demonstrates basic ontology-based inference using Cypher.",
+      "watchTask": "Separate asserted facts from inferred facts. Trace one subclass-derived conclusion and state the inference rule used.",
+      "practiceTask": "On a local Python fixture, compute a small subclass transitive closure and infer an entity type. Record provenance for each derived fact and reject a deliberately cyclic assumption if your chosen rules require it.",
+      "caution": "Basic Cypher inferencing is not a complete OWL 2 reasoner. This selection does not certify full RDF/OWL/SPARQL standards coverage.",
+      "evidence": [
+        {
+          "url": "https://neo4j.com/videos/going-meta-ontology-based-reasoning-101/",
+          "note": "Primary publisher identifies Episode 4 and describes basic ontology inferencing with Cypher."
+        },
+        {
+          "url": "https://www.youtube.com/watch?v=XX7Ppc5T0GE",
+          "note": "Neo4j channel identifies the ontology-reasoning episode."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "structured-outputs-devday",
+      "title": "OpenAI DevDay 2024 | Structured outputs for reliable applications",
+      "url": "https://www.youtube.com/watch?v=kE4BkATIl9c",
+      "creator": "OpenAI",
+      "topics": [
+        "structured-output"
+      ],
+      "days": [
+        27
+      ],
+      "level": "intermediate",
+      "format": "implementation",
+      "why": "A first-party developer session explains producing outputs constrained by a JSON schema.",
+      "watchTask": "Separate syntactic validity, schema conformity, semantic correctness and authorization. Describe the application handling for refusal or incomplete output.",
+      "practiceTask": "Validate three fixed JSON examples locally: malformed JSON, schema-valid but semantically wrong data, and an authorized valid request. Add deterministic business checks after schema validation.",
+      "caution": "A valid schema does not establish truth or permission. APIs and supported schema features can change after the 2024 recording; no API call is required for the exercise.",
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=kE4BkATIl9c",
+          "note": "Official OpenAI session metadata identifies structured outputs for reliable applications."
+        },
+        {
+          "url": "https://developers.openai.com/api/docs/guides/structured-outputs",
+          "note": "Current first-party guide describes schema-constrained output and application handling."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "inference-token-budgets",
+      "title": "Stanford CS336 Language Modeling from Scratch | Spring 2025 | Lecture 10: Inference",
+      "url": "https://www.youtube.com/watch?v=fcgPYo3OtV0",
+      "creator": "Stanford Online; Percy Liang",
+      "topics": [
+        "tokens",
+        "model-selection"
+      ],
+      "days": [
+        28,
+        23
+      ],
+      "level": "advanced",
+      "format": "course",
+      "why": "A dedicated inference lecture gives systems context for token budgets, memory and serving decisions.",
+      "watchTask": "Separate processing the input from generating output tokens. Explain why request length and concurrency both matter when planning inference capacity.",
+      "practiceTask": "Use illustrative values to compute KV bytes = 2 * layers * KV_heads * head_dim * tokens * bytes_per_element. Then calculate a batch budget and reserve an explicit safety margin.",
+      "caution": "The formula exercise is a teaching task, not a benchmark claim. Real runtimes add overhead, sharing and compression; hardware-specific examples do not establish your SLO.",
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=fcgPYo3OtV0",
+          "note": "Stanford Online identifies the dedicated inference lecture."
+        },
+        {
+          "url": "https://cs336.stanford.edu/spring2025/index.html",
+          "note": "University schedule identifies Lecture 10 Inference as taught by Percy and links lecture_10.py."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "finbot-agent-goal-manipulation",
+      "title": "OWASP Agentic AI CTF - FinBot DEMO: Goal Manipulation",
+      "url": "https://www.youtube.com/watch?v=UORcoidb4VY",
+      "creator": "Helen Oakley; endorsed by OWASP GenAI Security Project",
+      "topics": [
+        "secure-agents",
+        "financial-controls"
+      ],
+      "days": [
+        29,
+        30
+      ],
+      "level": "intermediate",
+      "format": "explanation",
+      "why": "An OWASP-endorsed simulated financial-agent attack makes the boundary between untrusted instructions and permitted financial actions concrete.",
+      "watchTask": "Identify attacker input, victim agent, sensitive action and failed trust boundary. Explain which controls must execute outside the language model.",
+      "practiceTask": "Build a local Python payment-tool fixture using Decimal, an allowlisted account, amount ceiling, approval requirement and idempotency key. Feed it a malicious proposed action and verify rejection without moving money.",
+      "caution": "This is a CTF attack demonstration, not a comprehensive financial-controls course or real banking compliance advice. The practice controls are additional tutorial exercises, not a claim about what the video implements.",
+      "evidence": [
+        {
+          "url": "https://genai.owasp.org/learning/agentic-ai-capture-the-flag-ctf-finbot-demo-goal-manipulation/",
+          "note": "OWASP publisher page endorses the FinBot goal-manipulation demonstration and embeds this exact watch ID."
+        },
+        {
+          "url": "https://www.youtube.com/watch?v=UORcoidb4VY",
+          "note": "Public YouTube oEmbed confirms the exact video title and Helen Oakley creator."
+        },
+        {
+          "url": "https://github.com/OWASP-ASI/finbot-ctf-demo",
+          "note": "Official project repository identifies FinBot as a simulated agent-security CTF."
+        }
+      ],
+      "verification": "identity-and-topic"
+    }
+  ]
+}

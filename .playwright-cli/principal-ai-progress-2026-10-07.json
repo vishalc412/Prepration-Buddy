@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "day": 14,
+  "start": "2026-10-07",
+  "hours": 4,
+  "answers": {
+    "b1": "Synthetic test attempt 1. I do not know; this is UI verification.",
+    "b2": "Synthetic test attempt 2. I do not know; this is UI verification.",
+    "b3": "Synthetic test attempt 3. I do not know; this is UI verification.",
+    "b4": "Synthetic test attempt 4. I do not know; this is UI verification.",
+    "b5": "Synthetic test attempt 5. I do not know; this is UI verification.",
+    "b6": "Synthetic test attempt 6. I do not know; this is UI verification.",
+    "b7": "Synthetic test attempt 7. I do not know; this is UI verification.",
+    "b8": "Synthetic test attempt 8. I do not know; this is UI verification.",
+    "b9": "Synthetic test attempt 9. I do not know; this is UI verification.",
+    "b10": "Synthetic test attempt 10. I do not know; this is UI verification.",
+    "b11": "Synthetic test attempt 11. I do not know; this is UI verification.",
+    "b12": "Synthetic test attempt 12. I do not know; this is UI verification.",
+    "b13": "Synthetic test attempt 13. I do not know; this is UI verification.",
+    "b14": "Synthetic test attempt 14. I do not know; this is UI verification.",
+    "b15": "Synthetic test attempt 15. I do not know; this is UI verification.",
+    "b16": "Synthetic test attempt 16. I do not know; this is UI verification.",
+    "b17": "Synthetic test attempt 17. I do not know; this is UI verification.",
+    "b18": "Synthetic test attempt 18. I do not know; this is UI verification.",
+    "b19": "Synthetic test attempt 19. I do not know; this is UI verification.",
+    "b20": "Synthetic test attempt 20. I do not know; this is UI verification.",
+    "b21": "Synthetic test attempt 21. I do not know; this is UI verification.",
+    "b22": "Synthetic test attempt 22. I do not know; this is UI verification.",
+    "b23": "Synthetic test attempt 23. I do not know; this is UI verification.",
+    "b24": "Synthetic test attempt 24. I do not know; this is UI verification.",
+    "b25": "Synthetic test attempt 25. I do not know; this is UI verification.",
+    "b26": "Synthetic test attempt 26. I do not know; this is UI verification.",
+    "b27": "Synthetic test attempt 27. I do not know; this is UI verification.",
+    "b28": "Synthetic test attempt 28. I do not know; this is UI verification.",
+    "b29": "Synthetic test attempt 29. I do not know; this is UI verification.",
+    "b30": "Synthetic test attempt 30. I do not know; this is UI verification.",
+    "final-0": "Synthetic timed answer"
+  },
+  "ratings": {
+    "b1": 1
+  },
+  "revealed": {
+    "b1": true
+  },
+  "lessons": {},
+  "checks": {
+    "1-0": true,
+    "1-1": true,
+    "1-2": true
+  },
+  "code": {
+    "1": "# synthetic attempt"
+  },
+  "evidence": {
+    "1": "Synthetic browser check only; no Python execution claim."
+  },
+  "notes": {
+    "quiz-2": "2",
+    "threshold": "0.75",
+    "fpCost": "10",
+    "fnCost": "100",
+    "candidateTokens": "1000"
+  },
+  "dayScores": {
+    "1": {
+      "Python": 75
+    }
+  },
+  "retakes": {
+    "b1": [
+      {
+        "answer": "Synthetic retest attempt with mechanism, failure and test.",
+        "score": 3,
+        "at": 1791373657453,
+        "due": 1791460057453
+      }
+    ]
+  },
+  "design": {},
+  "stories": {},
+  "done": {
+    "1": true
+  },
+  "finalScores": {},
+  "scoreSource": "Self-assessed"
+}

@@ -1,0 +1,92 @@
+# Authored ONLY, not executed. Replace image placeholders with built immutable digests.
+# Shared Pod networking lets Java call Python at 127.0.0.1, matching the gateway allowlist.
+# Single replica + PVC is an educational SQLite boundary, not a multi-region data service.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: enterprise-case-data
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: enterprise-case
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: enterprise-case
+  template:
+    metadata:
+      labels:
+        app: enterprise-case
+    spec:
+      securityContext:
+        fsGroup: 10001
+      containers:
+        - name: gateway
+          image: example.invalid/enterprise-java:REPLACE_WITH_BUILT_IMAGE
+          ports:
+            - containerPort: 8080
+          env:
+            - name: PYTHON_BASE
+              value: http://127.0.0.1:9091
+          securityContext:
+            runAsUser: 10001
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+          resources:
+            requests: {cpu: 250m, memory: 256Mi}
+            limits: {cpu: '1', memory: 768Mi}
+          startupProbe:
+            httpGet: {path: /health, port: 8080}
+            failureThreshold: 30
+            periodSeconds: 2
+          readinessProbe:
+            httpGet: {path: /health, port: 8080}
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: {path: /health, port: 8080}
+            periodSeconds: 10
+        - name: evidence
+          image: example.invalid/enterprise-python:REPLACE_WITH_BUILT_IMAGE
+          securityContext:
+            runAsUser: 10001
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+          volumeMounts:
+            - {name: data, mountPath: /data}
+          resources:
+            requests: {cpu: 100m, memory: 128Mi}
+            limits: {cpu: '1', memory: 512Mi}
+          # Python binds loopback; the probe executes inside its container.
+          readinessProbe:
+            exec:
+              command: [python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:9091/health',timeout=2)"]
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            exec:
+              command: [python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:9091/health',timeout=2)"]
+            initialDelaySeconds: 10
+            periodSeconds: 10
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: enterprise-case-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: enterprise-case
+spec:
+  selector:
+    app: enterprise-case
+  ports:
+    - {port: 8080, targetPort: 8080}

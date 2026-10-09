@@ -1,0 +1,1278 @@
+{
+  "days": [
+    {
+      "n": 15,
+      "title": "Transformer families and prompt ingestion",
+      "topics": "Tokenization \u00b7 embeddings \u00b7 masks \u00b7 attention \u00b7 prefill/decode",
+      "deliverable": "Causal attention fixture + family-selection defense",
+      "proficiency": "Trace prompt processing precisely; compare architecture connectivity without an imaginary encoder.",
+      "theory": [
+        [
+          "From text to contextual state",
+          "A tokenizer maps text to identifiers; an embedding table maps identifiers to vectors. Neither operation is a separate contextual Transformer encoder. Positional information distinguishes order, then neural blocks transform each vector using permitted context. The output representation therefore depends on both token content and connectivity. Read a diagram as data flow: IDs, vectors, positions, blocks and output head. In a decoder-only model these operations occur inside the same causal stack that will generate the continuation. A hidden vector is a learned representation, not a verified fact record. Start with this path before using vague phrases such as \u201cthe model understands the prompt.\u201d"
+        ],
+        [
+          "Visibility: bidirectional versus causal",
+          "An attention mask is an information-flow contract. Bidirectional source attention permits each nonpadding position to use source positions on either side. Causal attention permits position i to use only positions up to i. Masking scores before softmax makes forbidden positions contribute zero probability. A future token must not affect an earlier causal output. This property can be tested without training a network: change only a future value and compare earlier outputs. The final prompt position can consult the full earlier prefix even though the first prompt position cannot see the end. Padding and causal masks solve different visibility problems."
+        ],
+        [
+          "Self-attention arithmetic",
+          "For one head, project hidden vectors to queries, keys and values. Scores are QK-transpose divided by the square root of the key dimension; apply a visibility mask and softmax, then multiply by V. Similarity determines weights, not a hard proof of relevance. Subtracting the largest finite permitted score before exponentiation improves numerical stability. Every row should sum to one across allowed keys, and forbidden keys should contribute zero. Full models add multiple heads, output projections, residual paths, normalization and feed-forward layers. The scalar lab intentionally omits these components and uses declared toy scores; its successful assertions certify arithmetic contracts only."
+        ]
+      ],
+      "lab": [
+        "Save day 15_foundations.py from the reference download and run python 3 day 15_foundations.py offline.",
+        "Before running, predict every positive fixture result; then change one invalid input and explain why the rejection must remain visible.",
+        "Add one boundary test beyond the supplied assertions and explain which contract it checks.",
+        "Write an evidence/limitations note: separate toy arithmetic from trained model quality, optimized kernels and deployment behavior.",
+        "Four-hour 240-minute plan:20 min recall;50 min mechanisms;30 min worked example;75 min coding;40 min defense;25 min review. Follow this allocation before expanding optional references."
+      ],
+      "checks": [
+        "Future 3\u219230 does not change causal outputs 0 or 1; final output changes.",
+        "Every causal row sums to 1 and forbidden probabilities are 0.",
+        "Bidirectional first output changes when the future value changes."
+      ],
+      "scenario": "A document assistant must read a 400-token evidence prefix and answer within 100 tokens. A reviewer says decoder-only cannot process inputs. Correct the explanation and define context/quality tests.",
+      "design": "Design an architecture-selection review for a document-answering service with isolated customer sessions. Define evidence-grounded answer quality, unsupported-answer rejection, schema validity and acceptable latency before choosing a model family. Separate retrieval/classification workloads from generative continuation; inspect candidate masks, heads and source-to-target paths. Pin checkpoint, tokenizer, prompt template, context limit and decoding configuration. Bind cached state to a single authorized session and model version. Record actual prompt tokens, truncation decisions, first-token latency, decode throughput and peak memory on a representative corpus. Test future-token isolation in an untrained arithmetic fixture, then test the trained serving implementation separately, including padding and cached continuation. Preserve failure examples and compare under equal hardware and output budgets. Choose a checkpoint that meets the required quality and operational thresholds; a family label is insufficient evidence. Document unsupported tasks and escalation paths. The offline lab supplies visibility checks only and should never appear in the review as proof of trained understanding or speed.",
+      "questions": [
+        "Easy: Trace a decoder-only prompt from text to the first generated token.",
+        "Medium: Distinguish encoder-only, decoder-only and encoder-decoder connectivity.",
+        "Hard: What does a future-token perturbation establish about a causal mask?",
+        "Principal: How would you compare architecture choices for a document-answering service?",
+        "Expert: Why can next-token training be parallel while generation is sequential?"
+      ],
+      "sources": [
+        "python",
+        "transformer"
+      ],
+      "domains": [
+        "LLM",
+        "System Design"
+      ],
+      "capstone": "Add a model-connectivity and context-budget section to your architecture decision record."
+    },
+    {
+      "n": 16,
+      "title": "Diffusion from noise to architecture",
+      "topics": "Forward process \u00b7 schedules \u00b7 denoising targets \u00b7 samplers \u00b7 latent pipelines",
+      "deliverable": "Noise-schedule fixture + process/backbone diagram",
+      "proficiency": "Separate diffusion process, denoiser, sampler and optional encoding components.",
+      "theory": [
+        [
+          "Corruption is a process, not a picture filter",
+          "A forward corruption process defines how clean data becomes noisy at specified levels. In a Gaussian formulation, beta values control incremental noise and alpha products describe the retained signal. The process creates training pairs because the clean example and sampled noise are known. A network can learn a denoising target from those pairs. Forward corruption is deliberately constructed; reverse prediction is learned and approximate. An arbitrary blurred or damaged photograph is not automatically distributed like a chosen Gaussian training corruption. Identify the noisy-state distribution and target before promising restoration or generation behavior."
+        ],
+        [
+          "Schedule and cumulative signal",
+          "Set alpha_t=1-beta_t and multiply these values to obtain alpha_bar_t. The square roots of alpha_bar and one minus alpha_bar scale the signal and independent Gaussian noise in the common direct-sampling equation. Increasing time usually reduces retained signal under a valid positive schedule. Validate finite beta values strictly between zero and one for our fixture; zero, one or NaN violate its declared contract. The lab uses three levels to expose cumulative multiplication. It does not establish an optimal image schedule, and cumulative products near numerical underflow need different treatment in large implementations."
+        ],
+        [
+          "Denoising target and oracle boundary",
+          "Noise prediction is one parameterization of a denoising model. The network receives noisy data and a time or noise-level input, optionally with conditioning, and predicts a quantity learned from examples. Clean-data and velocity-like targets are alternatives, with corresponding sampler equations. Algebra can recover clean data if the actual sampled noise is supplied, but that is an oracle identity. It is not a neural predictor and cannot generate realistic content without a learned model. A wrong noise estimate should cause a different reconstruction; our negative test makes this distinction measurable rather than relying on a disclaimer alone."
+        ]
+      ],
+      "lab": [
+        "Save day 16_foundations.py from the reference download and run python 3 day 16_foundations.py offline.",
+        "Before running, predict every positive fixture result; then change one invalid input and explain why the rejection must remain visible.",
+        "Add one boundary test beyond the supplied assertions and explain which contract it checks.",
+        "Write an evidence/limitations note: separate toy arithmetic from trained model quality, optimized kernels and deployment behavior.",
+        "Four-hour 240-minute plan:20 min recall;50 min mechanisms;30 min worked example;75 min coding;40 min defense;25 min review. Follow this allocation before expanding optional references."
+      ],
+      "checks": [
+        "Betas .1,.2,.3 produce cumulative values .9,.72,.504.",
+        "Clean 2,noise-1,alpha_bar .64 produce noisy 1 and recover 2.",
+        "Using noise 0 instead recovers a different value."
+      ],
+      "scenario": "A team claims any diffusion model must have a U-Net encoder-decoder. Draw two valid backbone alternatives and identify the evidence required to compare actual image quality.",
+      "design": "Design a diffusion pipeline review that names every component and its role. State whether the noisy state contains pixels or latent tensors, identify the denoiser backbone, and separate optional image compression and conditioning encoders from the diffusion process. Pin the checkpoint, target parameterization, schedule, sampler, resolution and conditioning configuration. Define quality, fidelity, safety and latency acceptance criteria using representative prompts and artifact review. Count denoiser evaluations and measure memory and elapsed time under realistic batch settings. A lower step count must still pass the agreed output checks. Validate the forward-noise algebra and schedule boundaries in the offline fixture, while explicitly labeling its known-noise recovery as an oracle identity. A trained denoiser and reverse sampler require different evidence. Preserve rejected or unsafe artifacts for categorized review without exposing private inputs. Report which components are frozen or adapted and which workloads remain untested. An encoder in a diagram should never substitute for this role-based explanation.",
+      "questions": [
+        "Easy: Explain forward corruption and learned reverse denoising.",
+        "Medium: Why does diffusion not require one encoder-decoder backbone?",
+        "Hard: Why is known-noise recovery not a trained diffusion model?",
+        "Principal: Define a controlled diffusion deployment comparison.",
+        "Expert: Diagnose a cumulative-noise schedule bug."
+      ],
+      "sources": [
+        "python",
+        "torch"
+      ],
+      "domains": [
+        "Deep Learning",
+        "System Design"
+      ],
+      "capstone": "Add a generative-pipeline component map with sampler and oracle-demo boundaries."
+    },
+    {
+      "n": 17,
+      "title": "Mixture of Experts and learned routing",
+      "topics": "Sparse capacity \u00b7 affine router \u00b7 top-k \u00b7 gates \u00b7 overflow",
+      "deliverable": "Deterministic router fixture + capacity accounting report",
+      "proficiency": "Explain sparse conditional computation from lay analogy through routing and deployment costs.",
+      "theory": [
+        [
+          "Conditional capacity",
+          "A dense feed-forward block applies one transformation to every token. Sparse MoE supplies several experts and activates only a subset for a particular token representation. Shared attention and surrounding layers may remain dense. Total parameters measure the entire weight pool; active parameters describe only part of token computation. Neither number alone determines resident memory, latency or deployment cost. Explain the granularity: different tokens and layers in one question can choose different experts. Expert labels such as coding or medicine require behavioral evidence, not an appealing analogy. The fixture uses scalar expert outputs with no learned specialization."
+        ],
+        [
+          "Learned affine scores",
+          "A common router transforms hidden vectors into expert logits using learned matrix weights and biases. This makes routing depend on contextual representation rather than explicit keywords. The fixture freezes those parameters so every route can be inspected and repeated. A bias changes the score independently of the input features and can alter the selected expert. Validate matching hidden dimension, one bias per expert and finite arithmetic. The presence of a learned-router-shaped equation does not mean this fixture trained a router. Real learning needs losses, gradient treatment and balanced data, while this exercise establishes the forward contract."
+        ],
+        [
+          "Top-k, ties and gate weights",
+          "Top-k chooses the highest-scoring expert indices. Ties require a deterministic or documented stochastic rule. Softmax converts finite logits to normalized positive weights; subtracting the maximum keeps exponentiation stable. Selected experts may retain full-softmax gates or normalize within the selected set, depending on design. Our fixture uses selected-set normalization, so chosen gate weights sum to one. That is an explicit teaching contract rather than a claim about all MoE models. Computing gates and mixing expert outputs are separate operations: a correct selected index can still have an incorrect weight or output aggregation."
+        ]
+      ],
+      "lab": [
+        "Save day 17_foundations.py from the reference download and run python 3 day 17_foundations.py offline.",
+        "Before running, predict every positive fixture result; then change one invalid input and explain why the rejection must remain visible.",
+        "Add one boundary test beyond the supplied assertions and explain which contract it checks.",
+        "Write an evidence/limitations note: separate toy arithmetic from trained model quality, optimized kernels and deployment behavior.",
+        "Four-hour 240-minute plan:20 min recall;50 min mechanisms;30 min worked example;75 min coding;40 min defense;25 min review. Follow this allocation before expanding optional references."
+      ],
+      "checks": [
+        "Hidden [1,0] selects experts [0,1] with weights about .62246/.37754.",
+        "Changed expert 1 bias selects expert 1; equal logits break ties by index.",
+        "Expert outputs 10/20 mix to 13.775406687981454."
+      ],
+      "scenario": "Three tokens all choose one expert with capacity 1. Specify accepted/overflow outcomes and defend why active-parameter counts alone cannot predict tail latency.",
+      "design": "Design an MoE serving review around token accounting, quality and device placement. Specify the expert pool, active top-k rule, gate normalization, tie policy and capacity handling for the actual implementation. Separate total weight memory, active expert arithmetic, shared-layer work and dispatch communication. Measure per-expert loads, overflow, utilization and tail latency on both representative and skewed traffic. Every input token must have an observable outcome; any model-defined drop or reroute behavior requires an explicit quality assessment. Compare trained outputs under the intended workload before claiming expert specialization. For training explanations, document router gradient treatment and balancing mechanisms instead of pretending hard sorting is smoothly differentiable. The offline fixture freezes an affine router, supplies scalar expert outputs and returns explicit overflow records; it validates forward contracts, not trained language capability. Bind routing reports to model/configuration identity. Use quality gates and actual hardware measurements to justify scaling, and record failure policies when an expert or device becomes unavailable.",
+      "questions": [
+        "Easy: Explain sparse MoE without inventing human-domain experts.",
+        "Medium: Compute router logits, top-k selection and selected-set weights.",
+        "Hard: What should happen when expert capacity is exhausted?",
+        "Principal: Why might an MoE deployment be expensive despite sparse activation?",
+        "Expert: Explain the learning caveat at hard top-k selection."
+      ],
+      "sources": [
+        "python",
+        "torch"
+      ],
+      "domains": [
+        "LLM",
+        "System Design"
+      ],
+      "capstone": "Add routing, capacity, balancing and communication assumptions to your platform design."
+    },
+    {
+      "n": 18,
+      "title": "Mamba and selective state-space models",
+      "topics": "Recurrence \u00b7 content selection \u00b7 scans \u00b7 chunk state \u00b7 attention comparison",
+      "deliverable": "Selective-state fixture + continuation/reset evidence",
+      "proficiency": "Explain content-dependent state updates and separate storage scaling from recall and training claims.",
+      "theory": [
+        [
+          "State-space recurrence",
+          "A state-space model passes information through an internal state. A simple discrete skeleton is h_t=A h_previous+B x_t, with output y_t=C h_t+D x_t. Matrices determine retained history, inserted input and observed output. Fixed maps give a linear time-invariant model; more expressive neural designs modify this structure. State dimension is an explicit capacity choice, not an unlimited archive. Our scalar recurrence intentionally keeps only one value and exposes collisions between histories. It teaches what continuation and reset mean; it does not model the full multidimensional dynamics, discretization or trained parameters of Mamba."
+        ],
+        [
+          "Input-dependent selection",
+          "Mamba's key idea is making important state-space update parameters depend on current input. Content can influence retention and propagation, rather than following one fixed response for all positions. The full formulation includes a specific parameterization, discretization and surrounding neural operations. A hand-written branch on input magnitude illustrates selection but is not learned and is not a faithful replacement for those components. Keep the distinction visible: the lab changes retention when magnitude exceeds 3 because we wrote that rule. Real behavior must come from a trained implementation and be tested on its intended task."
+        ],
+        [
+          "Chunk continuation and session ownership",
+          "A recurrent computation can resume a chunk if it receives the exact prior state and compatible parameters. Resetting state changes the semantics: a new session should start fresh, while a continued sequence should not. Treat checkpoints as typed state with model/configuration identity and the correct sequence boundary. In a service, cross-user state reuse leaks context and invalidates results. A full-run versus chunked-run parity test is a direct correctness check. Our fixture passes a scalar state explicitly; a real model has layered tensors and possibly convolutional state, so serialization and compatibility require a larger contract."
+        ]
+      ],
+      "lab": [
+        "Save day 18_foundations.py from the reference download and run python 3 day 18_foundations.py offline.",
+        "Before running, predict every positive fixture result; then change one invalid input and explain why the rejection must remain visible.",
+        "Add one boundary test beyond the supplied assertions and explain which contract it checks.",
+        "Write an evidence/limitations note: separate toy arithmetic from trained model quality, optimized kernels and deployment behavior.",
+        "Four-hour 240-minute plan:20 min recall;50 min mechanisms;30 min worked example;75 min coding;40 min defense;25 min review. Follow this allocation before expanding optional references."
+      ],
+      "checks": [
+        "Inputs 1 and 2 produce states .2 and .56; input 8 then gives 7.256.",
+        "Full sequence equals chunked continuation with saved .56.",
+        "Second chunk reset to 0 differs; separate sessions start fresh."
+      ],
+      "scenario": "A stateful service restarts midway through a sequence and accidentally reuses another customer state. Define session/model binding and full-versus-chunked parity tests.",
+      "design": "Design a selective-state service with explicit session ownership and continuation contracts. Identify the real checkpoint and all per-layer state, including any surrounding convolution state. A checkpoint should bind model/configuration identity, sequence boundary and authorized session; incompatible or cross-session state must be rejected or reset under a stated policy. Verify full-run versus chunked-run parity, fresh-session isolation and interrupted checkpoint behavior. Evaluate tasks that need detailed historical recall at multiple lengths, because a fixed state compresses information. Compare suitable attention or hybrid baselines using matched hardware, precision, token budgets and quality thresholds. Measure prompt processing, one-token decode, throughput and memory separately. The offline scalar recurrence is untrained and omits Mamba discretization and optimized scans; its collision example teaches capacity reasoning, not a verdict on trained models. Monitor finite states and numerical drift. Keep architecture efficiency, training convergence and deployment correctness as separate claims, each with its own evidence and remaining limitations.",
+      "questions": [
+        "Easy: Explain selective state-space modeling without calling it low-bit.",
+        "Medium: Compare attention history access with recurrent compressed state.",
+        "Hard: How do you verify chunked recurrent continuation?",
+        "Principal: What evidence justifies replacing a Transformer with Mamba?",
+        "Expert: Why does fixed state not guarantee perfect arbitrary recall?"
+      ],
+      "sources": [
+        "python",
+        "torch"
+      ],
+      "domains": [
+        "Deep Learning",
+        "System Design"
+      ],
+      "capstone": "Add recurrent-state ownership and checkpoint compatibility requirements."
+    },
+    {
+      "n": 19,
+      "title": "Optimization without convergence myths",
+      "topics": "Local/global minima \u00b7 stationary points \u00b7 saddles \u00b7 updates \u00b7 diagnosis",
+      "deliverable": "Analytical landscape fixture + plateau investigation plan",
+      "proficiency": "Classify simple loss geometry and defend controlled optimization troubleshooting.",
+      "theory": [
+        [
+          "Objective, domain and minimum",
+          "A loss landscape exists only after specifying an objective and feasible parameter domain. A local minimum is best within some neighborhood; a global minimum is best throughout that domain. Minima can be nonunique or non-strict. Training objectives can reward behavior that is undesirable in deployment, and low empirical loss does not establish generalization. State whether constraints, regularization and validation metrics are included. In the quartic fixture, both-1 and 1 give the lowest possible value 0 because a square cannot be negative. That establishes global optimality for this particular mathematical function, not for arbitrary neural models."
+        ],
+        [
+          "Stationary points and saddles",
+          "A zero gradient indicates a stationary point in a differentiable interior, not a certified minimum. Positive-definite curvature gives a strict local minimum under suitable smoothness; mixed-sign curvature gives a saddle. Semidefinite curvature may be inconclusive because higher-order terms matter. At a saddle, some directions reduce loss even if the gradient at the exact point vanishes. Real high-dimensional optimization may encounter such regions, but a flat chart is not a geometry measurement. The fixture uses an analytically known Hessian and directional perturbations so its saddle classification has direct evidence."
+        ],
+        [
+          "Updates, step sizes and stationary failure",
+          "Gradient descent subtracts a step-scaled gradient. At exact zero gradient, a deterministic update remains zero if no other optimizer state contributes. A large step can overshoot and diverge even when gradients are correct. Momentum carries accumulated velocity; adaptive methods rescale updates using stored statistics. None should be described as a universal escape algorithm. Our lab starts the quartic at 0, a local maximum, and shows immobility; starting at .1 under a chosen stable step reaches a minimum. The comparison separates initialization, stationary geometry and update size instead of claiming a local-minimum escape theorem."
+        ]
+      ],
+      "lab": [
+        "Save day 19_foundations.py from the reference download and run python 3 day 19_foundations.py offline.",
+        "Before running, predict every positive fixture result; then change one invalid input and explain why the rejection must remain visible.",
+        "Add one boundary test beyond the supplied assertions and explain which contract it checks.",
+        "Write an evidence/limitations note: separate toy arithmetic from trained model quality, optimized kernels and deployment behavior.",
+        "Four-hour 240-minute plan:20 min recall;50 min mechanisms;30 min worked example;75 min coding;40 min defense;25 min review. Follow this allocation before expanding optional references."
+      ],
+      "checks": [
+        "Zero initialization stays 0 with loss 1; this is a maximum, not a local minimum.",
+        "Initial\u00b1.1 approaches\u00b11 within 1e-8 under step .05.",
+        "Saddle origin has both uphill and downhill directional values."
+      ],
+      "scenario": "A loss plateaus after 100 steps. One engineer calls it a local minimum; another says Mamba prevents that. Build an evidence-first diagnosis covering data, gradients and update behavior.",
+      "design": "Design a training-investigation protocol that starts with an immutable problem statement rather than an escape trick. Record data version, split rules, objective, loss masks, checkpoint, optimizer, learning-rate schedule, precision and random seeds. Verify a tiny clean dataset can be fit and that intended parameters receive finite gradients. Track gradient norms, update norms, learning rate, training loss and held-out task metrics. A plateau opens several hypotheses: wrong targets, saturation, conditioning, numerical instability, capacity or stationary geometry. Do not certify a local minimum from a chart. Compare changes under equal compute with repeated seeds, preserve checkpoints selected by validation and state uncertainty. The analytical fixture distinguishes a stationary maximum, global minima and a saddle, but contains no real-network generalization evidence. Apply the same protocol to Mamba and Transformer training; an inference-storage property does not guarantee convexity. Escalate only after evidence narrows the cause, and document failed hypotheses so repeated expensive restarts do not replace diagnosis.",
+      "questions": [
+        "Easy: Distinguish local and global minima from a zero-gradient point.",
+        "Medium: Explain why a saddle can stall a gradient-based method.",
+        "Hard: What does the quartic stationary-point fixture prove and omit?",
+        "Principal: Plan a training plateau investigation before changing architecture.",
+        "Expert: Does Mamba change the guarantee of global optimization?"
+      ],
+      "sources": [
+        "python",
+        "torch"
+      ],
+      "domains": [
+        "ML",
+        "System Design"
+      ],
+      "capstone": "Add a reproducible training investigation and validation-based checkpoint policy."
+    },
+    {
+      "n": 20,
+      "title": "Low-bit models and orthogonal design axes",
+      "topics": "Binary/ternary \u00b7 BitNet \u00b7 packing \u00b7 error \u00b7 Mamba distinction",
+      "deliverable": "Ternary arithmetic fixture + component precision map",
+      "proficiency": "Distinguish low-bit representation from sequence architecture and require compatible implementation evidence.",
+      "theory": [
+        [
+          "Precision is not architecture",
+          "Sequence architecture specifies how information moves; numerical representation specifies how values are stored and computed. A Transformer can use several precisions, while a state-space architecture has its own representation choices. MoE adds a routing/capacity axis. A 1-bit label does not imply a different attention mask, a selective recurrence or a smaller token vocabulary. Build a component-level map of weights, activations, state and scales. This prevents a product name from replacing an implementation explanation. A proposed combination needs supported trained weights and execution machinery, not just two desirable theoretical labels."
+        ],
+        [
+          "Binary versus ternary",
+          "Binary weights have two symbols. A ternary alphabet{-1,0,+1}has three; the zero enables skip contributions. BitNet b1.58 uses ternary values, so calling it strictly binary is inaccurate. log2(3) gives the ideal information count for three symbols, approximately 1.585 bits. A straightforward fixed-width symbol store uses 2 bits, and exact file size includes layout and metadata. The original BitNet and b1.58 work describe particular Transformer methods, not a promise that every layer and all training state has that precision. Keep symbolic alphabets, theoretical information and actual packing separate."
+        ],
+        [
+          "Add, subtract, skip and reconstruction error",
+          "With a ternary weight, multiplication by an integer activation can be expressed as addition, subtraction or no contribution. Scaling and activation representations in real systems add further rules. The fixture thresholds floating weights into ternary symbols and computes an unscaled dot product. That conversion changes results, so explicitly quantify reconstruction error. A threshold boundary has a defined tie policy: values exactly at\u00b1threshold map to zero here. Test dimensions, alphabet and finite inputs. Python integer arithmetic demonstrates the symbolic identity; it does not establish packed-kernel acceleration or BitNet inference."
+        ]
+      ],
+      "lab": [
+        "Save day 20_foundations.py from the reference download and run python 3 day 20_foundations.py offline.",
+        "Before running, predict every positive fixture result; then change one invalid input and explain why the rejection must remain visible.",
+        "Add one boundary test beyond the supplied assertions and explain which contract it checks.",
+        "Write an evidence/limitations note: separate toy arithmetic from trained model quality, optimized kernels and deployment behavior.",
+        "Four-hour 240-minute plan:20 min recall;50 min mechanisms;30 min worked example;75 min coding;40 min defense;25 min review. Follow this allocation before expanding optional references."
+      ],
+      "checks": [
+        "Threshold .25 maps six weights to [-1,0,0,1,1,1].",
+        "Ternary dot 16 differs from float 11.64 by 4.36.",
+        "Boundary\u00b1.25 map to 0; invalid symbol 2,bool and mismatched lengths fail."
+      ],
+      "scenario": "A proposal multiplies Mamba and 1-bit paper speed claims to promise a combined deployment. Ask for the exact checkpoint, tensor precisions, kernels, quality tests and measurements.",
+      "design": "Design a low-bit model assessment using a component precision map. Identify sequence architecture, expert topology, trained checkpoint and training-aware or post-training conversion procedure independently. List representations for projection weights, embeddings, activations, scales, recurrent state and optimizer state where applicable. Document packing and supported kernels on the target hardware; ideal log2(3) information is not the measured size of the complete system. Evaluate held-out task quality before reporting storage or latency benefits. For selective-state combinations, test long-sequence drift, finite state dynamics, chunk continuation and fresh-session resets in addition to ordinary output checks. Compare compatible baselines under identical workloads and budgets. The ternary fixture demonstrates threshold mapping, add/subtract/skip and a nonzero reconstruction error; it is not trained BitNet or a calibrated conversion. Report packed artifact size and peak serving memory separately. Do not multiply theoretical gains from unrelated architectures. A supported implementation and reproducible measurements are required for any combined deployment recommendation.",
+      "questions": [
+        "Easy: Distinguish binary weights from BitNet b1.58 ternary weights.",
+        "Medium: Compute a ternary dot product and quantify its error.",
+        "Hard: Why is 1.58 not the exact deployed bit width for every tensor?",
+        "Principal: Are Mamba and low-bit language modeling the same design choice?",
+        "Expert: Design evidence for a low-bit selective-state deployment."
+      ],
+      "sources": [
+        "python",
+        "torch"
+      ],
+      "domains": [
+        "LLM",
+        "System Design"
+      ],
+      "capstone": "Add architecture/precision compatibility and measured quality gates to the final recommendation."
+    }
+  ],
+  "lessons": [
+    {
+      "day": 15,
+      "objective": "Trace prompt processing precisely; compare architecture connectivity without an imaginary encoder.",
+      "modules": [
+        {
+          "title": "From text to contextual state",
+          "explanation": "A tokenizer maps text to identifiers; an embedding table maps identifiers to vectors. Neither operation is a separate contextual Transformer encoder. Positional information distinguishes order, then neural blocks transform each vector using permitted context. The output representation therefore depends on both token content and connectivity. Read a diagram as data flow: IDs, vectors, positions, blocks and output head. In a decoder-only model these operations occur inside the same causal stack that will generate the continuation. A hidden vector is a learned representation, not a verified fact record. Start with this path before using vague phrases such as \u201cthe model understands the prompt.\u201d",
+          "workedExample": "Write the sequence \u201creturn total\u201d as two illustrative token IDs 17 and 42. Map each to a 2 Dvector, add distinct position vectors and label the later contextual processing separately. These invented IDs and vectors are a teaching fixture, not a real tokenizer.",
+          "pitfall": "Treating a tokenizer API named encode as an encoder-only neural network.",
+          "teachBack": "Trace a prompt through five named operations without inventing an encoder.",
+          "hints": [
+            "IDs are discrete.",
+            "Embeddings are vectors.",
+            "Blocks add contextual processing."
+          ],
+          "check": {
+            "question": "Which operation contextualizes a token using other permitted positions?",
+            "options": [
+              "Embedding lookup alone",
+              "Attention blocks",
+              "Writing the token ID"
+            ],
+            "answer": 1,
+            "explanation": "Attention mixes information from permitted positions."
+          }
+        },
+        {
+          "title": "Visibility: bidirectional versus causal",
+          "explanation": "An attention mask is an information-flow contract. Bidirectional source attention permits each nonpadding position to use source positions on either side. Causal attention permits position i to use only positions up to i. Masking scores before softmax makes forbidden positions contribute zero probability. A future token must not affect an earlier causal output. This property can be tested without training a network: change only a future value and compare earlier outputs. The final prompt position can consult the full earlier prefix even though the first prompt position cannot see the end. Padding and causal masks solve different visibility problems.",
+          "workedExample": "For three positions, causal visibility rows are [1,0,0],[1,1,0],[1,1,1]. In the lab, replacing value 3 with 30 leaves outputs 0 and 1 unchanged. Bidirectional row 0 can change, making the distinction observable.",
+          "pitfall": "Applying a mask after softmax without renormalization or leaving forbidden probability mass.",
+          "teachBack": "Explain why changing a later prompt token cannot affect an earlier causal hidden state.",
+          "hints": [
+            "Draw rows by query position.",
+            "Mark permitted keys.",
+            "Compare future-perturbation outputs."
+          ],
+          "check": {
+            "question": "Which causal row may read all three existing positions?",
+            "options": [
+              "First",
+              "Last",
+              "None"
+            ],
+            "answer": 1,
+            "explanation": "The final row can use its entire prefix."
+          }
+        },
+        {
+          "title": "Self-attention arithmetic",
+          "explanation": "For one head, project hidden vectors to queries, keys and values. Scores are QK-transpose divided by the square root of the key dimension; apply a visibility mask and softmax, then multiply by V. Similarity determines weights, not a hard proof of relevance. Subtracting the largest finite permitted score before exponentiation improves numerical stability. Every row should sum to one across allowed keys, and forbidden keys should contribute zero. Full models add multiple heads, output projections, residual paths, normalization and feed-forward layers. The scalar lab intentionally omits these components and uses declared toy scores; its successful assertions certify arithmetic contracts only.",
+          "workedExample": "For equal permitted scores and values 2 and 4, softmax weights are .5 and .5, giving output 3. If only the first position is permitted, its weight is 1 and output 2. Ask whether a changed key or value alters scores or the mixed content.",
+          "pitfall": "Calling a scalar weighted average a trained Transformer.",
+          "teachBack": "Explain the different roles of Q,K,V and the mask.",
+          "hints": [
+            "Queries ask.",
+            "Keys determine scores.",
+            "Values supply mixed content."
+          ],
+          "check": {
+            "question": "Which vectors are mixed after softmax?",
+            "options": [
+              "Values",
+              "Token IDs directly",
+              "Optimizer velocities"
+            ],
+            "answer": 0,
+            "explanation": "Attention weights combine value vectors."
+          }
+        },
+        {
+          "title": "Three stacks, three output contracts",
+          "explanation": "Encoder-only, decoder-only and encoder-decoder names describe connectivity. A source encoder can produce bidirectional representations for a classification or token head. A causal decoder supports next-token continuation in one stream. A source-target model adds cross-attention, where target queries use source keys and values. Objective and head remain separate: masked-token training differs from next-token training, while a classifier produces class logits rather than vocabulary continuation. Existing checkpoint quality and adaptation data often matter more than a family name. Inspect the actual mask, head and source paths before recommending a model.",
+          "workedExample": "Classify a supportticket with an encoder head; continue a codeprefix with a decoder; translate a source sentence with a source encoder and target decoder. These are common fits, not absolute prohibitions on other adaptations.",
+          "pitfall": "Calling architecture names universal task restrictions.",
+          "teachBack": "Choose a family for three workloads and state what you would measure.",
+          "hints": [
+            "Find the output head.",
+            "Inspect visibility.",
+            "Check cross-attention."
+          ],
+          "check": {
+            "question": "In cross-attention, source representations typically provide what?",
+            "options": [
+              "Target queries",
+              "Keys and values",
+              "Learning-rate schedules"
+            ],
+            "answer": 1,
+            "explanation": "The target queries the separately represented source."
+          }
+        },
+        {
+          "title": "Prefill, decoding and service evidence",
+          "explanation": "Prefill processes the existing prompt; decode repeatedly computes a new token conditioned on its current prefix. A training pass may evaluate many known target positions under a causal mask, but an autoregressive response has sequential dependencies. Cached keys and values avoid some recomputation while retaining context-dependent state. Enforce input and output budgets and per-session ownership. First-token latency and generation throughput describe different phases. A short scalar fixture validates visibility, not a cache kernel or throughput claim. Production comparisons need identical prompts, token budgets, decoding settings, hardware and quality gates, including rejection and truncation behavior.",
+          "workedExample": "A service receives 400 prompttokens and permits 100 outputtokens. Record prompt token count, prefill time, first-token time and total output time. An over-budget prompt should follow an explicit policy rather than quietly pretending every supplied document was read.",
+          "pitfall": "Treating KV cache as cross-user persistent factual memory.",
+          "teachBack": "Explain two latency measures and one context-limit failure policy.",
+          "hints": [
+            "Separate prompt and output.",
+            "Track cache ownership.",
+            "Measure each phase."
+          ],
+          "check": {
+            "question": "Which state normally grows with context in cached Transformer decode?",
+            "options": [
+              "Ordinary KV cache",
+              "A guaranteed fact database",
+              "A filename"
+            ],
+            "answer": 0,
+            "explanation": "Per-token projections are retained for attention."
+          }
+        }
+      ],
+      "review": [
+        "Teach the mechanism aloud using one numerical example before opening suggested answers.",
+        "State two claims this untrained fixture cannot establish, then propose the real evidence needed.",
+        "Use the 25-minute review block to answer the five daily questions, correct one misconception and record tomorrow\u2019s recall target."
+      ]
+    },
+    {
+      "day": 16,
+      "objective": "Separate diffusion process, denoiser, sampler and optional encoding components.",
+      "modules": [
+        {
+          "title": "Corruption is a process, not a picture filter",
+          "explanation": "A forward corruption process defines how clean data becomes noisy at specified levels. In a Gaussian formulation, beta values control incremental noise and alpha products describe the retained signal. The process creates training pairs because the clean example and sampled noise are known. A network can learn a denoising target from those pairs. Forward corruption is deliberately constructed; reverse prediction is learned and approximate. An arbitrary blurred or damaged photograph is not automatically distributed like a chosen Gaussian training corruption. Identify the noisy-state distribution and target before promising restoration or generation behavior.",
+          "workedExample": "Choose clean scalar 2, known noise-1 and alpha_bar .64. The constructed noisy scalar equals 1. Store all three fixture values, then distinguish this known training pair from a new sample whose original noise is unavailable.",
+          "pitfall": "Assuming denoising learns to invert every possible real-world damage process.",
+          "teachBack": "Explain why a forward training pair has information unavailable at generation time.",
+          "hints": [
+            "Know the clean fixture.",
+            "Sample corruption noise.",
+            "Separate construction from estimation."
+          ],
+          "check": {
+            "question": "Which part is deliberately specified?",
+            "options": [
+              "Forward corruption",
+              "All generated content",
+              "Every denoiser answer"
+            ],
+            "answer": 0,
+            "explanation": "A chosen noise process constructs the training states."
+          }
+        },
+        {
+          "title": "Schedule and cumulative signal",
+          "explanation": "Set alpha_t=1-beta_t and multiply these values to obtain alpha_bar_t. The square roots of alpha_bar and one minus alpha_bar scale the signal and independent Gaussian noise in the common direct-sampling equation. Increasing time usually reduces retained signal under a valid positive schedule. Validate finite beta values strictly between zero and one for our fixture; zero, one or NaN violate its declared contract. The lab uses three levels to expose cumulative multiplication. It does not establish an optimal image schedule, and cumulative products near numerical underflow need different treatment in large implementations.",
+          "workedExample": "Betas .1,.2,.3 give alphas .9,.8,.7 and cumulative products .9,.72,.504. The last value is not 1-(.1+.2+.3). Compare the actual products and reject an invalid beta 1.",
+          "pitfall": "Using a sum where the Gaussian schedule needs a cumulative product.",
+          "teachBack": "Compute all three cumulative values and interpret the final signal coefficient.",
+          "hints": [
+            "Subtract each beta from 1.",
+            "Multiply in order.",
+            "Take square roots for the mixture."
+          ],
+          "check": {
+            "question": "The cumulative product for .9,.8,.7 is what?",
+            "options": [
+              ".6",
+              ".504",
+              ".7"
+            ],
+            "answer": 1,
+            "explanation": "The product is .9\u00d7.8\u00d7.7=.504."
+          }
+        },
+        {
+          "title": "Denoising target and oracle boundary",
+          "explanation": "Noise prediction is one parameterization of a denoising model. The network receives noisy data and a time or noise-level input, optionally with conditioning, and predicts a quantity learned from examples. Clean-data and velocity-like targets are alternatives, with corresponding sampler equations. Algebra can recover clean data if the actual sampled noise is supplied, but that is an oracle identity. It is not a neural predictor and cannot generate realistic content without a learned model. A wrong noise estimate should cause a different reconstruction; our negative test makes this distinction measurable rather than relying on a disclaimer alone.",
+          "workedExample": "At x_t=1 and alpha_bar .64, true epsilon-1 recovers clean 2. Replacing epsilon with 0 recovers 1.25. Both use the same algebra; only the former uses the fixture truth. No network inferred either value.",
+          "pitfall": "Presenting known-noise inversion as learned generation.",
+          "teachBack": "Separate oracle input, predicted target and actual training objective.",
+          "hints": [
+            "What is known?",
+            "What is estimated?",
+            "Test the wrong estimate."
+          ],
+          "check": {
+            "question": "Known-noise recovery demonstrates what?",
+            "options": [
+              "A learned denoiser",
+              "An algebra identity",
+              "A real image benchmark"
+            ],
+            "answer": 1,
+            "explanation": "The noise was supplied, not estimated."
+          }
+        },
+        {
+          "title": "Denoiser, latent autoencoder and condition encoder",
+          "explanation": "Draw separate boxes for diffusion states, a denoising backbone, a sampler, an optional image autoencoder and an optional conditioning encoder. A U-Net has spatial down/up paths, which are not a causal text decoder. A latent autoencoder compresses and reconstructs images; the diffusion process can run on its latent tensors. A text encoder supplies conditioning vectors. A Transformer denoiser can replace U-Net geometry while preserving a diffusion objective. These roles may coexist, but none should be inferred solely from the word encoder. The architecture explanation should state which representation the sampler updates.",
+          "workedExample": "Pipeline: text \u2192 conditioning vectors; noise \u2192 latent denoiser \u2192 sampler updates; final latent \u2192 image decoder. Removing text conditioning gives a different conditional interface, while replacing a U-Net with Transformer blocks changes the backbone.",
+          "pitfall": "Calling every component that compresses information the same encoder.",
+          "teachBack": "Draw a pixel-space and latent-space pipeline with distinct component roles.",
+          "hints": [
+            "Name the sampled state.",
+            "Separate representation from denoising.",
+            "Identify optional conditioning."
+          ],
+          "check": {
+            "question": "What does an image autoencoder decode?",
+            "options": [
+              "Final image latent to pixels",
+              "Expert routing scores",
+              "Next-word labels"
+            ],
+            "answer": 0,
+            "explanation": "Its reconstruction role is distinct from denoising."
+          }
+        },
+        {
+          "title": "Sampler and evaluation budget",
+          "explanation": "The denoiser prediction is consumed by a sampler that defines state updates. Stochastic and deterministic sampling variants use different rules; training noise levels and inference steps need not have identical counts. Conditioning strength, resolution, schedule and number of model evaluations affect outputs and cost. A fair comparison fixes or reports these settings. Use quality and conditioning-fidelity measures appropriate to the task and review unsafe or memorized outputs. A numerical forward fixture proves no sampling quality. Explain exactly which parts are offline teaching arithmetic and which would require trained weights and appropriate hardware.",
+          "workedExample": "Compare two configured pipelines at the same output resolution and prompt set, record model-evaluation count, elapsed time and artifact review. If one uses fewer updates, measure its quality instead of declaring an automatic win.",
+          "pitfall": "Treating fewer denoising steps as guaranteed equivalent quality.",
+          "teachBack": "Design a comparison that distinguishes speed and acceptable output behavior.",
+          "hints": [
+            "Fix resolution.",
+            "Count model calls.",
+            "Review conditioning fidelity."
+          ],
+          "check": {
+            "question": "What does a shorter sampling schedule guarantee?",
+            "options": [
+              "Identical outputs",
+              "Nothing about quality by itself",
+              "A new encoder"
+            ],
+            "answer": 1,
+            "explanation": "Sampler and model behavior must be measured."
+          }
+        }
+      ],
+      "review": [
+        "Teach the mechanism aloud using one numerical example before opening suggested answers.",
+        "State two claims this untrained fixture cannot establish, then propose the real evidence needed.",
+        "Use the 25-minute review block to answer the five daily questions, correct one misconception and record tomorrow\u2019s recall target."
+      ]
+    },
+    {
+      "day": 17,
+      "objective": "Explain sparse conditional computation from lay analogy through routing and deployment costs.",
+      "modules": [
+        {
+          "title": "Conditional capacity",
+          "explanation": "A dense feed-forward block applies one transformation to every token. Sparse MoE supplies several experts and activates only a subset for a particular token representation. Shared attention and surrounding layers may remain dense. Total parameters measure the entire weight pool; active parameters describe only part of token computation. Neither number alone determines resident memory, latency or deployment cost. Explain the granularity: different tokens and layers in one question can choose different experts. Expert labels such as coding or medicine require behavioral evidence, not an appealing analogy. The fixture uses scalar expert outputs with no learned specialization.",
+          "workedExample": "With 4 experts and top 2 selection, every token uses 2 expert transformations. Across a batch, all 4 can be selected by different tokens. A device plan must still accommodate weights or explicitly schedule their movement.",
+          "pitfall": "Equating total parameter count with per-token arithmetic.",
+          "teachBack": "Explain total capacity, active work and resident memory separately.",
+          "hints": [
+            "Count all weights.",
+            "Count selected experts.",
+            "Add shared operations."
+          ],
+          "check": {
+            "question": "Which cost can remain large under sparse activation?",
+            "options": [
+              "Resident expert weights",
+              "Only the token ID count",
+              "No cost"
+            ],
+            "answer": 0,
+            "explanation": "Unused-for-this-token weights may still be loaded."
+          }
+        },
+        {
+          "title": "Learned affine scores",
+          "explanation": "A common router transforms hidden vectors into expert logits using learned matrix weights and biases. This makes routing depend on contextual representation rather than explicit keywords. The fixture freezes those parameters so every route can be inspected and repeated. A bias changes the score independently of the input features and can alter the selected expert. Validate matching hidden dimension, one bias per expert and finite arithmetic. The presence of a learned-router-shaped equation does not mean this fixture trained a router. Real learning needs losses, gradient treatment and balanced data, while this exercise establishes the forward contract.",
+          "workedExample": "Hidden [1,0] and three matrixrows [1,0],[0,1],[-1,0] with bias [0,.5,0] produce logits [1,.5,-1]. Raising bias 1 to 2 selects expert 1 without changing the hidden vector. Verify both routes.",
+          "pitfall": "Calling fixed logits a learned topic taxonomy.",
+          "teachBack": "Calculate two routes with one changed bias and explain the difference.",
+          "hints": [
+            "Dot each row with h.",
+            "Add its bias.",
+            "Rank the resulting scores."
+          ],
+          "check": {
+            "question": "Changing router bias can affect what?",
+            "options": [
+              "Selection despite unchanged input",
+              "Only filenames",
+              "The number of input tokens"
+            ],
+            "answer": 0,
+            "explanation": "The affine scores change before ranking."
+          }
+        },
+        {
+          "title": "Top-k, ties and gate weights",
+          "explanation": "Top-k chooses the highest-scoring expert indices. Ties require a deterministic or documented stochastic rule. Softmax converts finite logits to normalized positive weights; subtracting the maximum keeps exponentiation stable. Selected experts may retain full-softmax gates or normalize within the selected set, depending on design. Our fixture uses selected-set normalization, so chosen gate weights sum to one. That is an explicit teaching contract rather than a claim about all MoE models. Computing gates and mixing expert outputs are separate operations: a correct selected index can still have an incorrect weight or output aggregation.",
+          "workedExample": "For selected logits 1 and .5, selectedsoftmax weights are about .62246 and .37754. Expert outputs 10 and 20 mix to 13.7754. At three equal scores, the fixture chooses smallest indices first, giving deterministic top 2[0,1].",
+          "pitfall": "Leaving normalization or tie behavior unspecified.",
+          "teachBack": "Reproduce the selected weighted sum and one tie outcome.",
+          "hints": [
+            "Subtract max.",
+            "Normalize exponentials.",
+            "State the tie rule."
+          ],
+          "check": {
+            "question": "Selected-set normalized gate weights sum to what?",
+            "options": [
+              "Expert count",
+              "One",
+              "The hidden dimension"
+            ],
+            "answer": 1,
+            "explanation": "The selected exponential weights are divided by their sum."
+          }
+        },
+        {
+          "title": "Dispatch, capacity and nondropped accounting",
+          "explanation": "Routing scores do not ensure every selected expert can accept every token. Batch capacity and device resources constrain dispatch. A hot expert can overflow while others remain underused. Systems must choose an explicit response: reroute under a valid rule, queue, reject or record a model-defined drop behavior. Never hide missing work from accounting. The teaching dispatch returns accepted and overflow records with token IDs and reasons; accepted plus overflow equals input count. It does not silently change top 1 routes to satisfy capacity. This makes the policy observable without claiming it matches any specific trained model's semantics.",
+          "workedExample": "Three identical tokens choose expert 0 and capacity is 1. The fixture records 1 accepted and 2 overflow, with loads [1,0,0]. No token disappears; the output is intentionally a dispatch report rather than a completed language response.",
+          "pitfall": "Ignoring overflow because average active compute looks small.",
+          "teachBack": "Choose an overflow policy and explain its effect on model behavior.",
+          "hints": [
+            "Count assignments.",
+            "Enforce capacity.",
+            "Reconcile every token outcome."
+          ],
+          "check": {
+            "question": "With 3 tokens and 1 accepted, explicit overflow count must be what?",
+            "options": [
+              "Zero",
+              "Two",
+              "Four"
+            ],
+            "answer": 1,
+            "explanation": "The accounting invariant preserves all input outcomes."
+          }
+        },
+        {
+          "title": "Learning signals and production evidence",
+          "explanation": "Hard expert selection introduces discrete decisions. The exact training implementation determines how task loss and auxiliary losses update router scores and selected experts; ordinary differentiation through a sort is not a complete explanation. Load-balancing objectives or other mechanisms can discourage expert collapse. At serving time, device placement and dispatch communication affect throughput and tail latency. Measure per-expert load, overflow, quality and end-to-end cost at representative batch and context sizes. A top-k unit test proves selection arithmetic only. Avoid assigning human-domain expertise or claiming sparse activation automatically solves training stability or memory limitations.",
+          "workedExample": "Compare expert utilization on code and natural-language prompts, but inspect actual routing and answer quality before naming an expert. Record p95 latency and overflow under a traffic skew, not only mean latency on balanced synthetic tokens.",
+          "pitfall": "Claiming top-k is smoothly differentiable everywhere.",
+          "teachBack": "Explain why a routing arithmetic test cannot establish trained specialization.",
+          "hints": [
+            "Separate selection and gradients.",
+            "Inspect balancing.",
+            "Measure communication and tail behavior."
+          ],
+          "check": {
+            "question": "What does the fixed router fixture establish?",
+            "options": [
+              "Trained expertise",
+              "Its stated forward and dispatch contracts",
+              "Universal MoE quality"
+            ],
+            "answer": 1,
+            "explanation": "The weights are supplied and no optimization occurs."
+          }
+        }
+      ],
+      "review": [
+        "Teach the mechanism aloud using one numerical example before opening suggested answers.",
+        "State two claims this untrained fixture cannot establish, then propose the real evidence needed.",
+        "Use the 25-minute review block to answer the five daily questions, correct one misconception and record tomorrow\u2019s recall target."
+      ]
+    },
+    {
+      "day": 18,
+      "objective": "Explain content-dependent state updates and separate storage scaling from recall and training claims.",
+      "modules": [
+        {
+          "title": "State-space recurrence",
+          "explanation": "A state-space model passes information through an internal state. A simple discrete skeleton is h_t=A h_previous+B x_t, with output y_t=C h_t+D x_t. Matrices determine retained history, inserted input and observed output. Fixed maps give a linear time-invariant model; more expressive neural designs modify this structure. State dimension is an explicit capacity choice, not an unlimited archive. Our scalar recurrence intentionally keeps only one value and exposes collisions between histories. It teaches what continuation and reset mean; it does not model the full multidimensional dynamics, discretization or trained parameters of Mamba.",
+          "workedExample": "With retention .8, initialstate 0 and input 1, nextstate=.2. Input 2 then gives .8\u00d7.2+.2\u00d72=.56. Compute these values before running the fixture to see precisely what one scalar carries forward.",
+          "pitfall": "Interpreting finite state as exact storage of every past item.",
+          "teachBack": "Compute two state updates and identify retained versus inserted contributions.",
+          "hints": [
+            "Carry previous state.",
+            "Add current input contribution.",
+            "Name output separately."
+          ],
+          "check": {
+            "question": "What persists between recurrent steps?",
+            "options": [
+              "Hidden state",
+              "All past raw input by definition",
+              "Only source code"
+            ],
+            "answer": 0,
+            "explanation": "The recurrence carries its chosen state representation."
+          }
+        },
+        {
+          "title": "Input-dependent selection",
+          "explanation": "Mamba's key idea is making important state-space update parameters depend on current input. Content can influence retention and propagation, rather than following one fixed response for all positions. The full formulation includes a specific parameterization, discretization and surrounding neural operations. A hand-written branch on input magnitude illustrates selection but is not learned and is not a faithful replacement for those components. Keep the distinction visible: the lab changes retention when magnitude exceeds 3 because we wrote that rule. Real behavior must come from a trained implementation and be tested on its intended task.",
+          "workedExample": "The gate is .8 for small magnitudes and .1 for magnitude above 3. From state .56 and input 8, newstate=.1\u00d7.56+.9\u00d78=7.256. The marked large input largely replaces history; this is a declared toy rule.",
+          "pitfall": "Calling one conditional coefficient the complete selective SSM.",
+          "teachBack": "Explain selection while listing three omitted full-model components.",
+          "hints": [
+            "Depend on current input.",
+            "Trace retention.",
+            "State the untrained boundary."
+          ],
+          "check": {
+            "question": "Why does the fixture use different retention at input 8?",
+            "options": [
+              "A hand-written content rule",
+              "Learned natural language skill",
+              "A global optimizer theorem"
+            ],
+            "answer": 0,
+            "explanation": "The rule illustrates selection without learning."
+          }
+        },
+        {
+          "title": "Chunk continuation and session ownership",
+          "explanation": "A recurrent computation can resume a chunk if it receives the exact prior state and compatible parameters. Resetting state changes the semantics: a new session should start fresh, while a continued sequence should not. Treat checkpoints as typed state with model/configuration identity and the correct sequence boundary. In a service, cross-user state reuse leaks context and invalidates results. A full-run versus chunked-run parity test is a direct correctness check. Our fixture passes a scalar state explicitly; a real model has layered tensors and possibly convolutional state, so serialization and compatibility require a larger contract.",
+          "workedExample": "Run [1,2] first, save .56, then run [8,0,-1] with initial .56. It must equal running all 5 values together. Running the second chunk from 0 must differ; that is a new sequence, not continuation.",
+          "pitfall": "Using a cached previous user state as the next user initialization.",
+          "teachBack": "Distinguish a continuation checkpoint from a fresh-session reset.",
+          "hints": [
+            "Keep the exact state.",
+            "Bind state to sequence and model.",
+            "Test full versus chunked outputs."
+          ],
+          "check": {
+            "question": "Which initial state reproduces continuation?",
+            "options": [
+              "Zero always",
+              "Exact compatible prior state",
+              "Any average state"
+            ],
+            "answer": 1,
+            "explanation": "Continuation needs the state produced by the preceding chunk."
+          }
+        },
+        {
+          "title": "Attention access versus compressed history",
+          "explanation": "Ordinary attention can directly weight stored token projections; an SSM carries compressed state through recurrence. Full attention's pair interactions are quadratic in sequence length, while a fixed-dimension state update has linear sequence-length work. These mechanisms offer different access and retention trade-offs. Restricted attention, optimized kernels and hybrid architectures qualify simple comparisons. A finite scalar toy makes information loss concrete: two different histories can lead to the same state and therefore produce the same next update. Do not use one such collision to condemn all SSMs; use it to motivate task-specific tests and capacity reasoning.",
+          "workedExample": "Histories [1] and [0,1] both end at .2 in the fixture. Their lengths differ, but the state alone cannot distinguish them. A later request for exact length cannot be answered from this single scalar without additional state.",
+          "pitfall": "Turning an asymptotic comparison into a universal quality ranking.",
+          "teachBack": "Describe one task that stresses exact history access and one memory measurement.",
+          "hints": [
+            "Compare historical access.",
+            "Find a state collision.",
+            "Control dimensions and workload."
+          ],
+          "check": {
+            "question": "Identical compressed states can imply what?",
+            "options": [
+              "Some historical distinctions are lost",
+              "All history is perfectly recoverable",
+              "Every checkpoint is wrong"
+            ],
+            "answer": 0,
+            "explanation": "Many histories may map to one finite representation."
+          }
+        },
+        {
+          "title": "Implementation and benchmark boundaries",
+          "explanation": "Mamba's efficient training uses a structured hardware-aware scan; recurrent inference does not mean training must execute a naive serial Python loop. Surrounding projections, feature dimensions and kernels contribute to cost. Benchmark training, prompt processing and one-token serving separately with matched hardware, precision and quality requirements. The same caution applies to optimization: a storage advantage does not guarantee convergence, reliable recall or generalization. Our fixture measures no kernel speed and contains no gradients. A defensible recommendation uses a compatible trained checkpoint, reproducible serving configuration and task-specific outcomes, including long-context and state-reset failures.",
+          "workedExample": "A candidate deployment claims lower memory on 10000 tokens. Request checkpoint version, dimensions, precision, batch, hardware, peak-memory method and recall-sensitive test results. A 10000-step scalar loop cannot validate that claim.",
+          "pitfall": "Presenting toy loop timing as an architecture benchmark.",
+          "teachBack": "Ask for six reproducibility fields before accepting a model speed claim.",
+          "hints": [
+            "Name the phase.",
+            "Specify hardware and dimensions.",
+            "Apply quality gates first."
+          ],
+          "check": {
+            "question": "A scalar recurrence runtime proves what about real Mamba?",
+            "options": [
+              "Universal speed",
+              "No real kernel benchmark result",
+              "Guaranteed lower training loss"
+            ],
+            "answer": 1,
+            "explanation": "It omits the real architecture and implementation."
+          }
+        }
+      ],
+      "review": [
+        "Teach the mechanism aloud using one numerical example before opening suggested answers.",
+        "State two claims this untrained fixture cannot establish, then propose the real evidence needed.",
+        "Use the 25-minute review block to answer the five daily questions, correct one misconception and record tomorrow\u2019s recall target."
+      ]
+    },
+    {
+      "day": 19,
+      "objective": "Classify simple loss geometry and defend controlled optimization troubleshooting.",
+      "modules": [
+        {
+          "title": "Objective, domain and minimum",
+          "explanation": "A loss landscape exists only after specifying an objective and feasible parameter domain. A local minimum is best within some neighborhood; a global minimum is best throughout that domain. Minima can be nonunique or non-strict. Training objectives can reward behavior that is undesirable in deployment, and low empirical loss does not establish generalization. State whether constraints, regularization and validation metrics are included. In the quartic fixture, both-1 and 1 give the lowest possible value 0 because a square cannot be negative. That establishes global optimality for this particular mathematical function, not for arbitrary neural models.",
+          "workedExample": "g(x)=(x\u00b2-1)\u00b2is nonnegative. At x=-1 and 1 it equals 0, so both are global minima. A finite numerical grid that merely finds the lowest sampled point would not, by itself, prove this conclusion.",
+          "pitfall": "Calling the best checkpoint across a few runs a proven global optimum.",
+          "teachBack": "Give the mathematical argument for two global minima in this toy.",
+          "hints": [
+            "Specify the objective.",
+            "Show the lower bound.",
+            "Exhibit points attaining it."
+          ],
+          "check": {
+            "question": "Why are\u00b11 global for the quartic?",
+            "options": [
+              "They attain its nonnegative lower bound 0",
+              "They were sampled first",
+              "Any zero gradient is global"
+            ],
+            "answer": 0,
+            "explanation": "The square is nonnegative and reaches 0 there."
+          }
+        },
+        {
+          "title": "Stationary points and saddles",
+          "explanation": "A zero gradient indicates a stationary point in a differentiable interior, not a certified minimum. Positive-definite curvature gives a strict local minimum under suitable smoothness; mixed-sign curvature gives a saddle. Semidefinite curvature may be inconclusive because higher-order terms matter. At a saddle, some directions reduce loss even if the gradient at the exact point vanishes. Real high-dimensional optimization may encounter such regions, but a flat chart is not a geometry measurement. The fixture uses an analytically known Hessian and directional perturbations so its saddle classification has direct evidence.",
+          "workedExample": "f(x,y)=x\u00b2-y\u00b2has gradient 0 at the origin. Lossat(.1,0)=.01 and at(0,.1)=-.01. Hessian diagonal(2,-2) has mixed signs. A positive bowlx\u00b2+y\u00b2would instead rise in both directions.",
+          "pitfall": "Naming any zero-gradient point a local minimum.",
+          "teachBack": "Use two directions to distinguish a saddle from a bowl.",
+          "hints": [
+            "Compute gradient.",
+            "Inspect curvature.",
+            "Evaluate directional perturbations."
+          ],
+          "check": {
+            "question": "What establishes the toy origin is a saddle?",
+            "options": [
+              "Mixed uphill and downhill directions",
+              "A flat first derivative alone",
+              "Its coordinate name"
+            ],
+            "answer": 0,
+            "explanation": "Directional behavior exposes mixed curvature."
+          }
+        },
+        {
+          "title": "Updates, step sizes and stationary failure",
+          "explanation": "Gradient descent subtracts a step-scaled gradient. At exact zero gradient, a deterministic update remains zero if no other optimizer state contributes. A large step can overshoot and diverge even when gradients are correct. Momentum carries accumulated velocity; adaptive methods rescale updates using stored statistics. None should be described as a universal escape algorithm. Our lab starts the quartic at 0, a local maximum, and shows immobility; starting at .1 under a chosen stable step reaches a minimum. The comparison separates initialization, stationary geometry and update size instead of claiming a local-minimum escape theorem.",
+          "workedExample": "At x0=0, gradient 4 x(x\u00b2-1)=0 and descent stays 0. Starting .1 with step .05 approaches 1. Starting .5 with step 5 causes an unstable trajectory that the fixture reports explicitly rather than printing a misleading successful endpoint.",
+          "pitfall": "Interpreting the perturbed maximum experiment as proof of escaping every local well.",
+          "teachBack": "Explain the stuck and unstable cases using the update equation.",
+          "hints": [
+            "Write the gradient.",
+            "Apply one update.",
+            "Check movement and finite magnitudes."
+          ],
+          "check": {
+            "question": "What does a zero-gradient deterministic step do?",
+            "options": [
+              "Moves automatically",
+              "Stays unchanged",
+              "Always finds a global solution"
+            ],
+            "answer": 1,
+            "explanation": "No nonzero update is present."
+          }
+        },
+        {
+          "title": "Stochasticity, restarts and diagnosis",
+          "explanation": "Mini-batch gradients differ from full-data gradients and introduce stochasticity. This can change a trajectory and sometimes help traverse difficult regions, but it can also impede settling. Schedules, restarts, perturbations and different seeds are controlled experiments, not guarantees. Diagnose the loss implementation, target alignment, finite gradients and data quality before speculating about a trap. Try fitting a tiny clean dataset and inspect update magnitudes. Compare several runs at equal compute and choose with held-out metrics. A single fortunate seed or lower training loss is insufficient evidence for a general optimizer recommendation.",
+          "workedExample": "Two runs share data and budget but use different seeds. Report both validation results and gradient/update histories. If neither fits 10 clean examples, first inspect label shifts or detached parameters instead of adding repeated restarts blindly.",
+          "pitfall": "Using optimizer randomness as a promise of global convergence.",
+          "teachBack": "Design a plateau investigation with a tiny-data test and controlled seeds.",
+          "hints": [
+            "Verify the implementation.",
+            "Inspect finite updates.",
+            "Compare equal-budget runs."
+          ],
+          "check": {
+            "question": "A flat loss trace proves what?",
+            "options": [
+              "A strict local minimum",
+              "Only observed stalled loss; diagnosis remains open",
+              "Global optimality"
+            ],
+            "answer": 1,
+            "explanation": "Several numerical, data and geometric causes remain possible."
+          }
+        },
+        {
+          "title": "Mamba and generalization remain separate concerns",
+          "explanation": "Mamba changes sequence computation but still learns parameters on a chosen objective. Its selective transitions and surrounding neural layers do not make general training convex. Precision, initialization, loss masks and state dynamics can affect training. Use evidence to distinguish saturated dynamics, wrong targets and ordinary optimization difficulty. Inference state bounds concern storage, while optimization geometry concerns the loss over parameters. Held-out quality concerns another boundary: even low training loss can fail on shifted data. Explain these three properties separately so an architecture's efficiency does not become a claim of training or deployment reliability.",
+          "workedExample": "A recurrent model uses constant-size history state but a wrong loss mask hides every useful target. Its inference-memory property remains true while training learns nothing. Fix the mask with a tiny labeled fixture before comparing architectures.",
+          "pitfall": "Claiming selective state spaces remove nonconvex optimization problems.",
+          "teachBack": "Separate memory, convergence and task generalization in one example.",
+          "hints": [
+            "Name learned parameters.",
+            "Check the actual loss.",
+            "Test held-out behavior."
+          ],
+          "check": {
+            "question": "Does a fixed inference state imply convex training?",
+            "options": [
+              "Yes",
+              "No",
+              "Only with longer prompts"
+            ],
+            "answer": 1,
+            "explanation": "These properties describe different mathematical objects."
+          }
+        }
+      ],
+      "review": [
+        "Teach the mechanism aloud using one numerical example before opening suggested answers.",
+        "State two claims this untrained fixture cannot establish, then propose the real evidence needed.",
+        "Use the 25-minute review block to answer the five daily questions, correct one misconception and record tomorrow\u2019s recall target."
+      ]
+    },
+    {
+      "day": 20,
+      "objective": "Distinguish low-bit representation from sequence architecture and require compatible implementation evidence.",
+      "modules": [
+        {
+          "title": "Precision is not architecture",
+          "explanation": "Sequence architecture specifies how information moves; numerical representation specifies how values are stored and computed. A Transformer can use several precisions, while a state-space architecture has its own representation choices. MoE adds a routing/capacity axis. A 1-bit label does not imply a different attention mask, a selective recurrence or a smaller token vocabulary. Build a component-level map of weights, activations, state and scales. This prevents a product name from replacing an implementation explanation. A proposed combination needs supported trained weights and execution machinery, not just two desirable theoretical labels.",
+          "workedExample": "Create a matrix with rowsattention/SSMand columnsfloatingpoint/lowbit. Place a checkpoint only after verifying its architecture and precision map. A low-bit projection does not establish low-bit recurrent state or low-bit embeddings.",
+          "pitfall": "Calling Mamba another name for 1-bit language modeling.",
+          "teachBack": "Classify architecture, topology and representation as separate axes.",
+          "hints": [
+            "How is history mixed?",
+            "Which values are low-bit?",
+            "Which kernels support them?"
+          ],
+          "check": {
+            "question": "Which axis does low-bit computation primarily describe?",
+            "options": [
+              "Numerical representation",
+              "Only causal visibility",
+              "Only expert count"
+            ],
+            "answer": 0,
+            "explanation": "It specifies representations and arithmetic machinery."
+          }
+        },
+        {
+          "title": "Binary versus ternary",
+          "explanation": "Binary weights have two symbols. A ternary alphabet{-1,0,+1}has three; the zero enables skip contributions. BitNet b1.58 uses ternary values, so calling it strictly binary is inaccurate. log2(3) gives the ideal information count for three symbols, approximately 1.585 bits. A straightforward fixed-width symbol store uses 2 bits, and exact file size includes layout and metadata. The original BitNet and b1.58 work describe particular Transformer methods, not a promise that every layer and all training state has that precision. Keep symbolic alphabets, theoretical information and actual packing separate.",
+          "workedExample": "Six ternary symbols have ideal informationcount 6 log2(3)\u22489.51 bits. Simple 2-bitpacking requires 12 bits before scale and layout overhead. This is a symbol calculation, not the measured size of an LLM checkpoint.",
+          "pitfall": "Treating 1.58 as exact bits for every stored model element.",
+          "teachBack": "Explain why three symbols cannot fit into one independent binary bit.",
+          "hints": [
+            "Count symbols.",
+            "Compute log2.",
+            "Separate ideal coding from packing."
+          ],
+          "check": {
+            "question": "How many symbols does b1.58 use?",
+            "options": [
+              "Two",
+              "Three",
+              "Sixteen"
+            ],
+            "answer": 1,
+            "explanation": "Its weight alphabet is ternary."
+          }
+        },
+        {
+          "title": "Add, subtract, skip and reconstruction error",
+          "explanation": "With a ternary weight, multiplication by an integer activation can be expressed as addition, subtraction or no contribution. Scaling and activation representations in real systems add further rules. The fixture thresholds floating weights into ternary symbols and computes an unscaled dot product. That conversion changes results, so explicitly quantify reconstruction error. A threshold boundary has a defined tie policy: values exactly at\u00b1threshold map to zero here. Test dimensions, alphabet and finite inputs. Python integer arithmetic demonstrates the symbolic identity; it does not establish packed-kernel acceleration or BitNet inference.",
+          "workedExample": "Weights [-.9,-.2,.01,.3,.8,1.1] and inputs [2,3,4,5,6,7] give float dot 11.64. Threshold .25 gives ternary dot 16, error 4.36. The negative test rejects symbol 2; the boundary test maps\u00b1.25 to 0.",
+          "pitfall": "Claiming quantization is lossless because the symbols are simple.",
+          "teachBack": "Calculate the dot error and explain the declared threshold rule.",
+          "hints": [
+            "Map each weight.",
+            "Apply add/subtract/skip.",
+            "Compare the original result."
+          ],
+          "check": {
+            "question": "The toy output difference is what?",
+            "options": [
+              "Zero",
+              "4.36",
+              "1.58"
+            ],
+            "answer": 1,
+            "explanation": "16-11.64=4.36 in the declared unscaled fixture."
+          }
+        },
+        {
+          "title": "Training-aware methods versus post-training conversion",
+          "explanation": "A training-aware low-bit method includes quantized computations in training and specifies how gradients are approximated through discrete transforms. It may retain higher-precision latent parameters and optimizer state. Post-training quantization starts from an existing checkpoint and uses a conversion or calibration procedure. These methods produce different evidence and compatibility requirements. Thresholding six numbers implements neither a full BitLinear training path nor a calibrated LLM conversion. Ask which quantities remain higher precision, how scales are computed and what the actual checkpoint was trained to support. Quality evaluation is necessary after either route.",
+          "workedExample": "The fixture has no loss, gradient or optimizer. Therefore it can test symbol mapping but cannot support \u201ctrained 1-bitmodel\u201d claims. A real report must identify training/conversion procedure and held-out errors after quantization.",
+          "pitfall": "Calling a numerical rounding demo quantization-aware training.",
+          "teachBack": "List the evidence needed to distinguish the two conversion histories.",
+          "hints": [
+            "Identify the original checkpoint.",
+            "Inspect training or calibration.",
+            "Validate quality after representation changes."
+          ],
+          "check": {
+            "question": "Which is absent from the threshold fixture?",
+            "options": [
+              "Discrete symbols",
+              "A trained low-bit neural objective",
+              "Integer sums"
+            ],
+            "answer": 1,
+            "explanation": "No model parameters are learned."
+          }
+        },
+        {
+          "title": "Combining Mamba with low bits: an evidence plan",
+          "explanation": "Architecture and precision are different axes but can interact numerically. Quantizing recurrent state or transition quantities can affect accumulated error and stability; quantizing only a projection is a narrower choice. A compatible design must specify the component map, scales, training/conversion process and supported kernels. Evaluate identical tasks and contexts against relevant baselines, including sequence-length sensitivity, state resets, memory and latency. Do not multiply theoretical gains from unrelated papers to predict a combined system. The two teaching fixtures remain separate: one proves scalar state contracts, the other ternary arithmetic. Neither establishes a trained combined architecture.",
+          "workedExample": "Propose low-bit projections with higher-precision state, then test long-sequence drift and chunk parity alongside held-out task quality. Record which tensors are quantized and the exact kernel/hardware versions before discussing any speed advantage.",
+          "pitfall": "Assuming low-bit state has the same numerical behavior as low-bit feed-forward weights.",
+          "teachBack": "Design a component precision map and two numerical stability tests.",
+          "hints": [
+            "Map each tensor class.",
+            "Test accumulated error.",
+            "Measure quality and hardware outcomes."
+          ],
+          "check": {
+            "question": "A combined deployment benefit needs what?",
+            "options": [
+              "Two labels",
+              "Compatible implementation and controlled evidence",
+              "Only a small symbol alphabet"
+            ],
+            "answer": 1,
+            "explanation": "Implementation and task measurements establish suitability."
+          }
+        }
+      ],
+      "review": [
+        "Teach the mechanism aloud using one numerical example before opening suggested answers.",
+        "State two claims this untrained fixture cannot establish, then propose the real evidence needed.",
+        "Use the 25-minute review block to answer the five daily questions, correct one misconception and record tomorrow\u2019s recall target."
+      ]
+    }
+  ],
+  "labs": [
+    {
+      "day": 15,
+      "title": "Causal visibility with scalar attention",
+      "explanation": "Implement a finite scalar attention fixture with explicit permitted indices. Scores use a declared toy formula and stable softmax; the causal row at i consults only 0 through i. Change a future value while keeping preceding values identical and assert earlier outputs do not change. Add a bidirectional control that does change, row-normalization checks and invalid-input failures. The final prompt position can use its complete prefix; the first cannot use the end. This illustrates how input is processed in a causal stream without a separate encoder. It omits learned projections, positions, multiple heads, residual blocks, feed-forward layers, logits and KV kernels, so a passing result is not a trained Transformer or performance claim.",
+      "steps": [
+        "Save day 15_foundations.py from the reference download and run python 3 day 15_foundations.py offline.",
+        "Before running, predict every positive fixture result; then change one invalid input and explain why the rejection must remain visible.",
+        "Add one boundary test beyond the supplied assertions and explain which contract it checks.",
+        "Write an evidence/limitations note: separate toy arithmetic from trained model quality, optimized kernels and deployment behavior.",
+        "Four-hour 240-minute plan:20 min recall;50 min mechanisms;30 min worked example;75 min coding;40 min defense;25 min review. Follow this allocation before expanding optional references."
+      ],
+      "checks": [
+        "Future 3\u219230 does not change causal outputs 0 or 1; final output changes.",
+        "Every causal row sums to 1 and forbidden probabilities are 0.",
+        "Bidirectional first output changes when the future value changes.",
+        "Empty,NaN,bool and string inputs raise ValueError."
+      ],
+      "pitfalls": [
+        "Treating a tokenizer API named encode as an encoder-only neural network.",
+        "Calling a scalar weighted average a trained Transformer.",
+        "Treating KV cache as cross-user persistent factual memory."
+      ],
+      "files": [
+        {
+          "name": "day15_foundations.py",
+          "language": "python",
+          "code": "import math\n\ndef finite_sequence(values):\n    if not values or any(type(x) not in (int, float) or not math.isfinite(x) for x in values):\n        raise ValueError('nonempty finite numeric sequence required')\n    return list(values)\n\ndef attention(values, causal=True):\n    values = finite_sequence(values)\n    outputs, rows = [], []\n    for i, query in enumerate(values):\n        allowed = list(range(i + 1)) if causal else list(range(len(values)))\n        scores = [query * values[j] / 4 for j in allowed]\n        if any(not math.isfinite(score) for score in scores):\n            raise ValueError('attention score overflow')\n        maximum = max(scores)\n        numerators = [math.exp(score - maximum) for score in scores]\n        weights = [v / sum(numerators) for v in numerators]\n        row = [0.0] * len(values)\n        for j, weight in zip(allowed, weights):\n            row[j] = weight\n        outputs.append(sum(row[j] * values[j] for j in allowed))\n        rows.append(row)\n    return outputs, rows\n\ndef main():\n    original, rows = attention([1., 2., 3.])\n    changed, _ = attention([1., 2., 30.])\n    assert original[:2] == changed[:2], 'future token leaked backward'\n    assert original[2] != changed[2]\n    assert rows[0] == [1., 0., 0.]\n    assert rows[1][2] == 0\n    assert all(math.isclose(sum(row), 1) for row in rows)\n    bidirectional, _ = attention([1., 2., 3.], False)\n    bi_changed, _ = attention([1., 2., 30.], False)\n    assert bidirectional[0] != bi_changed[0]\n    assert attention([5.])[0] == [5.]\n    for invalid in ([], [float('nan')], [True], ['word'], [1e308]):\n        try:\n            attention(invalid)\n        except ValueError:\n            pass\n        else:\n            raise AssertionError('invalid input accepted')\n    print('day15 PASS: causal visibility, normalized rows, future isolation, invalid inputs')\n\nif __name__ == '__main__':\n    main()\n"
+        }
+      ],
+      "limits": "Python 3.11+ standard-library-only executable fixture; no package install, provider, socket, model download or training. All assertions are deterministic numerical/contract tests. This is scalar attention arithmetic, not a Transformer checkpoint, tokenizer or serving benchmark."
+    },
+    {
+      "day": 16,
+      "title": "Gaussian schedule and known-noise oracle",
+      "explanation": "Compute cumulative alpha products from valid beta values, construct noisy scalars using the direct Gaussian equation and recover clean values with explicitly supplied noise. Use a seeded finite fixture for repeated numerical identity checks. A wrong-noise negative test must change recovery, making the oracle boundary observable. Reject invalid schedule ranges and nonfinite values. The sampled scalar and known epsilon are fixture data; no denoiser is trained and no reverse generative sampler exists here. Explain the time/noise-level input and how a real learned noise estimate would replace the oracle before claiming a diffusion application. Keep process, backbone and optional representation encoders separate.",
+      "steps": [
+        "Save day 16_foundations.py from the reference download and run python 3 day 16_foundations.py offline.",
+        "Before running, predict every positive fixture result; then change one invalid input and explain why the rejection must remain visible.",
+        "Add one boundary test beyond the supplied assertions and explain which contract it checks.",
+        "Write an evidence/limitations note: separate toy arithmetic from trained model quality, optimized kernels and deployment behavior.",
+        "Four-hour 240-minute plan:20 min recall;50 min mechanisms;30 min worked example;75 min coding;40 min defense;25 min review. Follow this allocation before expanding optional references."
+      ],
+      "checks": [
+        "Betas .1,.2,.3 produce cumulative values .9,.72,.504.",
+        "Clean 2,noise-1,alpha_bar .64 produce noisy 1 and recover 2.",
+        "Using noise 0 instead recovers a different value.",
+        "Thirty seeded pairs recover within 1e-12 at each level; invalid betas fail."
+      ],
+      "pitfalls": [
+        "Assuming denoising learns to invert every possible real-world damage process.",
+        "Presenting known-noise inversion as learned generation.",
+        "Treating fewer denoising steps as guaranteed equivalent quality."
+      ],
+      "files": [
+        {
+          "name": "day16_foundations.py",
+          "language": "python",
+          "code": "import math\nimport random\n\ndef schedule(betas):\n    if not betas or any(type(b) not in (int, float) or not math.isfinite(b) or not 0 < b < 1 for b in betas):\n        raise ValueError('betas must be finite and strictly between zero and one')\n    product, cumulative = 1.0, []\n    for beta in betas:\n        product *= 1 - beta\n        if product == 0:\n            raise ValueError('cumulative signal underflow; use a log-space implementation')\n        cumulative.append(product)\n    return cumulative\n\ndef forward(x0, noise, alpha_bar):\n    if not all(type(v) in (int, float) and math.isfinite(v) for v in (x0, noise, alpha_bar)) or not 0 < alpha_bar < 1:\n        raise ValueError('finite values and alpha_bar in (0,1) required')\n    value = math.sqrt(alpha_bar) * x0 + math.sqrt(1-alpha_bar) * noise\n    if not math.isfinite(value):\n        raise ValueError('forward arithmetic overflow')\n    return value\n\ndef oracle_recover(xt, known_noise, alpha_bar):\n    # Uses fixture noise; not a learned denoiser or reverse sampling algorithm.\n    if not all(type(v) in (int, float) and math.isfinite(v) for v in (xt, known_noise, alpha_bar)) or not 0 < alpha_bar < 1:\n        raise ValueError('finite values and alpha_bar in (0,1) required')\n    value = (xt - math.sqrt(1-alpha_bar)*known_noise) / math.sqrt(alpha_bar)\n    if not math.isfinite(value):\n        raise ValueError('oracle arithmetic overflow')\n    return value\n\ndef main():\n    cumulative = schedule([.1, .2, .3])\n    assert all(a > b for a, b in zip(cumulative, cumulative[1:]))\n    assert math.isclose(cumulative[-1], .504)\n    assert math.isclose(forward(2, -1, .64), 1)\n    assert math.isclose(oracle_recover(1, -1, .64), 2)\n    assert not math.isclose(oracle_recover(1, 0, .64), 2), 'wrong noise must change recovery'\n    rng = random.Random(7)\n    fixtures = [(rng.uniform(-3, 3), rng.gauss(0, 1)) for _ in range(30)]\n    for alpha in cumulative:\n        for clean, noise in fixtures:\n            assert math.isclose(oracle_recover(forward(clean, noise, alpha), noise, alpha), clean, abs_tol=1e-12)\n    for invalid in ([], [0], [1], [-.1], [float('nan')], [True], [.9]*1000):\n        try:\n            schedule(invalid)\n        except ValueError:\n            pass\n        else:\n            raise AssertionError('invalid schedule accepted')\n    for operation, args in ((forward, (1.7e308, 1.7e308, .5)), (oracle_recover, (1e308, 0, 1e-300))):\n        try:\n            operation(*args)\n        except ValueError:\n            pass\n        else:\n            raise AssertionError('non-finite arithmetic accepted')\n    print('day16 PASS: cumulative schedule, oracle identity, wrong-noise failure, invalid betas')\n\nif __name__ == '__main__':\n    main()\n"
+        }
+      ],
+      "limits": "Python 3.11+ standard-library-only executable fixture; no package install, provider, socket, model download or training. All assertions are deterministic numerical/contract tests. Known epsilon is an oracle; no denoiser or reverse generative sampler is learned."
+    },
+    {
+      "day": 17,
+      "title": "Affine routing, top-k gates and explicit overflow",
+      "explanation": "Use fixed router weights with the shape of a learned affine router: hidden vector to logits, then deterministic top-k and selected-set softmax. Verify a bias change alters selection, ties follow index order and weighted scalar expert outputs match arithmetic. For top 1 dispatch, enforce an expert capacity and return accepted plus explicit overflow records; never discard an outcome silently. Validate dimensions, k and finite values. These weights and expert outputs are supplied, not learned. The exercise omits training gradients, balancing loss, distributed communication and language capability. Defend those omissions alongside the exact gate-normalization and overflow contract.",
+      "steps": [
+        "Save day 17_foundations.py from the reference download and run python 3 day 17_foundations.py offline.",
+        "Before running, predict every positive fixture result; then change one invalid input and explain why the rejection must remain visible.",
+        "Add one boundary test beyond the supplied assertions and explain which contract it checks.",
+        "Write an evidence/limitations note: separate toy arithmetic from trained model quality, optimized kernels and deployment behavior.",
+        "Four-hour 240-minute plan:20 min recall;50 min mechanisms;30 min worked example;75 min coding;40 min defense;25 min review. Follow this allocation before expanding optional references."
+      ],
+      "checks": [
+        "Hidden [1,0] selects experts [0,1] with weights about .62246/.37754.",
+        "Changed expert 1 bias selects expert 1; equal logits break ties by index.",
+        "Expert outputs 10/20 mix to 13.775406687981454.",
+        "Three identical top 1 tokens with capacity 1 yield 1 accepted/2 overflow and reconciled IDs."
+      ],
+      "pitfalls": [
+        "Equating total parameter count with per-token arithmetic.",
+        "Leaving normalization or tie behavior unspecified.",
+        "Claiming top-k is smoothly differentiable everywhere."
+      ],
+      "files": [
+        {
+          "name": "day17_foundations.py",
+          "language": "python",
+          "code": "import math\n\ndef finite(values):\n    return all(type(v) in (int, float) and math.isfinite(v) for v in values)\n\ndef route(hidden, matrix, bias, k):\n    if not hidden or not matrix or len(matrix) != len(bias) or not finite(hidden + bias):\n        raise ValueError('invalid router dimensions or values')\n    if any(len(row) != len(hidden) or not finite(row) for row in matrix):\n        raise ValueError('invalid matrix row')\n    if type(k) is not int or not 1 <= k <= len(matrix):\n        raise ValueError('k outside expert range')\n    logits = [sum(w*x for w, x in zip(row, hidden)) + b for row, b in zip(matrix, bias)]\n    if not finite(logits):\n        raise ValueError('router arithmetic overflow')\n    selected = sorted(range(len(logits)), key=lambda i: (-logits[i], i))[:k]\n    maximum = max(logits[i] for i in selected)\n    exp_scores = [math.exp(logits[i]-maximum) for i in selected]\n    weights = [v/sum(exp_scores) for v in exp_scores]\n    return selected, weights\n\ndef dispatch(tokens, matrix, bias, capacity):\n    if type(capacity) is not int or capacity < 1:\n        raise ValueError('positive integer capacity required')\n    loads = [0]*len(matrix)\n    accepted, overflow = [], []\n    for token_id, hidden in enumerate(tokens):\n        selected, weights = route(hidden, matrix, bias, 1)\n        expert = selected[0]\n        if loads[expert] >= capacity:\n            overflow.append({'token': token_id, 'expert': expert, 'reason': 'capacity'})\n        else:\n            loads[expert] += 1\n            accepted.append({'token': token_id, 'expert': expert, 'gate': weights[0]})\n    assert len(accepted)+len(overflow) == len(tokens)\n    return accepted, overflow, loads\n\ndef main():\n    matrix, bias = [[1., 0.], [0., 1.], [-1., 0.]], [0., .5, 0.]\n    selected, weights = route([1., 0.], matrix, bias, 2)\n    assert selected == [0, 1]\n    assert math.isclose(weights[0], .6224593312018546)\n    assert math.isclose(sum(weights), 1)\n    assert route([1., 0.], matrix, [0., 2., 0.], 1)[0] == [1]\n    assert route([0., 0.], matrix, [0., 0., 0.], 2)[0] == [0, 1]\n    # Invented scalar experts; no claimed human-language specialization.\n    expert_outputs = [10., 20., 30.]\n    output = sum(g*expert_outputs[e] for e, g in zip(selected, weights))\n    assert math.isclose(output, 13.775406687981454)\n    accepted, overflow, loads = dispatch([[1.,0.]]*3, matrix, bias, 1)\n    assert len(accepted) == 1 and len(overflow) == 2 and loads == [1,0,0]\n    for hidden, k in (([float('nan'),0.],1), ([1.],1), ([1.,0.],0), ([1.,0.],True)):\n        try:\n            route(hidden, matrix, bias, k)\n        except ValueError:\n            pass\n        else:\n            raise AssertionError('invalid router input accepted')\n    print('day17 PASS: affine bias, top-k, ties, normalized gates, explicit overflow')\n\nif __name__ == '__main__':\n    main()\n"
+        }
+      ],
+      "limits": "Python 3.11+ standard-library-only executable fixture; no package install, provider, socket, model download or training. All assertions are deterministic numerical/contract tests. Router weights and scalar expert outputs are fixed; no expert specialization, gradients or distributed performance is demonstrated."
+    },
+    {
+      "day": 18,
+      "title": "Selective recurrence, chunk parity and history collision",
+      "explanation": "Implement a scalar state update with a hand-written input-dependent retention rule. Trace retained history and inserted input, then compare a complete sequence with two chunks joined by their exact intermediate state. Confirm a fresh reset produces a different sequence result, and keep sessions independently initialized. Show two distinct histories can share the same state, exposing the compressed-history boundary. Validate finite scalar values. This is not Mamba discretization, training or a scan kernel: it omits multidimensional learned maps and surrounding neural components. Use the fixture to explain content selection and state ownership without claiming model quality or real architecture timing.",
+      "steps": [
+        "Save day 18_foundations.py from the reference download and run python 3 day 18_foundations.py offline.",
+        "Before running, predict every positive fixture result; then change one invalid input and explain why the rejection must remain visible.",
+        "Add one boundary test beyond the supplied assertions and explain which contract it checks.",
+        "Write an evidence/limitations note: separate toy arithmetic from trained model quality, optimized kernels and deployment behavior.",
+        "Four-hour 240-minute plan:20 min recall;50 min mechanisms;30 min worked example;75 min coding;40 min defense;25 min review. Follow this allocation before expanding optional references."
+      ],
+      "checks": [
+        "Inputs 1 and 2 produce states .2 and .56; input 8 then gives 7.256.",
+        "Full sequence equals chunked continuation with saved .56.",
+        "Second chunk reset to 0 differs; separate sessions start fresh.",
+        "Histories [1] and [0,1] collide; nonfinite,bool,string inputs fail."
+      ],
+      "pitfalls": [
+        "Interpreting finite state as exact storage of every past item.",
+        "Using a cached previous user state as the next user initialization.",
+        "Presenting toy loop timing as an architecture benchmark."
+      ],
+      "files": [
+        {
+          "name": "day18_foundations.py",
+          "language": "python",
+          "code": "import math\n\ndef selective_step(state, value):\n    if any(type(v) not in (int, float) or not math.isfinite(v) for v in (state, value)):\n        raise ValueError('finite scalar state and input required')\n    # A hand-written content-dependent gate; NOT learned Mamba discretization.\n    retention = .1 if abs(value) > 3 else .8\n    new_state = retention * state + (1-retention) * value\n    return new_state, retention\n\ndef run(values, initial=0.):\n    state, trace = initial, []\n    if type(initial) not in (int, float) or not math.isfinite(initial):\n        raise ValueError('invalid initial state')\n    for value in values:\n        state, retention = selective_step(state, value)\n        trace.append({'state': state, 'retention': retention})\n    return state, trace\n\ndef main():\n    inputs = [1., 2., 8., 0., -1.]\n    full, trace = run(inputs)\n    first, _ = run(inputs[:2])\n    continued, _ = run(inputs[2:], first)\n    assert full == continued, 'chunk continuation lost state'\n    reset, _ = run(inputs[2:])\n    assert not math.isclose(reset, full), 'reset must not impersonate continuation'\n    assert trace[1]['retention'] == .8 and trace[2]['retention'] == .1\n    assert math.isclose(trace[0]['state'], .2)\n    assert math.isclose(trace[1]['state'], .56)\n    assert math.isclose(trace[2]['state'], 7.256)\n    assert run([])[0] == 0\n    # Independently owned sessions must reset state, not inherit another user.\n    assert run([1.])[0] == run([1.])[0]\n    assert run([1.], 10.)[0] != run([1.])[0]\n    # Compression collision: [1] and [0,1] leave exactly the same final state.\n    assert run([1.])[0] == run([0.,1.])[0]\n    for bad in (float('nan'), float('inf'), True, 'token'):\n        try:\n            run([bad])\n        except ValueError:\n            pass\n        else:\n            raise AssertionError('invalid state input accepted')\n    print('day18 PASS: selective gate, chunk parity, session reset, history collision')\n\nif __name__ == '__main__':\n    main()\n"
+        }
+      ],
+      "limits": "Python 3.11+ standard-library-only executable fixture; no package install, provider, socket, model download or training. All assertions are deterministic numerical/contract tests. Hand-written retention is not Mamba parameterization/discretization or a hardware-aware scan. State has deliberate information collisions."
+    },
+    {
+      "day": 19,
+      "title": "Stationary geometry and controlled descent",
+      "explanation": "Use analytical objectives rather than a simulated training claim. The quartic(x\u00b2-1)\u00b2has two global minima at\u00b11 and a zero-gradient local maximum at 0. Show deterministic gradient descent remains at 0, while\u00b1.1 initializations with a declared stable step approach the respective minima. Evaluate saddle directions for x\u00b2-y\u00b2and report a too-large step as instability. Validate numerical inputs and iteration contract. The fixture demonstrates update mechanics and exact toy geometry. It does not escape an arbitrary local well, model stochastic training or prove generalization. Explain why diagnosis needs data, gradients and held-out evidence beyond this exercise.",
+      "steps": [
+        "Save day 19_foundations.py from the reference download and run python 3 day 19_foundations.py offline.",
+        "Before running, predict every positive fixture result; then change one invalid input and explain why the rejection must remain visible.",
+        "Add one boundary test beyond the supplied assertions and explain which contract it checks.",
+        "Write an evidence/limitations note: separate toy arithmetic from trained model quality, optimized kernels and deployment behavior.",
+        "Four-hour 240-minute plan:20 min recall;50 min mechanisms;30 min worked example;75 min coding;40 min defense;25 min review. Follow this allocation before expanding optional references."
+      ],
+      "checks": [
+        "Zero initialization stays 0 with loss 1; this is a maximum, not a local minimum.",
+        "Initial\u00b1.1 approaches\u00b11 within 1e-8 under step .05.",
+        "Saddle origin has both uphill and downhill directional values.",
+        "Step 5 reports instability; NaN,zero step and bool iterations fail."
+      ],
+      "pitfalls": [
+        "Calling the best checkpoint across a few runs a proven global optimum.",
+        "Interpreting the perturbed maximum experiment as proof of escaping every local well.",
+        "Claiming selective state spaces remove nonconvex optimization problems."
+      ],
+      "files": [
+        {
+          "name": "day19_foundations.py",
+          "language": "python",
+          "code": "import math\n\ndef loss(x):\n    return (x*x-1)**2\n\ndef gradient(x):\n    return 4*x*(x*x-1)\n\ndef descend(initial, step=.05, iterations=120):\n    if type(initial) not in (int, float) or not math.isfinite(initial):\n        raise ValueError('finite initial point required')\n    if type(step) not in (int, float) or not math.isfinite(step) or step <= 0:\n        raise ValueError('finite positive step required')\n    if type(iterations) is not int or iterations < 0:\n        raise ValueError('nonnegative integer iterations required')\n    x, history = initial, [loss(initial)]\n    for _ in range(iterations):\n        x -= step * gradient(x)\n        if not math.isfinite(x) or abs(x) > 1e20:\n            raise ArithmeticError('unstable trajectory')\n        history.append(loss(x))\n    return x, history\n\ndef main():\n    assert loss(-1) == loss(1) == 0\n    assert gradient(0) == 0 and loss(0) == 1\n    stuck, unchanged = descend(0)\n    assert stuck == 0 and set(unchanged) == {1}\n    positive, history = descend(.1)\n    negative, _ = descend(-.1)\n    assert math.isclose(positive, 1, abs_tol=1e-8)\n    assert math.isclose(negative, -1, abs_tol=1e-8)\n    assert all(b <= a+1e-14 for a,b in zip(history, history[1:]))\n    # Saddle f(x,y)=x*x-y*y: gradient=(2*x,-2*y), Hessian=diag(2,-2).\n    saddle = lambda x,y: x*x-y*y\n    assert saddle(0,.1) < saddle(0,0) < saddle(.1,0)\n    assert (2*0,-2*0) == (0,0)\n    try:\n        descend(.5, 5, 20)\n    except ArithmeticError:\n        pass\n    else:\n        raise AssertionError('large-step instability not reported')\n    for args in ((float('nan'), .05, 1), (0, 0, 1), (0,.05,True)):\n        try:\n            descend(*args)\n        except ValueError:\n            pass\n        else:\n            raise AssertionError('invalid optimizer input accepted')\n    print('day19 PASS: stationary maximum, two global minima, saddle directions, unstable step')\n\nif __name__ == '__main__':\n    main()\n"
+        }
+      ],
+      "limits": "Python 3.11+ standard-library-only executable fixture; no package install, provider, socket, model download or training. All assertions are deterministic numerical/contract tests. Analytical functions are not a neural training landscape. Perturbing a maximum is not a general local-minimum escape guarantee."
+    },
+    {
+      "day": 20,
+      "title": "Ternary symbols, arithmetic and representation error",
+      "explanation": "Map six finite weights into{-1,0,+1}using a declared threshold, then compute an integer dot product through add/subtract/skip. Compare it with the original float dot to expose conversion error. Test exact threshold ties, alphabet validation, shape mismatch and invalid types. Compute log2(3) and compare ideal information with simple 2-bit symbol packing, explicitly excluding scales and other tensors. This is an untrained numerical illustration, not BitLinear, a quantization-aware training path or real LLM inference. Connect it to a component precision map and distinguish representation from Mamba sequence architecture before discussing deployment.",
+      "steps": [
+        "Save day 20_foundations.py from the reference download and run python 3 day 20_foundations.py offline.",
+        "Before running, predict every positive fixture result; then change one invalid input and explain why the rejection must remain visible.",
+        "Add one boundary test beyond the supplied assertions and explain which contract it checks.",
+        "Write an evidence/limitations note: separate toy arithmetic from trained model quality, optimized kernels and deployment behavior.",
+        "Four-hour 240-minute plan:20 min recall;50 min mechanisms;30 min worked example;75 min coding;40 min defense;25 min review. Follow this allocation before expanding optional references."
+      ],
+      "checks": [
+        "Threshold .25 maps six weights to [-1,0,0,1,1,1].",
+        "Ternary dot 16 differs from float 11.64 by 4.36.",
+        "Boundary\u00b1.25 map to 0; invalid symbol 2,bool and mismatched lengths fail.",
+        "log2(3)\u22481.58496; simple packing exceeds ideal symbol information before overhead."
+      ],
+      "pitfalls": [
+        "Calling Mamba another name for 1-bit language modeling.",
+        "Claiming quantization is lossless because the symbols are simple.",
+        "Assuming low-bit state has the same numerical behavior as low-bit feed-forward weights."
+      ],
+      "files": [
+        {
+          "name": "day20_foundations.py",
+          "language": "python",
+          "code": "import math\n\ndef ternarize(weights, threshold):\n    if type(threshold) not in (int,float) or not math.isfinite(threshold) or threshold < 0:\n        raise ValueError('nonnegative finite threshold required')\n    if not weights or any(type(w) not in (int,float) or not math.isfinite(w) for w in weights):\n        raise ValueError('nonempty finite weights required')\n    return [-1 if w < -threshold else 1 if w > threshold else 0 for w in weights]\n\ndef ternary_dot(symbols, values):\n    if not symbols or len(symbols) != len(values):\n        raise ValueError('matching nonempty vectors required')\n    if any(type(s) is not int or s not in (-1,0,1) for s in symbols):\n        raise ValueError('ternary integer symbols required')\n    if any(type(v) is not int for v in values):\n        raise ValueError('integer fixture activations required')\n    total = 0\n    for symbol, value in zip(symbols, values):\n        if symbol == 1:\n            total += value\n        elif symbol == -1:\n            total -= value\n    return total\n\ndef main():\n    weights = [-.9,-.2,.01,.3,.8,1.1]\n    values = [2,3,4,5,6,7]\n    symbols = ternarize(weights,.25)\n    assert symbols == [-1,0,0,1,1,1]\n    result = ternary_dot(symbols, values)\n    assert result == 16\n    assert result == sum(s*v for s,v in zip(symbols, values))\n    original = sum(w*v for w,v in zip(weights,values))\n    assert math.isclose(original, 11.64)\n    assert math.isclose(result-original,4.36)\n    assert ternarize([-.25,0,.25],.25) == [0,0,0]\n    assert math.isclose(math.log2(3),1.584962500721156)\n    # This comparison excludes scales, metadata, other tensors and alignment.\n    ideal_bits = len(weights)*math.log2(3)\n    naive_packed_bits = len(weights)*2\n    assert ideal_bits < naive_packed_bits < len(weights)*16\n    for weights_bad in ([],[float('nan')],[True]):\n        try:\n            ternarize(weights_bad,.25)\n        except ValueError:\n            pass\n        else:\n            raise AssertionError('invalid weights accepted')\n    for symbols_bad, values_bad in (([2],[1]),([True],[1]),([1],[1,2]),([1],[1.5])):\n        try:\n            ternary_dot(symbols_bad,values_bad)\n        except ValueError:\n            pass\n        else:\n            raise AssertionError('invalid arithmetic boundary accepted')\n    print('day20 PASS: ternary alphabet, add/subtract/skip, explicit error, information vs packing')\n\nif __name__ == '__main__':\n    main()\n"
+        }
+      ],
+      "limits": "Python 3.11+ standard-library-only executable fixture; no package install, provider, socket, model download or training. All assertions are deterministic numerical/contract tests. Threshold mapping is neither trained BitNet nor a calibrated checkpoint conversion; packing figures omit all scales and runtime overhead."
+    }
+  ],
+  "daily": [
+    [
+      "A decoder-only Transformer takes the prompt directly into its own stack. Text is tokenized, token IDs are embedded, positional information is incorporated, and successive causal attention and feed-forward blocks create contextual hidden states. The final prompt position can attend to all earlier prompt positions, so its hidden state supports the first next-token prediction. A vocabulary head produces logits; a decoding policy selects a token, appends it and repeats. Prefill processes the existing prompt; decode generates new tokens. These are phases of the same stack. Tokenizer encoding is a string-to-ID operation, not a separate Transformer encoder. The absence of cross-attention to an encoder does not mean the model lacks representations. I would also distinguish this learned conditional behavior from factual reliability and test whether the response follows the supplied evidence and instructions.",
+      "I distinguish the three families by visibility and source-to-output connectivity. Encoder-only models usually create bidirectional input representations and suit tasks such as classification, tagging or embeddings when trained appropriately. Decoder-only models apply causal self-attention and predict successive tokens from a prefix, making a shared prompt-plus-response stream natural. Encoder-decoder models represent a source separately and generate a causal target with cross-attention to the source. BERT, GPT-style models and T5 are useful examples, but their objectives and downstream adaptations still matter. A decoder-only model absolutely processes input; it lacks a separate encoder stack, not representation building. I would choose based on the task, available checkpoint, context requirements and measured quality, latency and memory. I would inspect masks and output heads rather than assume the most popular family is best for every workload.",
+      "Change exactly one token vector at a later position and compare outputs at earlier positions under otherwise identical computations. In our causal fixture, those earlier outputs must remain unchanged because their permitted keys and values exclude that future position. Also check forbidden probabilities are zero and every allowed row normalizes. A bidirectional control should respond to the future change, showing the experiment is sensitive. This establishes a visibility contract in the fixture, not trained language understanding, a full Transformer implementation or service performance. In a real system I would separately check padding, position offsets, cached continuation and masking during training, because each can introduce a different leakage bug.",
+      "Begin with a representative task set and acceptance thresholds: factual support, instruction following, response format and rejection when evidence is missing. Identify suitable checkpoints from each relevant architecture rather than assuming a family name determines quality. Fix prompt/evidence budgets, adaptation assumptions and hardware. Measure first-token latency, output throughput, peak memory and failure behavior, while preserving tenant/session ownership of caches. For encoder-based retrieval or classification, compare the actual head and embedding training; for generation, inspect source connectivity and context policy. Record truncation and stop conditions. Choose the smallest deployment satisfying measured quality and operational budgets, and disclose where the evaluation lacks coverage.",
+      "During training the complete example is available. Shifted targets define which next token each position predicts, and causal masking prevents a position from using later target inputs. A single forward pass can therefore evaluate many conditional predictions without violating autoregressive factorization. During generation the future output token is unknown, so the model must choose the next token before extending the sequence and predicting another. Prefill processes the known prompt; decode handles this repeated extension. KV caching reduces some recomputation but does not remove the dependency on previously selected output tokens. Different generation algorithms can change execution, so state the precise decoding method before claiming a throughput result."
+    ],
+    [
+      "Diffusion is a generative modeling approach with a defined corruption process and a learned reverse process. In a common Gaussian formulation, training constructs a noisy example at a sampled time and teaches a denoiser to predict the added noise or an equivalent target. At generation time, a sampler starts from noise and applies successive learned updates, optionally conditioned on text or another input. The time/noise level is part of the network input. The forward process, denoising network, target parameterization and sampler are separate design choices. I would not equate diffusion with a U-Net or confuse an oracle algebra fixture with trained generation. Operationally I would evaluate quality, latency, conditioning fidelity and safety at a specified resolution, schedule and step count. A different sampler can change speed and outputs without changing the entire model family.",
+      "A diffusion model does not require a particular encoder-decoder architecture. Diffusion specifies the forward corruption and learned reverse modeling process; the denoising backbone is a separate choice. A U-Net has spatial down/up paths and skips, but that differs from a source encoder plus causal target decoder with cross-attention. Latent diffusion can use an image autoencoder for compression and reconstruction, while a text encoder provides conditioning. Those components should be identified independently. A diffusion Transformer can replace the U-Net denoiser, demonstrating that U-Net geometry is not essential to diffusion. I would draw the noisy-state path, denoiser, sampler, image representation and conditioning path separately. Then I would explain which parts are trained together or frozen, and measure the complete pipeline at its actual resolution and sampling budget.",
+      "The fixture supplies the actual clean scalar and sampled noise when constructing a noisy value. Inverting its equation with that known noise is algebra, so exact recovery requires no learning. At generation time an arbitrary noisy state does not come with its true corruption noise or clean target. A denoiser must estimate a useful target, and a sampler must apply compatible iterative updates. Our wrong-noise test changes the recovered value and exposes this missing knowledge. I would report the fixture as a schedule and numerical identity test only. A trained system needs a defined objective, learned parameters, sampling procedure and separate output-quality evaluation.",
+      "Specify the task, output resolution, conditioning inputs, model/checkpoint version and safety requirements. Record denoiser backbone, representation space, sampler, schedule, conditioning strength and number of model evaluations. Compare latency and memory under the same hardware and realistic batch/concurrency settings. Quality should include task-specific artifact review and conditioning fidelity, not only one aggregate metric. Treat unsafe or memorized outputs as separate failure classes. If fewer sampling steps improve latency, verify quality at those exact settings. Our scalar algebra fixture supplies no evidence about image quality or deployment speed; it is a prerequisite explanation exercise, not the benchmark.",
+      "Write each beta, compute alpha=1-beta and then the cumulative product, not a cumulative subtraction or mean. In the fixture, betas .1,.2,.3 yield alpha_bar .9,.72,.504. The forward coefficients use square roots of alpha_bar and one minus alpha_bar. Validate finite inputs and permitted ranges before evaluating equations; a NaN schedule can silently contaminate all states. Check monotonic cumulative signal and the known-noise recovery identity at several levels. In a large implementation also consider underflow and the exact target/sampler parameterization. A correct schedule does not certify a learned denoiser, so keep numerical checks and output-quality tests separate."
+    ],
+    [
+      "I explain MoE as a workshop that has many workbenches but sends each piece of work to only a few. In the actual model, the piece is a token representation, each bench is an expert neural transformation, and a learned router chooses the active experts and combines their outputs. This provides conditional use of a larger parameter pool. The analogy has limits: experts are not automatically named human specialists, and routing can vary by token and layer within the same prompt. Keeping all benches available still consumes weight memory, and dispatching across devices introduces communication and bottlenecks. If one expert receives too many tokens, capacity and balancing become important. I would use the metaphor to explain sparse activation, then replace it with the hidden-vector-to-router-to-expert-output flow for a technical follow-up.",
+      "A typical router maps the current token hidden vector through learned parameters to expert logits, applies a score/probability transformation and selects top-1 or top-k experts. Their outputs are combined under the model's specified gate normalization. The router is learned with task objectives and often balancing controls; it is not usually a keyword classifier with manually assigned expert domains. Hard selection requires implementation-specific treatment for training gradients, so I would not claim every discrete routing step is differentiable. I would also explain tie behavior and capacity: the highest-scoring expert may already be overloaded. Dispatch and overflow policies must preserve the intended semantics and be measured. Our fixed-weight affine fixture exposes bias effects, stable softmax, tie ordering, selected-set weights and overflow accounting. It validates those contracts without pretending to learn expert specialization.",
+      "First specify the model and service policy; capacity handling changes behavior. Our fixture records an explicit overflow result rather than silently dropping the token or rerouting it with an unspecified rule. Three tokens select expert 0 with capacity 1, producing one accepted record and two overflow records. Every input token ID appears exactly once across outcomes. A production design may queue, reroute, reject or use a model-defined dropping rule, but must account for it and evaluate quality consequences. Monitor per-expert loads and overflow alongside tail latency. Average active-parameter counts cannot reveal a hot expert or prove the dispatch policy is acceptable.",
+      "All experts contribute to the parameter pool and may need resident memory, loading or distributed placement, even when each token activates only a subset. Shared layers and router computation still run. Dispatch across devices introduces communication, and skewed routes can make one expert a bottleneck. Capacity policies can change quality or increase queuing and tail latency. I would compare total and active parameters separately, then measure actual peak memory, communication, utilization, quality and end-to-end latency on the intended traffic mix. Sparse activation is a mechanism, not a universal cost reduction. A forward top-k fixture cannot establish a real serving advantage.",
+      "The router computes differentiable logits and probabilities, but selecting discrete expert indices is not smoothly differentiable everywhere. A complete training explanation must specify which gradients reach router probabilities, selected expert outputs and any auxiliary losses. Different designs use different routing or gradient treatments. Load-balancing controls can discourage collapse, but their existence does not guarantee stable or semantically meaningful experts. Our fixed affine fixture has no training objective and only checks selection, normalization, ties and accounting. I would inspect the actual implementation before describing its gradients, and evaluate router/expert utilization and task quality during controlled training runs."
+    ],
+    [
+      "Mamba is a sequence architecture based on selective state-space models. It carries a recurrent hidden state and makes important update parameters depend on the current input, so information retention and propagation can respond to content. Its implementation combines a specific state-space parameterization with surrounding neural components and a hardware-aware scan for efficient training. During recurrent inference, state size can remain fixed with respect to sequence length for a fixed model configuration. That differs from an ordinary Transformer attention cache. I would not describe it as just an old RNN, a scalar running average or a guarantee of perfect long-term memory. I would evaluate the trained checkpoint on the intended task and hardware, including quality, throughput and memory. Our scalar fixture teaches selective state updates and reset boundaries; it does not implement full Mamba or demonstrate a real model speedup.",
+      "The central difference is how sequence history enters the computation. A standard Transformer uses content-dependent attention over token keys and values; Mamba uses a selective recurrent state-space update that compresses history into a fixed-size state for a fixed architecture. Full attention has quadratic token-pair work during a sequence pass, while selective state updates have linear sequence-length scaling with fixed dimensions. Ordinary autoregressive attention caching grows with context; recurrent state can remain bounded. Optimized kernels, hybrids and restricted attention complicate a simple comparison. Mamba's state compression and attention's explicit historical access have different quality trade-offs, so I would test retrieval-sensitive tasks as well as latency and memory. I would distinguish training, prefill and decode measurements and avoid universal \u201cfaster and better\u201d claims. The toy recurrence illustrates state mechanics, not a production architecture comparison.",
+      "Run a sequence in one pass and record its final state/output. Then split it at a known boundary, carry the exact compatible intermediate state into the second chunk and assert parity with the full run. Also reset to a fresh initial state and verify it behaves as a new sequence. Bind state to model/configuration and session identity; otherwise a checkpoint from another user or incompatible model can corrupt behavior. Our scalar fixture checks this deterministically but omits layered tensors, convolution state and serialization. A real deployment should test those components, interrupted writes and model upgrades. Chunk parity establishes state ownership and continuation, not language-model quality.",
+      "Use a compatible trained checkpoint and representative tasks, including exact retrieval or long-distance dependency tests if the service requires them. Hold hardware, precision, budgets and evaluation criteria explicit. Measure training or serving phases separately: prompt processing, one-token decode, throughput and peak memory are different outcomes. State whether the baseline uses full, restricted or hybrid attention and optimized kernels. Check session reset and checkpoint continuation failures. Mamba's selective recurrence suggests different history-storage and scaling trade-offs, but theoretical terms do not establish a universal quality or speed win. The scalar fixture tests a teaching contract and should never be presented as the replacement benchmark.",
+      "A fixed representation compresses histories, so different sequences can map to the same state. If a later query depends on a distinction already lost, the state alone cannot recover it. Our scalar example maps [1] and [0,1] to the same final state, erasing their different lengths. A larger learned state can preserve useful features and selection can improve retention, but neither supplies an unlimited exact archive. The operational question is whether a trained model preserves what the target tasks require. Test such behaviors across lengths and distribution shifts, and compare appropriate attention baselines. A memory-size bound and a recall-quality claim require different evidence."
+    ],
+    [
+      "A local minimum minimizes the stated objective within some neighborhood; a global minimum minimizes it over the full feasible parameter domain. The same objective may have several global solutions. For smooth interior points, zero gradient is necessary but not sufficient: a saddle can have zero gradient while offering a downhill direction. Hessian curvature can identify simple cases, but semidefinite curvature can be inconclusive. I would not diagnose a flat training trace as a local minimum without checking gradients, conditioning, optimization settings and data. I would also separate empirical training loss from held-out task quality. Minimizing a poorly chosen or overfit objective does not establish a good deployed model. In our toy, x\u00b2-y\u00b2 at the origin is a saddle; (x\u00b2-1)\u00b2 has two global minima. Those examples clarify definitions without implying that a production network has the same landscape.",
+      "At a differentiable saddle the gradient can be zero while curvature has both positive and negative directions. For x\u00b2-y\u00b2, the origin is stationary; moving along y reduces loss and moving along x increases it. Plain gradient descent initialized exactly there has zero movement if no additional state or perturbation contributes. Nearby points may follow different trajectories. This clarifies why a plateau alone cannot certify a minimum. Numerical noise, mini-batch variation or deliberate perturbations can affect movement, but none generally guarantees optimal convergence. In a real run I would inspect gradients, updates, objective correctness and held-out behavior before assigning a geometric diagnosis.",
+      "The fixture has g(x)=(x\u00b2-1)\u00b2, which is nonnegative and reaches zero at\u00b11. Those are proven global minima for this toy objective. At 0 the gradient is zero but loss is 1, and the point is a local maximum. Plain descent stays there; a small changed initialization under a stable step reaches one minimum. A very large step becomes unstable and is reported. This proves programmed behavior and known analytical geometry, not escape from every local minimum or convergence of a real network. The fixture contains no data split or generalization problem, so it cannot establish deployed task quality.",
+      "Freeze the observed data, checkpoint, loss and optimizer settings. Verify labels, target alignment, masks, finite inputs and loss computation. Fit a tiny clean fixture and check intended parameters receive finite useful gradients. Inspect gradient norms, update norms, learning-rate history and train/validation divergence. Only then test schedules, restarts, optimizer changes or initializations under equal compute with multiple seeds. Preserve validated checkpoints and compare held-out task metrics, not only training loss. Architecture-specific hypotheses require additional evidence. A plateau may reflect numerical conditioning, saturation, wrong targets or capacity, so avoid announcing a local-minimum diagnosis from one chart.",
+      "Mamba still faces optimization difficulties. It is a parameterized neural sequence model trained on an objective; selective state-space computation does not imply convexity or guaranteed convergence to a global minimum. Its input-dependent maps, state dynamics and surrounding projections can be sensitive to initialization, precision, sequence length and optimizer settings. I would check ordinary data, loss and gradient problems first, then inspect state/update behavior and implementation-specific numerical conventions. A tiny controlled task, finite-gradient checks, multiple seeds and a matched baseline provide more evidence than a family-level claim. I would distinguish a saddle, flat region or numerical instability from a demonstrated local minimum. The bounded recurrent-state property concerns inference history storage; it says nothing by itself about loss geometry. Our untrained scalar recurrence makes no claim about real Mamba training outcomes."
+    ],
+    [
+      "A 1-bit LLM generally describes very low-precision weight computation in major model components; it does not mean every tensor and training state is one bit. Original binary BitNet and ternary BitNet b1.58 should be distinguished. The latter uses {-1,0,+1}; log2(3) explains the 1.58 terminology, while actual storage also includes packing, scales and other parameters. Low-bit-aware training differs from post-training rounding of an existing checkpoint. I would ask which layers, activations and metadata are quantized, how training handles the discrete transform and which kernels are available on the target hardware. Then I would measure held-out quality, peak memory and latency. The scalar ternary lab illustrates add/subtract/skip arithmetic and quantization error; it is not a BitNet implementation or evidence that any existing Transformer can be converted losslessly.",
+      "Map each original weight using the declared threshold: below-.25 becomes-1, above .25 becomes 1 and the rest becomes 0. For the six fixture weights this yields [-1,0,0,1,1,1]. Add/subtract/skip against inputs [2,3,4,5,6,7] gives 16. The original floating dot is 11.64, so the unscaled difference is 4.36. This makes representation error visible; it is not a lossless conversion. Boundary weights exactly\u00b1.25 map to 0 under our explicit tie policy. Validate dimensions, integer activation contract and the ternary alphabet. Real low-bit layers add scales and training/calibration machinery, and Python arithmetic supplies no packed-kernel speed evidence. Report the declared scale convention with the error, rather than treating a symbol alphabet as a complete quantization method.",
+      "log2(3) describes the ideal information required to distinguish three symbols. A simple fixed-width code needs two bits per ternary symbol, and real storage includes packing, alignment, scales, metadata and any nonquantized parameters. Activations, recurrent state, optimizer state and embeddings may have different precision. Therefore model file size and peak serving/training memory must be measured or calculated from an exact component map. The fixture compares ideal symbol information and naive packing only; it omits all system overhead. I would not divide an entire FP16 checkpoint size by 16/1.58 and present that as measured deployment savings.",
+      "Mamba and 1-bit LLMs are different concepts. Mamba names a sequence architecture based on selective state-space updates; low-bit language modeling concerns numerical representation and training/computation methods. BitNet's published approaches are Transformer-based, so binary or ternary weights do not imply Mamba, and Mamba does not imply low-bit weights. These axes may be combined in research or engineering, but compatibility and quality are not automatic. I would specify which projections, recurrent state and other quantities are quantized, which remain higher precision, and what kernels and training procedure support the design. Recurrent numerical effects deserve explicit tests. Then I would compare a compatible trained checkpoint against baselines under fixed quality, hardware and workload constraints. Our two separate toys teach state updates and ternary arithmetic; they establish no combined model quality or speed claim.",
+      "Specify the actual trained checkpoint or supported conversion, the precision of each projection and recurrent-state quantity, scale handling and target kernels. Compare a suitable higher-precision baseline on identical tasks, token budgets, hardware and serving settings. Check long-sequence numerical drift, chunk continuation, fresh-session reset and finite state/update behavior. Quality gates must pass before claiming latency or memory gains. Record packed model size, peak runtime memory and phase-specific timings separately. Architecture and precision can interact, so combining two claimed theoretical benefits does not predict the result. The two independent teaching toys demonstrate neither trained compatibility nor a deployment speedup."
+    ]
+  ],
+  "design": [
+    "Design an architecture-selection review for a document-answering service with isolated customer sessions. Define evidence-grounded answer quality, unsupported-answer rejection, schema validity and acceptable latency before choosing a model family. Separate retrieval/classification workloads from generative continuation; inspect candidate masks, heads and source-to-target paths. Pin checkpoint, tokenizer, prompt template, context limit and decoding configuration. Bind cached state to a single authorized session and model version. Record actual prompt tokens, truncation decisions, first-token latency, decode throughput and peak memory on a representative corpus. Test future-token isolation in an untrained arithmetic fixture, then test the trained serving implementation separately, including padding and cached continuation. Preserve failure examples and compare under equal hardware and output budgets. Choose a checkpoint that meets the required quality and operational thresholds; a family label is insufficient evidence. Document unsupported tasks and escalation paths. The offline lab supplies visibility checks only and should never appear in the review as proof of trained understanding or speed.",
+    "Design a diffusion pipeline review that names every component and its role. State whether the noisy state contains pixels or latent tensors, identify the denoiser backbone, and separate optional image compression and conditioning encoders from the diffusion process. Pin the checkpoint, target parameterization, schedule, sampler, resolution and conditioning configuration. Define quality, fidelity, safety and latency acceptance criteria using representative prompts and artifact review. Count denoiser evaluations and measure memory and elapsed time under realistic batch settings. A lower step count must still pass the agreed output checks. Validate the forward-noise algebra and schedule boundaries in the offline fixture, while explicitly labeling its known-noise recovery as an oracle identity. A trained denoiser and reverse sampler require different evidence. Preserve rejected or unsafe artifacts for categorized review without exposing private inputs. Report which components are frozen or adapted and which workloads remain untested. An encoder in a diagram should never substitute for this role-based explanation.",
+    "Design an MoE serving review around token accounting, quality and device placement. Specify the expert pool, active top-k rule, gate normalization, tie policy and capacity handling for the actual implementation. Separate total weight memory, active expert arithmetic, shared-layer work and dispatch communication. Measure per-expert loads, overflow, utilization and tail latency on both representative and skewed traffic. Every input token must have an observable outcome; any model-defined drop or reroute behavior requires an explicit quality assessment. Compare trained outputs under the intended workload before claiming expert specialization. For training explanations, document router gradient treatment and balancing mechanisms instead of pretending hard sorting is smoothly differentiable. The offline fixture freezes an affine router, supplies scalar expert outputs and returns explicit overflow records; it validates forward contracts, not trained language capability. Bind routing reports to model/configuration identity. Use quality gates and actual hardware measurements to justify scaling, and record failure policies when an expert or device becomes unavailable.",
+    "Design a selective-state service with explicit session ownership and continuation contracts. Identify the real checkpoint and all per-layer state, including any surrounding convolution state. A checkpoint should bind model/configuration identity, sequence boundary and authorized session; incompatible or cross-session state must be rejected or reset under a stated policy. Verify full-run versus chunked-run parity, fresh-session isolation and interrupted checkpoint behavior. Evaluate tasks that need detailed historical recall at multiple lengths, because a fixed state compresses information. Compare suitable attention or hybrid baselines using matched hardware, precision, token budgets and quality thresholds. Measure prompt processing, one-token decode, throughput and memory separately. The offline scalar recurrence is untrained and omits Mamba discretization and optimized scans; its collision example teaches capacity reasoning, not a verdict on trained models. Monitor finite states and numerical drift. Keep architecture efficiency, training convergence and deployment correctness as separate claims, each with its own evidence and remaining limitations.",
+    "Design a training-investigation protocol that starts with an immutable problem statement rather than an escape trick. Record data version, split rules, objective, loss masks, checkpoint, optimizer, learning-rate schedule, precision and random seeds. Verify a tiny clean dataset can be fit and that intended parameters receive finite gradients. Track gradient norms, update norms, learning rate, training loss and held-out task metrics. A plateau opens several hypotheses: wrong targets, saturation, conditioning, numerical instability, capacity or stationary geometry. Do not certify a local minimum from a chart. Compare changes under equal compute with repeated seeds, preserve checkpoints selected by validation and state uncertainty. The analytical fixture distinguishes a stationary maximum, global minima and a saddle, but contains no real-network generalization evidence. Apply the same protocol to Mamba and Transformer training; an inference-storage property does not guarantee convexity. Escalate only after evidence narrows the cause, and document failed hypotheses so repeated expensive restarts do not replace diagnosis.",
+    "Design a low-bit model assessment using a component precision map. Identify sequence architecture, expert topology, trained checkpoint and training-aware or post-training conversion procedure independently. List representations for projection weights, embeddings, activations, scales, recurrent state and optimizer state where applicable. Document packing and supported kernels on the target hardware; ideal log2(3) information is not the measured size of the complete system. Evaluate held-out task quality before reporting storage or latency benefits. For selective-state combinations, test long-sequence drift, finite state dynamics, chunk continuation and fresh-session resets in addition to ordinary output checks. Compare compatible baselines under identical workloads and budgets. The ternary fixture demonstrates threshold mapping, add/subtract/skip and a nonzero reconstruction error; it is not trained BitNet or a calibrated conversion. Report packed artifact size and peak serving memory separately. Do not multiply theoretical gains from unrelated architectures. A supported implementation and reproducible measurements are required for any combined deployment recommendation."
+  ]
+}

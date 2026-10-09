@@ -1,0 +1,585 @@
+{
+  "baseline": [
+    {
+      "answer": "Python evaluates default arguments once when the function is defined. Both independent jobs therefore append to the same default list. I would call add twice without passing rows and assert that each job should start empty; the existing implementation fails that isolation test. Use rows=None and allocate a fresh list inside the function. If the caller intentionally passes a list, document whether the function mutates it or returns a copy. This is shared mutable state, not a threading problem; concurrency can make it worse but is unnecessary to reproduce it.",
+      "pitfall": "Using rows=[] again inside another default parameter leaves the same bug.",
+      "followup": "How would you preserve explicit caller-owned accumulation without sharing implicit state?",
+      "checks": [
+        "Definition-time evaluation",
+        "Independent-invocation test",
+        "Fresh default state",
+        "Document mutation"
+      ],
+      "code": "def add(row, rows=None):\n    if rows is None:\n        rows = []\n    rows.append(row)\n    return rows\n\nassert add('a') == ['a']\nassert add('b') == ['b']\nshared = []\nassert add('c', shared) is shared"
+    },
+    {
+      "answer": "Use a generator with a caller-owned Stats object. Increment seen for each physical line, parse JSON, verify a mapping with nonempty string tenant_id and repo_id, count rejected lines and yield a typed record for valid lines. Keep malformed input distinct from programmer errors: catch JSONDecodeError, not every exception. A generator runs lazily, so counters are partial until exhausted. The caller holds the Stats reference and inspects it during or after iteration. File lifetime belongs to a with-open block surrounding consumption. Memory is O(one parsed line plus caller state); an unbounded single line still needs a record-size limit.",
+      "pitfall": "Returning stats from a generator is not a convenient ordinary return value for a for loop.",
+      "followup": "How do you impose line-size limits and report partially consumed input?",
+      "checks": [
+        "Lazy execution",
+        "Explicit stats ownership",
+        "Narrow exceptions",
+        "Input-size bound"
+      ],
+      "code": "from dataclasses import dataclass\nfrom collections.abc import Iterable, Iterator\nimport json\n\n@dataclass(frozen=True)\nclass Record:\n    tenant_id: str\n    repo_id: str\n\n@dataclass\nclass Stats:\n    seen: int = 0\n    valid: int = 0\n    invalid: int = 0\n\ndef records(lines: Iterable[str], stats: Stats) -> Iterator[Record]:\n    for line in lines:\n        stats.seen += 1\n        try:\n            value = json.loads(line)\n        except json.JSONDecodeError:\n            stats.invalid += 1\n            continue\n        if not isinstance(value, dict) or any(\n            not isinstance(value.get(k), str) or not value[k].strip()\n            for k in ('tenant_id', 'repo_id')\n        ):\n            stats.invalid += 1\n            continue\n        stats.valid += 1\n        yield Record(value['tenant_id'].strip(), value['repo_id'].strip())\n\ns = Stats()\nassert list(records(['{bad}', '{\"tenant_id\":\"t\",\"repo_id\":\"r\"}'], s)) == [Record('t', 'r')]\nassert (s.seen, s.valid, s.invalid) == (2, 1, 1)"
+    },
+    {
+      "answer": "For X shaped (1000,32) and w shaped (32,), X*w broadcasts w across rows and returns (1000,32): every feature contribution remains separate. X@w or (X*w).sum(axis=1) returns (1000,), one dot-product score per row. sum(axis=0) instead aggregates across observations and returns 32 feature totals. Check shape, finite values and dtype first. If an intercept exists, add it after the row score. Broadcasting is useful but can create unexpectedly huge temporaries when singleton dimensions are placed incorrectly.",
+      "pitfall": "X*w is not already a one-score-per-row prediction.",
+      "followup": "What happens when w has shape (32,1) or X contains NaN?",
+      "checks": [
+        "Broadcasting shape",
+        "Correct reduction axis",
+        "Dot-product equivalence"
+      ],
+      "code": "# Requires locally installed NumPy. No network needed at execution.\nimport numpy as np\nX = np.arange(12, dtype=float).reshape(3, 4)\nw = np.array([1., 2., 3., 4.])\nweighted = X * w\nscores = X @ w\nassert weighted.shape == (3, 4)\nassert scores.shape == (3,)\nassert np.allclose(scores, weighted.sum(axis=1))"
+    },
+    {
+      "answer": "Take 10,000 repositories. There are 100 truly high-risk cases, of which 90 are detected. Among 9,900 safe cases, 5% produces 495 false alerts. Total alerts are 585; the fraction truly high risk is 90/585≈15.38%. Equivalently, P(risk|alert)=0.90×0.01/(0.90×0.01+0.05×0.99). Sensitivity is P(alert|risk), not P(risk|alert). I would check whether deployment prevalence matches the evaluation population before estimating reviewer load. A low base rate makes false-positive control operationally important.",
+      "pitfall": "Do not interpret 90% sensitivity as 90% precision.",
+      "followup": "If prevalence increases to 10% with identical conditional rates, recompute precision and reviewer demand.",
+      "checks": [
+        "Correct prior",
+        "True/false alert counts",
+        "Conditional-probability direction"
+      ]
+    },
+    {
+      "answer": "A 95% frequentist confidence-interval procedure covers the fixed population parameter in 95% of repeated experiments under its assumptions. It does not assign a 95% posterior probability to this particular interval. p=0.03 means data at least this extreme have probability 0.03 under the specified null model; it is not the probability the null is true. I would report effect size and uncertainty, sampling design, independence, and number of comparisons. Statistical significance alone does not prove useful business impact, generalization or causality. A randomized design and valid measurement support stronger causal claims than correlation alone.",
+      "pitfall": "p<0.05 is not proof of meaningful improvement or a 97% probability of success.",
+      "followup": "How would correlated tasks or multiple prompt comparisons alter your inference?",
+      "checks": [
+        "Coverage interpretation",
+        "Null-conditional p-value",
+        "Effect size",
+        "Assumptions and multiplicity"
+      ]
+    },
+    {
+      "answer": "Repeatedly picking the best score on the same 40 tasks turns that set into training feedback. The winner may exploit task-specific noise, and many comparisons increase false discoveries. Use a development set for iteration and a protected held-out set for the final comparison. Run configurations on identical tasks, inspect paired differences, repeat stochastic generations, and report task/slice counts and uncertainty. Predeclare the primary metric and safety gates; use appropriate multiple-comparison controls when making inferential claims. Bootstrap independent tasks or clusters at the correct unit, not dependent tokens. A tiny average gain is insufficient when critical safety slices regress.",
+      "pitfall": "Calling the reused set a test set does not make it independent.",
+      "followup": "What if five questions are near-duplicates from one repository?",
+      "checks": [
+        "Adaptive overfitting",
+        "Protected holdout",
+        "Paired evaluation",
+        "Dependence and practical significance"
+      ]
+    },
+    {
+      "answer": "The model is a majority-class baseline with zero recall for the high-risk class. Its 99% accuracy tells us only that safe cases dominate. Show a confusion matrix and compare against DummyClassifier, then measure precision, recall and review cost at candidate thresholds. For a rare positive class, precision-recall behavior and available reviewer capacity matter; ROC-AUC can complement them but does not select the operating point. Optimize the decision policy for the explicit false-negative and false-positive consequences. If no learned model improves the baseline safely, report that instead of manufacturing a model success.",
+      "pitfall": "High accuracy can coexist with complete failure on the business-critical class.",
+      "followup": "What review capacity and false-negative cost would change your threshold?",
+      "checks": [
+        "Majority baseline",
+        "Zero positive recall",
+        "Business cost",
+        "Threshold trade-offs"
+      ]
+    },
+    {
+      "answer": "There are two independent leaks. Fitting the scaler on all records exposes the test distribution; final remediation duration occurs after intake and is unavailable at prediction time. Split before any learned transformation, put scaling/imputation/encoding inside a Pipeline fitted within training folds, and remove or replace future-derived features with intake-time observations. Redefine the target and prediction timestamp explicitly. Rerun model selection and final evaluation on a genuinely uncontaminated holdout. A Pipeline fixes the fit boundary, but cannot make a future feature valid. Version the corrected dataset and retract the earlier inflated score.",
+      "pitfall": "Removing only the scaler leak leaves the future-information leak intact.",
+      "followup": "What other columns could indirectly encode the future outcome?",
+      "checks": [
+        "Two leakage mechanisms",
+        "Fold-local fit",
+        "Prediction-time contract",
+        "Fresh evaluation"
+      ]
+    },
+    {
+      "answer": "Separate evaluation for future releases from evaluation for new tenants. Keep each tenant/repository family from crossing entity-generalization splits, and use chronological cutoffs that reflect prediction time and label maturity. Where both constraints matter, construct a documented joint holdout rather than assuming one sklearn splitter solves everything. Learn transforms in training folds; tune models, calibrators and thresholds on independent/out-of-fold validation data. Report cost-sensitive precision/recall, ranking and reliability, with language/tenant slices and sample counts. Reserve the final test once and exclude late outcomes or later snapshots unavailable at intake. Different deployment claims may need separate test cohorts.",
+      "pitfall": "Randomly splitting repository versions measures memorization, not new-tenant generalization.",
+      "followup": "What do you do when the positive labels have not matured at your time cutoff?",
+      "checks": [
+        "Group boundary",
+        "Temporal boundary",
+        "Threshold/calibration separation",
+        "Protected final holdout"
+      ]
+    },
+    {
+      "answer": "For one batch, put the model in training mode, clear prior gradients, compute logits, compute the appropriate loss, call backward to populate parameter gradients, then optimizer.step to update weights. Without zero_grad, gradients accumulate across batches. That is a bug in ordinary per-batch updates, but can be intentional for larger effective batches if loss scaling and step frequency are designed correctly. Inputs, labels, logits and parameters have different roles and expected shapes/dtypes. Validation uses eval mode and disables gradient recording, without weight updates. Monitor loss and gradient norms rather than assuming every decreasing training curve generalizes.",
+      "pitfall": "model.eval() does not disable autograd; no_grad does not set eval mode.",
+      "followup": "How would you implement four-microbatch gradient accumulation without changing the intended gradient scale?",
+      "checks": [
+        "Forward/loss/backward/update",
+        "Gradient accumulation",
+        "Train versus validation",
+        "Shape/loss contract"
+      ]
+    },
+    {
+      "answer": "Freeze a representative input and compare exact transformed inputs before comparing weights. Check train/eval mode for dropout and batch normalization, preprocessing and tokenizer versions, class-index mappings, dtype/device, precision settings, batch shape, randomness and the loaded architecture. Use eval plus no_grad/inference_mode for inference. Compare intermediate outputs to find the first divergence, and record tolerances for numerical variation. A state_dict can be identical while surrounding inference behavior differs. Retraining before diagnosing the first mismatch hides a reproducibility defect and may introduce another one.",
+      "pitfall": "Matching weight files is not matching the complete inference pipeline.",
+      "followup": "How could changing batch size expose a batch-normalization or padding defect?",
+      "checks": [
+        "Input parity",
+        "Mode parity",
+        "Version/schema parity",
+        "Intermediate comparison"
+      ]
+    },
+    {
+      "answer": "In next-token training, position i must not attend to future token positions j>i, because those tokens would be unavailable at generation time. A causal mask suppresses their attention scores before softmax. Bidirectional encoders generally see both preceding and following context for representation objectives; autoregressive decoders see the prefix to predict the next token. Encoder-decoder models use separate source encoding and conditioned decoding. Attention and padding masks have different jobs. Validate normalization and verify future-token attention probability is zero. The choice follows the training objective and task, not merely the model name.",
+      "pitfall": "A causal mask is not an authorization filter or a way to remove positional information.",
+      "followup": "Where does cross-attention differ from decoder self-attention?",
+      "checks": [
+        "Future-token leakage",
+        "Encoder/decoder objective",
+        "Mask application",
+        "Normalization test"
+      ]
+    },
+    {
+      "answer": "The service authenticates the request, budgets it, applies the model input/chat format and tokenizes text. Prefill computes representations over the supplied context and initial key/value state. Decoding repeatedly computes next-token logits, applies sampling/stopping rules and appends tokens while reusing KV cache. A stop token, limit, timeout or cancellation ends the loop. Time to first token is affected by queueing and prefill; time per output token by decoding and batching. Cache memory scales with retained tokens, layers, KV heads, head size, precision and concurrency. Longer context does not guarantee the model uses all evidence correctly. Record actual tokenizer/model IDs and metered usage.",
+      "pitfall": "Tokens are not fixed-size words; a large context window is not proof of better evidence selection.",
+      "followup": "What changes if output length doubles but input size stays fixed?",
+      "checks": [
+        "Tokenization and format",
+        "Prefill versus decode",
+        "KV state",
+        "Latency/memory limits"
+      ]
+    },
+    {
+      "answer": "JSON schema validation proves structure, not factual correctness. Temperature zero changes selection behavior but cannot make unsupported repository facts true; deployment/runtime variation can also prevent strict reproducibility. Require evidence IDs and validate that the cited dependency exists in the allowed snapshot, with matching version and source span. Reject or abstain on unsupported claims; do not execute suggested tools merely because the JSON parses. Capture the failure class in regression tests and inspect whether retrieval/context omitted needed facts. An unsupported recommendation should not silently become a modernization plan.",
+      "pitfall": "Prompting for valid JSON does not verify dependency existence or tool authorization.",
+      "followup": "How do you distinguish missing retrieval evidence from a generation claim that contradicts supplied evidence?",
+      "checks": [
+        "Structure versus truth",
+        "Evidence validation",
+        "Safe rejection",
+        "Regression case"
+      ]
+    },
+    {
+      "answer": "Start with a measured prompt-only baseline. Use permission-aware RAG for changing repository facts: version documents, retrieve the current authorized evidence and verify citations. Consistent style can often be achieved with clear instructions, exemplars and structured output. Consider supervised fine-tuning/LoRA only if repeated behavior failures remain and high-quality training examples justify cost/privacy/maintenance. Fine-tuning changes model behavior; it is not a reliable freshness or access-control mechanism. Compare alternatives on protected tasks for correctness, style, latency, cost and safety. Keep adapters compatible with the base model and reevaluate after changes. Combine retrieval and adaptation when both demonstrated requirements exist.",
+      "pitfall": "Fine-tuning confidential facts into weights is not a substitute for per-user authorization or updates.",
+      "followup": "What evidence would justify fine-tuning rather than another prompt or retrieval experiment?",
+      "checks": [
+        "Knowledge versus behavior",
+        "Baseline experiment",
+        "Training-data suitability",
+        "Measured trade-offs"
+      ]
+    },
+    {
+      "answer": "Dense retrieval can miss exact identifiers, unusual versions, error codes and negated requirements even when semantic similarity looks plausible. BM25 preserves lexical signals; dense search helps paraphrases. Compare lexical, dense, hybrid fusion and reranked configurations on labeled relevant document IDs, exact-symbol/version queries, ambiguous cases and missing answers. Measure Recall@k, ranking quality, answer support, p95 latency and cost independently. Reciprocal-rank fusion combines rank positions without pretending raw dense and lexical scores are comparable. Reranking can improve ordering but adds compute and can still fail. Select configuration using observed task-level gains, not the word hybrid.",
+      "pitfall": "A higher cosine score is not necessarily more useful evidence for the question.",
+      "followup": "How would you evaluate source-code symbol queries separately from conceptual migration questions?",
+      "checks": [
+        "Dense failure examples",
+        "Lexical/hybrid comparison",
+        "Labeled recall/ranking",
+        "Ablation and latency"
+      ]
+    },
+    {
+      "answer": "Inspect the exact query, authorized corpus version, ranked IDs and labeled relevant passages. Relevant-looking is not sufficient: check that the necessary facts and versions are present. Inspect the final assembled context for truncation, duplicated chunks, lost warnings and ordering. Then run generation with a known-good gold context; if the answer still fails, isolate synthesis, instruction conflicts, citation verification or model limits. Measure retrieval recall/ranking separately from claim correctness, groundedness, completeness and abstention. Log versioned traces with access controls and redaction. This staged intervention locates the failure boundary more precisely than swapping models blindly.",
+      "pitfall": "Good document titles can hide missing spans or incompatible versions.",
+      "followup": "If the answer is fully supported by the wrong outdated document, which metrics detect the problem?",
+      "checks": [
+        "Gold relevance",
+        "Actual final context",
+        "Controlled intervention",
+        "Independent quality metrics"
+      ]
+    },
+    {
+      "answer": "Enforce tenant and document ACLs in trusted services before candidate retrieval and again before source delivery/context assembly. Identity and permission version belong in cache keys; sharing a semantic query key across tenants is unsafe. Propagate deletes/revocations to indexes and caches within a documented bound; authorize in-flight reads again at delivery or cancel them according to policy. Version documents/embeddings/index generations and never mix incompatible vector spaces. Use partitioning/sharding and admission control based on measured ingestion/query load. Revocation guarantees and eventual index lag must be explicit. A service account able to read all documents does not grant each end user that access.",
+      "pitfall": "Metadata filters supplied by the model are not an authorization boundary.",
+      "followup": "How do you prove a revoked document cannot leave a cache during an active request?",
+      "checks": [
+        "Trusted ACL enforcement",
+        "Cache identity/version",
+        "Revocation semantics",
+        "Index lifecycle"
+      ]
+    },
+    {
+      "answer": "Use deterministic transitions for scope, authorization, build/test gates, budget enforcement and approval, because they need reproducible policy. Use model judgment for ambiguous source interpretation, evidence-grounded recommendations and proposed custom transformations. Treat its output as a proposal with schema, evidence and bounded tools. Start with one auditable workflow before adding agent swarms: more agents add coordination cost and can share the same misconception. Persist plan, revision, allowed paths and receipts so runs can resume safely. Measure completion accuracy and unsafe actions on adversarial fixtures, not just conversation quality.",
+      "pitfall": "Planning agents should not decide whether failed gates can be ignored.",
+      "followup": "Which of your current stages require judgment, and which must be fixed policy?",
+      "checks": [
+        "Policy versus judgment",
+        "Bounded proposals",
+        "Durable evidence",
+        "Agent evaluation"
+      ]
+    },
+    {
+      "answer": "A timeout is an uncertain observation; the remote deployment may already exist. Move the run to a pending/reconcile state and query the remote operation by stable idempotency key or request ID. If the API guarantees idempotency, retry using the same key under a bounded policy. Otherwise inspect actual side effects before deciding; do not invent exactly-once behavior. Persist the approved artifact hash, target, request and receipts. Escalate unresolved or conflicting state rather than duplicating deployment. A new key on retry defeats idempotency. Approval must still match the exact artifact and destination.",
+      "pitfall": "Timeout does not mean no side effect; an exit code is not a complete deployment receipt.",
+      "followup": "What if reconciliation succeeds but the artifact hash differs from the approved hash?",
+      "checks": [
+        "Uncertain outcome",
+        "Stable key",
+        "External reconciliation",
+        "Artifact-bound approval"
+      ]
+    },
+    {
+      "answer": "Store model weights plus architecture, preprocessing, feature/schema contracts, class mappings, training code/revision, parameters, dependency/runtime versions, relevant data/split lineage and evaluation/promotion receipts. To reproduce one prediction, retain its exact permitted input or a policy-approved recoverable reference, feature timestamps and serving configuration. For GenAI, include prompt, model/provider version, retriever/index generation, evidence IDs and sampling settings; perfect replay may not be guaranteed by provider updates. Artifact hashes establish identity, not correctness. Data retention/privacy can limit exact replay, so document the operational guarantee instead of keeping sensitive data forever.",
+      "pitfall": "Weights alone omit preprocessing, inputs, environment and release policy.",
+      "followup": "What reproducibility guarantee remains when policy requires deleting raw user input?",
+      "checks": [
+        "Versioned bundle",
+        "Input/feature lineage",
+        "Environment",
+        "Privacy-aware limits"
+      ]
+    },
+    {
+      "answer": "Compare the failing tenant slice against offline sampling and previous release; inspect request schema, feature freshness, preprocessing parity, traffic mix and label definitions before blaming drift. Monitor data quality, prediction distributions, proxy business metrics and delayed labeled outcomes separately. Drift signals diagnosis, not proven performance loss. Use shadow/canary sampling with minimum counts and policy-defined gates, including safety-critical slices. Roll back a coherent model/preprocessing/schema configuration bundle if the release caused harm; retain the failing cases for reviewed regression data. Do not automatically retrain on unverified feedback or expose every tenant to the canary.",
+      "pitfall": "Aggregate improvement can conceal severe subgroup regression.",
+      "followup": "How do you avoid repeatedly rolling forward and back while labels arrive late?",
+      "checks": [
+        "Slice diagnosis",
+        "Delayed labels",
+        "Proxy limitations",
+        "Bundle rollback"
+      ]
+    },
+    {
+      "answer": "On AWS: identity/IAM and workload roles, Bedrock for managed foundation-model APIs, SageMaker for custom training/registry/hosting where needed, EKS/Lambda for workers, API Gateway for admission, object/metadata storage, Secrets Manager/KMS and CloudWatch. On Azure: Entra/workload identity, Azure model services, Azure ML, AKS/Functions, API Management, Key Vault and monitoring. These are responsibility mappings, not identical products. Application code still enforces tenant/resource authorization, quotas, budgets, evidence validation, retry safety, retention and evaluation gates. Pick one primary cloud and verify current support/regions before implementation.",
+      "pitfall": "A managed AI service does not automatically implement your business authorization or safe agent tools.",
+      "followup": "Which permissions does the application worker have, and which user permissions must not be inherited?",
+      "checks": [
+        "Service boundaries",
+        "User/workload identity",
+        "Application responsibilities",
+        "Provider limits"
+      ]
+    },
+    {
+      "answer": "Keep confidential inputs within the approved region and preserve jobs in a durable queue/checkpoint store. Apply per-tenant admission and token/request budgets; use bounded exponential backoff with jitter for eligible transient failures, respecting provider signals. Distinguish queue delay from execution latency, support cancellation and expire stale jobs. Degrade to approved non-LLM responses or defer work instead of silently sending data elsewhere. A cross-region/provider fallback requires explicit policy and evaluation approval beforehand. If quota prevents the SLO, surface the trade-off and revise admission/SLO or obtain capacity; more local workers will not raise the provider quota.",
+      "pitfall": "Unapproved fallback can violate data policy even if it restores availability.",
+      "followup": "How do you prevent one large tenant from occupying the queue and quota budget?",
+      "checks": [
+        "Durable work",
+        "Bounded admission/retries",
+        "Region policy",
+        "Honest SLO trade-off"
+      ]
+    },
+    {
+      "answer": "Attacker controls repository README content. Victim is the authenticated modernization agent and its execution gateway; target assets are secrets, code and provider credentials. The document may be acceptable evidence but its instructions are untrusted. Prevent secret reads through scoped paths/credentials, outbound upload through egress policy, arbitrary commands through typed allowlisted tools, and consequential operations through artifact-bound approval. Separate model analysis from executor authority; redact traces and prevent tool-result forgery. Test a poisoned README and assert the executor denies the requested read/upload even if the model proposes it. No prompt instruction alone establishes that guarantee.",
+      "pitfall": "Ingestion sanitization does not convert third-party content into trusted execution instructions.",
+      "followup": "If the model encodes the secret in an ordinary answer, which separate controls address that channel?",
+      "checks": [
+        "Attacker/victim/asset",
+        "Indirect injection",
+        "Independent read/egress authority",
+        "Negative test"
+      ]
+    },
+    {
+      "answer": "Authenticate the user, then authorize the requested tenant/resource from trusted identity and policy, not user-provided tenant_id. Apply checks at metadata/source APIs, retrieval candidate selection, post-fetch/context assembly, cache lookup/delivery, trace access and every tool operation. Use cache keys with principal/authorization context and source versions; avoid logging another tenant's raw data. Service roles may have broader infrastructure access, but the gateway must preserve end-user scope. Test guessed IDs, cross-tenant joins, stale permissions and active-run revocation. Encryption is necessary but does not fix an authorization bug.",
+      "pitfall": "Authenticated does not mean authorized for an arbitrary document ID.",
+      "followup": "How do you enforce the same authorization contract in batch jobs and synchronous requests?",
+      "checks": [
+        "Trusted resource policy",
+        "Every data boundary",
+        "Cache/trace isolation",
+        "Negative cases"
+      ]
+    },
+    {
+      "answer": "Capture the old/new build artifacts, runtime/framework/transitive dependencies, partner request/response traces with secrets redacted, configuration and identity/TLS behavior. Reproduce with a contract fixture against both versions to locate changed serialization, HTTP behavior, auth callbacks or trust settings. Check baseline test gaps before deciding that unit success proves parity. A Java version and a framework version can change different contracts. Accept only supported intentional changes with stakeholder-approved contract updates; otherwise repair or roll back through a tested artifact/data plan. Preserve the exact failing case as a regression test and report what remains untested.",
+      "pitfall": "Compilation proves a build configuration, not partner behavior.",
+      "followup": "What if rollback of the binary conflicts with a non-backward-compatible database change?",
+      "checks": [
+        "Baseline comparison",
+        "Runtime/config evidence",
+        "Contract reproduction",
+        "Rollback constraints"
+      ]
+    },
+    {
+      "answer": "Python orchestrates snapshot intake, build/AST/dependency discovery, graph analysis, approved plan, recipe preview, isolated transform, checks, build/tests and receipts. Java fixtures exercise real runtime changes; .NET uses an appropriate tool adapter without claiming C# development depth. Prefer semantic recipes for supported mechanical edits, and constrained model proposals for ambiguous changes. Graph gaps from reflection/runtime wiring/generated code remain explicit: add focused source/runtime/contract evidence rather than treating zero edges as safety. Bind approval to plan, revision, allowed paths and artifact hash. A mock adapter demonstrates integration policy, not successful modernization of an unexecuted target.",
+      "pitfall": "A dependency graph is partial evidence; an empty blast radius is not proof of no consumers.",
+      "followup": "How do you prevent a plugin from turning a narrow plan into arbitrary shell execution?",
+      "checks": [
+        "Evidence-first pipeline",
+        "Recipes versus judgment",
+        "Explicit graph gaps",
+        "Scoped approval/receipts"
+      ]
+    },
+    {
+      "answer": "Start with an asynchronous job API: create immutable repo snapshot/job, query status/report, submit scoped approvals and cancel work. Store durable run state in a metadata DB; artifacts/evidence in object storage; queue ready work; execute in isolated short-lived workspaces. Python workers perform discovery, retrieval, transformation and validation via adapters, with Java fixture parity tests. Illustrative planning: 50 concurrent jobs at 3 calls/minute means 150 model calls/minute; at 4,000 total tokens/call, 600,000 tokens/minute before retries. Bound tenant fairness, call/token spend and wall time. Publish job/ingestion/provider SLOs, recovery objectives and exact-artifact approval. Measure time-to-validated-change and escaped regressions, not code churn.",
+      "pitfall": "500 applications is an inventory size, not enough information to determine throughput or storage.",
+      "followup": "What changes if model quota is one-third of your estimated peak requirement?",
+      "checks": [
+        "Explicit requirements",
+        "Quantified assumptions",
+        "Durable isolated flow",
+        "Policy, recovery and outcomes"
+      ]
+    },
+    {
+      "answer": "Use an honest template: ‘In [real project], [specific stakeholder concern] blocked [decision]. My responsibility was [scope]. I compared [alternatives], gathered [actual evidence], and proposed [reversible pilot]. I personally [actions] and worked with [stakeholders] to agree [decision criteria]. The observed result was [truthful measured outcome or qualitative result], and [limitation/lesson] changed how I lead now.’ If there is no matching production example: ‘I have not owned that exact production ML situation. My relevant experience is [true adjacent case]; in this capstone I demonstrated [actual local evidence], not production operation.’ Never fill the blanks with fabricated scale or impact.",
+      "pitfall": "A polished invented story is worse than an honest experience boundary.",
+      "followup": "What did you personally decide, and what result can you substantiate?",
+      "checks": [
+        "True context",
+        "Personal ownership",
+        "Rejected alternative",
+        "Evidence and learning"
+      ]
+    }
+  ],
+  "daily": [
+    [
+      "Use a frozen dataclass for normalized data, explicit validation for incoming strings and a separate result/error type or exception policy. Strip identifiers, validate allowed language and numeric ranges, parse aware timestamps, and reject NaN/Infinity. Types help tools; they do not enforce data correctness at runtime.",
+      "A generator avoids loading all input, but a caller that list()s its output, a dedup dictionary growing with unique keys, or exact median aggregation still retains O(n) state. Bound line size and aggregation, or spill/sort in external storage. State the whole-pipeline bound, not just the parser bound.",
+      "A many-to-many join creates one output row per matching pair. Inspect key uniqueness and row counts before/after merging, use validate='one_to_one' or the intended relationship, include tenant in composite keys and define missing-key behavior. Do not remove duplicates blindly after multiplying business records.",
+      "Publish output atomically with schema/input/run IDs, reconciled valid/invalid/superseded counts and an explicit partial-success policy. Downstream must know which records were excluded. Make retry identity stable and preserve original input plus quarantined error categories without logging secrets.",
+      "For exact dedup keep latest (tenant,repo) state or use an external key store/sort. For exact median keep/sort values or external-sort bounded partitions; a fixed-memory approximate quantile must be labeled approximate. With 2 million keys, measure per-key overhead before promising a 256 MB bound."
+    ],
+    [
+      "Large build outliers pull the mean upward while median is less affected. Report both and distribution/slice counts. Median does not describe tail risk: also inspect p95 and maximum with adequate samples. Use the statistic that answers the operational question, not whichever looks better.",
+      "A confidence interval reflects long-run coverage of a method under assumptions. It does not make the fixed parameter random in the frequentist interpretation. Report effect size, valid sampling unit and uncertainty; distinguish posterior intervals if doing Bayesian inference.",
+      "With rare events, false alerts from the large safe population can outnumber true alerts even at high sensitivity. Compute TP and FP using prevalence, then precision. Improve the operating policy through lower false-positive rate, appropriate targeting and reviewer capacity, not sensitivity alone.",
+      "Choose threshold using validation costs and reviewer capacity, then test on a protected cohort. Expected cost is FP×cost_FP + FN×cost_FN, with operational constraints and calibration checked. The optimum shifts with prevalence and business consequences; it is not always 0.5.",
+      "Training labels from previously reviewed repos select a biased population. Repeated prompt/model testing inflates apparent wins. Define intended population, obtain representative labels where possible, respect clustered observations, protect holdout and report uncertainty plus practical significance."
+    ],
+    [
+      "Precision measures how many flagged cases truly matter; recall measures how many true risky cases are found. High recall can overload the queue with false positives; high precision may miss expensive failures. Choose using costs, capacity and risk policy rather than maximizing an isolated metric.",
+      "A scaler learns mean/variance. Fitting before cross-validation gives training folds information about held-out distributions. Place all learned transforms inside the fold-local Pipeline; fixed business parsing rules can run before splitting if they do not learn from outcomes.",
+      "ROC-AUC measures ranking across thresholds, not probability reliability. Plot reliability and use independent/out-of-fold calibration; inspect PR behavior and business thresholds. A well-ranked score may still exaggerate risk, and calibration does not automatically improve ranking.",
+      "Evaluate new-tenant and future-release cohorts separately with joint entity/time constraints where needed. Show per-tenant/language slices and sample counts, macro versus volume-weighted metrics and uncertainty. A global average should not silently hide a critical tenant regression.",
+      "Record the split IDs and proof that model/hyperparameter/threshold/calibration decisions used only training/validation. Keep the test cohort locked until final reporting. If it influenced iteration, designate it development and obtain a new untouched test cohort."
+    ],
+    [
+      "For input (B,F), Linear(F,H) yields (B,H), activation preserves that, and Linear(H,C) yields logits (B,C). Multiclass labels are (B,) integer indices for CrossEntropyLoss. Check dimensions/dtypes explicitly before changing the architecture.",
+      "backward traverses the recorded computation graph and accumulates gradients into leaf parameters. It does not update their values; optimizer.step does. Reset gradients for ordinary per-batch training, or deliberately scale/accumulate them for a defined effective batch.",
+      "Dropout randomizes activations in train mode; batch normalization uses training batch statistics/updates state. eval changes those layers' behavior. no_grad or inference_mode controls graph recording independently. Inspect preprocessing and mode before blaming checkpoint weights.",
+      "Keep logistic regression if it meets quality and operational requirements with less data, compute and debugging burden. Compare held-out error slices, calibration, latency and maintainability. Deep learning earns adoption through evidence, not extra layers.",
+      "Falling train loss and rising validation loss suggests overfitting, but first check split validity, train/eval mode and distribution differences. Examine learning curves/slices; try earlier stopping, appropriate regularization, simpler capacity or better representative data, and reevaluate without test-set tuning."
+    ],
+    [
+      "Subword tokenization splits words, symbols and whitespace patterns into model-specific units. Code and multilingual text have different counts. Record tokenizer/input format and measure actual tokens; a universal characters-per-token conversion is only a rough budgeting guess.",
+      "Queries score compatibility with keys; normalized scores weight value vectors. Learned projections allow representations to select information relevant to each position. Q, K and V are tensor roles, not database queries or external facts.",
+      "The causal mask suppresses future positions so next-token training matches prefix-only generation. Apply it to attention logits before normalization. Without it, training can use the answer and inflate apparent capability; test that future probability mass is zero.",
+      "Queueing/prefill mainly affect time to first token; output decoding affects tokens per second and completion time. Set separate latency/throughput metrics and context/output limits. Batching helps throughput but can increase waiting/tail latency and cache-memory pressure.",
+      "A larger context window does not guarantee attention to relevant evidence, freshness, authorization, reasoning correctness or affordability. Select/version/cite evidence, test long-context distractors, and measure truncation and retrieval failure rather than dumping the full repository."
+    ],
+    [
+      "Temperature reshapes sampling probabilities; top-p restricts cumulative probability mass. Neither ensures truth or authorizes tools. Compare task behavior and output stability on fixed cases before selecting settings; keep factual validation separate.",
+      "Schema validity checks structure, required fields and types. It cannot establish that a dependency exists, that evidence supports the plan, or that the caller can write the path. Apply semantic evidence checks and independent trusted policy after parsing.",
+      "Use LoRA when stable behavior needs adaptation, quality examples exist, and prompting/RAG baselines leave measured failures. Use RAG for current permissioned knowledge. Both may coexist. Evaluate adapter/base compatibility, training/held-out data, privacy, maintenance and deployment complexity.",
+      "Evaluate candidate hosted or open-weight models on the same repository tasks, with quality/safety thresholds, tool adherence, latency, metered cost, data policy, license and deployment constraints. Do not choose GPT/Claude/Gemini/open weights by reputation or remembered context/pricing claims.",
+      "Reduce unnecessary context, retrieve exact evidence, cache only authorized/versioned reuse and route simple tasks to cheaper configurations. Compare paired held-out quality/security results and real token/billing data. A 50–80% savings target is conditional; show where the actual experiment lands."
+    ],
+    [
+      "An embedding represents content in a learned vector space where selected similarity metrics can approximate task-relevant closeness. It is not a fact database or permission record. Model/version/dimension/normalization belong to index metadata; evaluate usefulness on labeled queries.",
+      "BM25 can beat dense retrieval for exact symbols, error codes and rare version strings. Dense can help paraphrases. Compare lexical, dense, hybrid and reranked settings with relevance labels and latency budget; do not sum incompatible raw scores without a principled fusion rule.",
+      "Compare ranked relevant passages, assembled context and cited claims. Generation with gold evidence isolates synthesis; retrieval evaluated alone isolates evidence finding. Check versions/truncation and score correctness, support and completeness separately.",
+      "Authorize documents in trusted code before retrieval and before delivery. Include tenant/principal/ACL version and source version in caches; support invalidation/revocation and trace access. A query filter written by the model is not enough. Test guessed IDs and permission changes in flight.",
+      "Build a new index generation with a new embedding model; dual-run evaluation and switch an explicit active-version pointer after gates. Keep old generation for rollback and reconcile deletions/ACLs. Never query mixed incompatible spaces merely because vector dimensions happen to match."
+    ],
+    [
+      "A deterministic workflow has defined transitions/gates; an agent chooses among bounded actions from observations. Use model choice only where ambiguity adds value. Preserve fixed authorization, budgets, receipt validation and human approval. Autonomous does not mean unbounded.",
+      "Persist authoritative run state in a durable store with revision, scope, plan hash, checkpoints and receipts. Retrieved memory is evidence for reasoning, not authority to broaden scope. Partition by tenant and treat stale/pending claims as leads needing validation.",
+      "Timeout can mean pending remote success. Reconcile by operation/idempotency key before replay; classify transient errors separately from unsafe uncertain side effects. Bound retries and keep receipt identity stable. Never treat a model's claim of failure as external state.",
+      "Humans control high-impact scope changes and production release against exact evidence. Deterministic machines can approve routine checks within preauthorized policy, but cannot infer broader authority. New diff or target invalidates an old approval.",
+      "Bind input revision, plan, allowed paths, proposed diff, built artifact hash and deployment receipt into the approval chain. Rebuild/reverify after mutation. Validate the deployed artifact identity and target; textual statements from the agent do not complete the chain."
+    ],
+    [
+      "Version weights, transforms, feature/schema contract, class mapping, data/split lineage, code/dependencies and evaluated promotion artifacts. Prediction replay also needs permitted input/feature timestamps and serving configuration. A registry entry organizes this evidence, not certifies it.",
+      "Data drift changes input distributions; concept drift changes the relationship between input and target. Quality loss requires outcome evidence under a valid metric, though drift can be an early clue. Monitoring should trigger diagnosis, not automatic unreviewed retraining.",
+      "Track input quality, feature freshness, schema, prediction distributions and carefully validated proxies while awaiting labels. Join delayed outcomes to the correct model/input version and evaluate by slices. Do not present unlabeled proxy stability as proven accuracy.",
+      "Shadow predictions do not affect user decisions; canary limits release exposure; randomized A/B can estimate business effects with proper design. Select based on risk, label delay and reversibility. Define minimum counts, stopping rules and slice gates.",
+      "Weights expect particular preprocessing, feature order, schema and class semantics. Rolling back weights without those dependencies can preserve or worsen the failure. Restore the validated versioned bundle, then compare representative contract inputs and operational metrics."
+    ],
+    [
+      "A managed model API supplies inference capabilities; a training/registry platform manages custom model lifecycle. Container/serverless workers orchestrate application behavior. Map responsibility and operational ownership, not just product names, before selecting services.",
+      "Workload identity avoids shipping long-lived keys and supports scoped short-lived credentials. It authenticates a service; resource policies authorize actions, and application code still enforces end-user tenant scope. Audit both identity layers and supported connectivity.",
+      "Checkpoint queued work and unfinished operations, apply tenant quotas and bounded retry/backoff, reconcile side effects and surface queue delays. Do not launch more workers than provider budget supports. Fall back only within approved data/quality policy.",
+      "Keep canonical job/evidence/plugin contracts portable; isolate provider auth, model invocation, quotas and networking in adapters. Provider behavior, regional support and operational features remain specific and need evaluation. Overabstracting differences hides important failure modes.",
+      "When residency prevents region failover, availability may be lower than a generic multi-region design claims. Agree SLO/degradation with stakeholders; use same-region resilience, durable queues and approved recovery. Do not move confidential data elsewhere for convenience."
+    ],
+    [
+      "Authentication establishes identity; authorization permits a specific action on a specific resource. A RAG user can be authenticated while forbidden from a source. Enforce access before content enters the model and again at cache/source/tool delivery boundaries.",
+      "A valid JSON tool request may ask to read secrets, traverse a path or deploy to an unauthorized target. Trusted executor policy checks identity, allowed capability, resource scope, argument constraints and approval. The model's confidence is irrelevant to permission.",
+      "Prompting can reduce confusion but cannot fully eliminate prompt injection. Treat documents/tool results as untrusted and constrain consequences with independent read/write/egress policies, typed tools, isolation and approval. Test those boundaries when the model follows attacker instructions.",
+      "Business risk owners accept intended-use trade-offs, residual harm, data retention and release exposure with security/legal/operations input as appropriate. Engineers provide concrete evidence, options and limits. NIST labels should map to owners and lifecycle artifacts, not a checkbox badge.",
+      "Invalidate ACL-aware caches and index access, reauthorize in-flight delivery/tool calls, cancel or deny jobs according to policy and restrict historical traces. Version authorization context and test revocation timing. Retention/deletion propagation has an explicit bound, not an implied instant guarantee."
+    ],
+    [
+      "Runtime upgrades change the execution environment and language/runtime compatibility; framework upgrades change API/configuration and application behavior. They can be coupled but need separate inventory and parity evidence. Upgrade in narrow reviewable steps where supported.",
+      "Reflection, generated code, configuration wiring, plugin loading and cross-language/runtime calls can evade static edges. Treat graph coverage as partial, add focused source/build/runtime evidence and targeted contract tests. Zero discovered callers is not proof of no dependencies.",
+      "HTTPS changes certificate trust, redirects, proxy headers, callback URLs, secure cookies, mixed content and service-to-service behavior. Validate each integration and certificate lifecycle, including termination at ingress and internal links. Encryption does not fix application authorization.",
+      "Semantic recipes are repeatable for supported mechanical changes and can preserve formatting/type-aware matching. Use bounded AI proposals for ambiguous adaptations, checked against source and behavior. Pin tools/recipes, preview diff and validate outputs rather than treating generated edits as automatically correct.",
+      "Define unchanged and intentionally changed behaviors across API/data/identity/config/runtime/deployment. Capture baseline, execute transformations in isolation, build, scan and run contract/integration tests with receipts. Database cutovers need data parity, reversible strategy and compatibility windows, not only code rollback."
+    ],
+    [
+      "Clarify users, modernization tasks, data/tenant scope, evidence/approval obligations, input sizes, load, latency, availability and cost. Mark assumptions before drawing components. If requirements conflict, surface the decision rather than hiding it in a service choice.",
+      "Compute workload rates from applications/jobs/calls/tokens, not the application count alone. Illustratively 50 jobs×3 calls/minute=150 calls/minute; at 4,000 tokens/call, 600,000 tokens/minute. Storage needs source/artifact/trace retention assumptions, indexes and replicas separately.",
+      "Keep source/ACL/version contracts independent of vector storage. Replace dense search with lexical retrieval or another store, then reevaluate exact-symbol and semantic recall plus latency. Preserve authorization and evidence gates; capability/quality may degrade honestly rather than pretending equivalence.",
+      "With five engineers, build one fixture-backed vertical path: intake→evidence→previewed Java change→build/tests→report→human approval. Buy commodity model/storage/identity capabilities where policy allows. Define ownership and measurable adoption before expanding to multiple ecosystems.",
+      "Measure time-to-validated-change, reviewer effort, acceptance rate, escaped regressions, recovery time, spend and adoption. Control for application complexity and track safety/quality as gates. Lines generated or auto-merged are weak incentives that can reward risky churn."
+    ],
+    [
+      "Implement bounded NDJSON parsing with typed output and explicit rejected-row counters; validate identifiers/time/finite numeric fields. Test malformed/oversized/empty records and iterator laziness. Keep whole-pipeline retained state visible, and execute locally rather than equating draft code with proof.",
+      "Choose group/time splits from deployment, prevent future/fit leakage, compare a dummy baseline and tune costs/thresholds only on validation. Report held-out precision/recall/ranking/calibration with slice counts. Explain which decision the model supports and where it must abstain.",
+      "Inference tokenizes/formats context, prefills attention state, then decodes tokens with KV reuse and stopping rules. Retrieval supplies current evidence; fine-tuning adapts behavior from examples. Both require task-specific evaluation, trusted authorization and honest latency/cost accounting.",
+      "Trace user/workload identity through read, retrieval, cache, model and execution boundaries. Enforce typed tools, allowed resources/egress, scoped budgets and artifact-bound approval independently of generated text. Negative tests must exercise denied actions, not only successful prompts.",
+      "Present a true STAR story with personal action and verifiable results, or state lack of direct experience and reason from adjacent work plus actual capstone evidence. Acknowledge an unsuccessful choice and what it taught you; do not fabricate production model ownership."
+    ]
+  ],
+  "design": [
+    "Use an immutable input snapshot and asynchronous tenant-scoped job. Python parsing validates and normalizes rows into an append-only staging area; keyed dedup retains newest (tenant,repo) evidence and quarantines rejects. Publish a versioned report atomically only after counts reconcile. Partition jobs by bounded chunks, apply backpressure and spill exact aggregation state when memory limits require it. Resume by input identity/checkpoint rather than reusing partial output blindly. API supports create/status/cancel/report. Store checkpoints in metadata DB and artifacts separately; authorize every read. Track throughput, memory, reject rates and lag. Replay identical input produces equivalent output; fail safely if schema or input identity changes.",
+    "Define risk at intake, target maturity and business review costs before collecting labels. Obtain representative human-reviewed cases and track selection bias. Keep features limited to intake-time facts; group/time split based on new-tenant/future-release requirements. Train dummy/linear/tree baselines inside fit-local pipelines. Tune threshold using validation capacity and calibration with independent data. Final holdout is immutable. Provide a human review queue with reasons and abstention, record outcome delay and disagreement, and monitor slices. Estimate uncertainty at the tenant/repository sampling unit. Synthetic labels are a learning demonstration, not operational evidence.",
+    "Ingest immutable observations with entity ID, feature timestamp and label maturity timestamp. Build versioned feature datasets with explicit prediction-time availability; avoid joins that introduce future information. Feature transforms and model fitting share a tested Pipeline contract. Separate training, tuning and protected entity/time holdouts. Serving consumes the same schema/transforms and logs versioned predictions. Join delayed outcomes to exact predictions and monitor slice metrics/calibration. Promotion needs cost/capacity and leakage checks. Failed schema/data checks stop training; retraining is deliberate. Lineage connects dataset→split→code→artifact→evaluation→release.",
+    "Separate admission/API from model workers. Load a validated model/preprocessing bundle at startup, expose readiness only after schema and warm-up checks, and constrain request/batch size. CPU serving suffices for a small baseline unless measured throughput requires GPU. GPU scheduling needs memory accounting, batch waiting limits and cache/precision policy. Autoscale on queue/load and measured throughput, not CPU alone for GPU-heavy work. Record p50/p95, errors, memory and model IDs. Gracefully reject overload. Canary a versioned bundle and retain rollback; isolate tenants and protect artifact loading from untrusted serialization.",
+    "Create a context-assembly service that takes authenticated task, repository revision and token budget. Retrieve authorized symbol/document evidence, rank by relevance/provenance, remove duplicate spans and retain important warnings. Reserve budget for instructions and output using the actual selected tokenizer where installed. Produce an assembly manifest with source IDs, versions, omitted evidence and token estimates/actuals. Reject or abstain if required evidence cannot fit rather than silently truncating it. Cache only within ACL/version boundaries. Evaluate distractor/long-code/multilingual tasks and diagnose selection versus synthesis failures separately.",
+    "Expose an authenticated model gateway with task/schema/evidence IDs rather than arbitrary privileged prompts. Provider adapters normalize invocation/usage while preserving provider-specific limits. Trusted admission enforces tenant budgets, token caps, deadlines, permissible regions and fallback. Validate schema, then claim/evidence semantics and tool authorization. Durable asynchronous mode handles long jobs; synchronous mode has bounded concurrency. Trace prompt/config/index/model IDs with redaction. Compare routes on frozen tasks for quality/security/latency/cost, and promote via evidence gates. A cheaper route cannot bypass required context or policy.",
+    "Split offline ingestion from query serving. Version documents, ACLs, chunk manifests and embedding/index generations; enforce idempotent updates/deletes and measurable lag. Use hybrid lexical/dense retrieval only if evaluation supports it, then rerank under latency budget. Trusted auth filters before and after retrieval; identity/ACL/source versions partition caches. Shard/partition using measured volume/load, and provision index rebuild plus rollback. Trace ranked IDs, actual context and supported claims; abstain when evidence is absent/conflicting. Evaluate recall/ranking, correctness/support/completeness, denied access and p95 separately. Define revocation delivery guarantees and disaster-recovery state explicitly.",
+    "Persist a typed workflow with snapshot, authorized scope, plan hash, step state and receipts. Python orchestration proposes work through bounded model/tool adapters, but executor independently authorizes paths, arguments, egress and targets. Run untrusted builds in ephemeral restricted workspaces. Use stable operation/idempotency keys, pending reconciliation and bounded retries. Pause on failed/missing gates or changed scope; approval binds exact diff/artifact and target. APIs support submit/status/cancel/approve/report. Store durable run state separately from traces/artifacts and enforce tenant access. Evaluate task completion, unsafe actions, retries, spend and human overrides on deterministic/adversarial fixtures.",
+    "Package weights/transforms/schema/environment with lineage and model registry metadata. Track experiments and use contract parity between offline and serving. Gate promotions on protected evaluation, security and operational limits; stage with shadow/canary and rollback a whole bundle. Monitor data quality, features, predictions and delayed outcomes, with slice sample counts and label-lag status. Store versioned prediction references under retention policy. Separate diagnosis from retraining, account for feedback selection bias and avoid automatic training from unreviewed user feedback. Define registry/artifact recovery, queues and serving failure behavior.",
+    "Use AWS or Azure as the primary implementation and map other clouds by capability. Authenticate users and workloads, apply application tenant policy, front APIs with admission, queue long modernization jobs and execute isolated container workers. Store immutable artifacts, durable metadata and ACL-aware retrieval indexes; route approved model calls via a budgeted gateway. Manage keys/secrets, network egress and redacted telemetry. Quota exhaustion preserves jobs in region with bounded retry/degradation, never unauthorized failover. IaC/tool adapters document exact resources and permissions. Show SLOs for admission, queue/ingestion lag and processing separately, and estimate metered spend from workload assumptions.",
+    "Map attacker-controlled documents/prompts/tools to secrets, code, outputs and release authority. Separate user identity, workload identity, source ACLs and tool permissions. Enforce scope/egress/approval in trusted gateways and isolate untrusted builds. Encrypt in transit/storage, control certificates, redact/access-control logs and propagate deletion/revocation to caches/indexes/traces. Maintain approved use cases, owner/risk tier, adversarial and outcome evaluation, artifact supply-chain integrity and incident/rollback playbook. Test denial across every sensitive boundary. NIST structures ownership; OWASP supplies attack scenarios; neither label certifies a secure implementation by itself.",
+    "Self-service intake records repo revision, target capabilities, tenant and authorized change scope. Python adapters inventory build/runtime/dependencies; graph outputs label unresolved edges. Prefer pinned semantic Java recipes and supported external modernization tools for other targets. Preview diff, establish baseline contracts and approve a plan before isolated execution. Validate static/security findings, build, contracts/integration/data parity and produce immutable receipts. Failed/missing gates stop promotion. Bind production approval to exact artifact and target, deploy via a staged tool, verify actual state and preserve backward-compatible data rollback. Report implemented local work separately from mock/tool-unavailable targets.",
+    "Choose a narrow platform slice first and state requirements/capacity/SLO/privacy/cost assumptions. APIs create jobs and approvals, immutable snapshots feed evidence and bounded transformations, queues schedule isolated workers, and metadata/artifact stores preserve state/receipts. Account for provider quota independently from worker scaling. Identify failure domains, idempotency, authorization, recovery/RPO/RTO and governance owners. Define build-versus-buy, adoption milestones and measurements of validated delivery rather than generated code volume. Use a real STAR story for leadership. Test a changed constraint, explain a rejected alternative and document unimplemented extensions.",
+    "Run closed-book first responses with local coding execution and no reference views; then review against the embedded suggested answers and explicit domain checks. Defend one changed constraint for each major platform design. Record actual commands/results and personal-experience limits. Score domain coverage separately, prioritize failed critical boundaries over average points, and schedule a final revision/retest block. This simulation demonstrates current practice, not guaranteed employer performance or invented production ownership."
+  ],
+  "final": [
+    {
+      "answer": "Coding response should include typed streaming input, explicit error counters, timestamp/finite-value validation, size limits and actual local tests. Explain partial iteration and downstream retained state. Python evaluates default arguments once when the function is defined. Both independent jobs therefore append to the same default list. I would call add twice without passing rows and assert that each job should start empty; the existing implementation fails that isolation test. Use rows=None and allocate a fresh list inside the function. If the caller intentionally passes a list, document whether the function mutates it or returns a copy. This is shared mutable state, not a threading problem; concurrency can make it worse but is unnecessary to reproduce it. Use a generator with a caller-owned Stats object. Increment seen for each physical line, parse JSON, verify a mapping with nonempty string tenant_id and repo_id, count rejected lines and yield a typed record for valid lines. Keep malformed input distinct from programmer errors: catch JSONDecodeError, not every exception. A generator runs lazily, so counters are partial until exhausted. The caller holds the Stats reference and inspects it during or after iteration. File lifetime belongs to a with-open block surrounding consumption. Memory is O(one parsed line plus caller state); an unbounded single line still needs a record-size limit. For X shaped (1000,32) and w shaped (32,), X*w broadcasts w across rows and returns (1000,32): every feature contribution remains separate. X@w or (X*w).sum(axis=1) returns (1000,), one dot-product score per row. sum(axis=0) instead aggregates across observations and returns 32 feature totals. Check shape, finite values and dtype first. If an intercept exists, add it after the row score. Broadcasting is useful but can create unexpectedly huge temporaries when singleton dimensions are placed incorrectly.",
+      "pitfall": "X*w is not already a one-score-per-row prediction.",
+      "followup": "What happens when w has shape (32,1) or X contains NaN?",
+      "checks": [
+        "Mechanism explained",
+        "Trade-off defended",
+        "Failure/control described",
+        "Evidence and limitations stated"
+      ]
+    },
+    {
+      "answer": "The model is a decision-support system. Defend prediction time, label maturity, reviewer capacity and protected thresholds; report an unsuccessful baseline honestly. The model is a majority-class baseline with zero recall for the high-risk class. Its 99% accuracy tells us only that safe cases dominate. Show a confusion matrix and compare against DummyClassifier, then measure precision, recall and review cost at candidate thresholds. For a rare positive class, precision-recall behavior and available reviewer capacity matter; ROC-AUC can complement them but does not select the operating point. Optimize the decision policy for the explicit false-negative and false-positive consequences. If no learned model improves the baseline safely, report that instead of manufacturing a model success. There are two independent leaks. Fitting the scaler on all records exposes the test distribution; final remediation duration occurs after intake and is unavailable at prediction time. Split before any learned transformation, put scaling/imputation/encoding inside a Pipeline fitted within training folds, and remove or replace future-derived features with intake-time observations. Redefine the target and prediction timestamp explicitly. Rerun model selection and final evaluation on a genuinely uncontaminated holdout. A Pipeline fixes the fit boundary, but cannot make a future feature valid. Version the corrected dataset and retract the earlier inflated score. Separate evaluation for future releases from evaluation for new tenants. Keep each tenant/repository family from crossing entity-generalization splits, and use chronological cutoffs that reflect prediction time and label maturity. Where both constraints matter, construct a documented joint holdout rather than assuming one sklearn splitter solves everything. Learn transforms in training folds; tune models, calibrators and thresholds on independent/out-of-fold validation data. Report cost-sensitive precision/recall, ranking and reliability, with language/tenant slices and sample counts. Reserve the final test once and exclude late outcomes or later snapshots unavailable at intake. Different deployment claims may need separate test cohorts.",
+      "pitfall": "Randomly splitting repository versions measures memorization, not new-tenant generalization.",
+      "followup": "What do you do when the positive labels have not matured at your time cutoff?",
+      "checks": [
+        "Mechanism explained",
+        "Trade-off defended",
+        "Failure/control described",
+        "Evidence and limitations stated"
+      ]
+    },
+    {
+      "answer": "Explain both model mechanics and the evidence boundary: adapter behavior changes and retrieved facts are not the same intervention. In next-token training, position i must not attend to future token positions j>i, because those tokens would be unavailable at generation time. A causal mask suppresses their attention scores before softmax. Bidirectional encoders generally see both preceding and following context for representation objectives; autoregressive decoders see the prefix to predict the next token. Encoder-decoder models use separate source encoding and conditioned decoding. Attention and padding masks have different jobs. Validate normalization and verify future-token attention probability is zero. The choice follows the training objective and task, not merely the model name. The service authenticates the request, budgets it, applies the model input/chat format and tokenizes text. Prefill computes representations over the supplied context and initial key/value state. Decoding repeatedly computes next-token logits, applies sampling/stopping rules and appends tokens while reusing KV cache. A stop token, limit, timeout or cancellation ends the loop. Time to first token is affected by queueing and prefill; time per output token by decoding and batching. Cache memory scales with retained tokens, layers, KV heads, head size, precision and concurrency. Longer context does not guarantee the model uses all evidence correctly. Record actual tokenizer/model IDs and metered usage. JSON schema validation proves structure, not factual correctness. Temperature zero changes selection behavior but cannot make unsupported repository facts true; deployment/runtime variation can also prevent strict reproducibility. Require evidence IDs and validate that the cited dependency exists in the allowed snapshot, with matching version and source span. Reject or abstain on unsupported claims; do not execute suggested tools merely because the JSON parses. Capture the failure class in regression tests and inspect whether retrieval/context omitted needed facts. An unsupported recommendation should not silently become a modernization plan. Start with a measured prompt-only baseline. Use permission-aware RAG for changing repository facts: version documents, retrieve the current authorized evidence and verify citations. Consistent style can often be achieved with clear instructions, exemplars and structured output. Consider supervised fine-tuning/LoRA only if repeated behavior failures remain and high-quality training examples justify cost/privacy/maintenance. Fine-tuning changes model behavior; it is not a reliable freshness or access-control mechanism. Compare alternatives on protected tasks for correctness, style, latency, cost and safety. Keep adapters compatible with the base model and reevaluate after changes. Combine retrieval and adaptation when both demonstrated requirements exist.",
+      "pitfall": "Fine-tuning confidential facts into weights is not a substitute for per-user authorization or updates.",
+      "followup": "What evidence would justify fine-tuning rather than another prompt or retrieval experiment?",
+      "checks": [
+        "Mechanism explained",
+        "Trade-off defended",
+        "Failure/control described",
+        "Evidence and limitations stated"
+      ]
+    },
+    {
+      "answer": "At large scale, separate index/ACL lifecycle from synthesis; quantify latency components and denied-access/revocation guarantees. Dense retrieval can miss exact identifiers, unusual versions, error codes and negated requirements even when semantic similarity looks plausible. BM25 preserves lexical signals; dense search helps paraphrases. Compare lexical, dense, hybrid fusion and reranked configurations on labeled relevant document IDs, exact-symbol/version queries, ambiguous cases and missing answers. Measure Recall@k, ranking quality, answer support, p95 latency and cost independently. Reciprocal-rank fusion combines rank positions without pretending raw dense and lexical scores are comparable. Reranking can improve ordering but adds compute and can still fail. Select configuration using observed task-level gains, not the word hybrid. Inspect the exact query, authorized corpus version, ranked IDs and labeled relevant passages. Relevant-looking is not sufficient: check that the necessary facts and versions are present. Inspect the final assembled context for truncation, duplicated chunks, lost warnings and ordering. Then run generation with a known-good gold context; if the answer still fails, isolate synthesis, instruction conflicts, citation verification or model limits. Measure retrieval recall/ranking separately from claim correctness, groundedness, completeness and abstention. Log versioned traces with access controls and redaction. This staged intervention locates the failure boundary more precisely than swapping models blindly. Enforce tenant and document ACLs in trusted services before candidate retrieval and again before source delivery/context assembly. Identity and permission version belong in cache keys; sharing a semantic query key across tenants is unsafe. Propagate deletes/revocations to indexes and caches within a documented bound; authorize in-flight reads again at delivery or cancel them according to policy. Version documents/embeddings/index generations and never mix incompatible vector spaces. Use partitioning/sharding and admission control based on measured ingestion/query load. Revocation guarantees and eventual index lag must be explicit. A service account able to read all documents does not grant each end user that access.",
+      "pitfall": "Metadata filters supplied by the model are not an authorization boundary.",
+      "followup": "How do you prove a revoked document cannot leave a cache during an active request?",
+      "checks": [
+        "Mechanism explained",
+        "Trade-off defended",
+        "Failure/control described",
+        "Evidence and limitations stated"
+      ]
+    },
+    {
+      "answer": "Repository build scripts are executable untrusted content. Grant only a disposable isolated environment with explicit read/write/network authority. Use deterministic transitions for scope, authorization, build/test gates, budget enforcement and approval, because they need reproducible policy. Use model judgment for ambiguous source interpretation, evidence-grounded recommendations and proposed custom transformations. Treat its output as a proposal with schema, evidence and bounded tools. Start with one auditable workflow before adding agent swarms: more agents add coordination cost and can share the same misconception. Persist plan, revision, allowed paths and receipts so runs can resume safely. Measure completion accuracy and unsafe actions on adversarial fixtures, not just conversation quality. A timeout is an uncertain observation; the remote deployment may already exist. Move the run to a pending/reconcile state and query the remote operation by stable idempotency key or request ID. If the API guarantees idempotency, retry using the same key under a bounded policy. Otherwise inspect actual side effects before deciding; do not invent exactly-once behavior. Persist the approved artifact hash, target, request and receipts. Escalate unresolved or conflicting state rather than duplicating deployment. A new key on retry defeats idempotency. Approval must still match the exact artifact and destination. Attacker controls repository README content. Victim is the authenticated modernization agent and its execution gateway; target assets are secrets, code and provider credentials. The document may be acceptable evidence but its instructions are untrusted. Prevent secret reads through scoped paths/credentials, outbound upload through egress policy, arbitrary commands through typed allowlisted tools, and consequential operations through artifact-bound approval. Separate model analysis from executor authority; redact traces and prevent tool-result forgery. Test a poisoned README and assert the executor denies the requested read/upload even if the model proposes it. No prompt instruction alone establishes that guarantee.",
+      "pitfall": "Ingestion sanitization does not convert third-party content into trusted execution instructions.",
+      "followup": "If the model encodes the secret in an ordinary answer, which separate controls address that channel?",
+      "checks": [
+        "Mechanism explained",
+        "Trade-off defended",
+        "Failure/control described",
+        "Evidence and limitations stated"
+      ]
+    },
+    {
+      "answer": "Delayed labels require a monitor/join process keyed to the original artifact/input version; proxies cannot establish true model quality. Store model weights plus architecture, preprocessing, feature/schema contracts, class mappings, training code/revision, parameters, dependency/runtime versions, relevant data/split lineage and evaluation/promotion receipts. To reproduce one prediction, retain its exact permitted input or a policy-approved recoverable reference, feature timestamps and serving configuration. For GenAI, include prompt, model/provider version, retriever/index generation, evidence IDs and sampling settings; perfect replay may not be guaranteed by provider updates. Artifact hashes establish identity, not correctness. Data retention/privacy can limit exact replay, so document the operational guarantee instead of keeping sensitive data forever. Compare the failing tenant slice against offline sampling and previous release; inspect request schema, feature freshness, preprocessing parity, traffic mix and label definitions before blaming drift. Monitor data quality, prediction distributions, proxy business metrics and delayed labeled outcomes separately. Drift signals diagnosis, not proven performance loss. Use shadow/canary sampling with minimum counts and policy-defined gates, including safety-critical slices. Roll back a coherent model/preprocessing/schema configuration bundle if the release caused harm; retain the failing cases for reviewed regression data. Do not automatically retrain on unverified feedback or expose every tenant to the canary.",
+      "pitfall": "Aggregate improvement can conceal severe subgroup regression.",
+      "followup": "How do you avoid repeatedly rolling forward and back while labels arrive late?",
+      "checks": [
+        "Mechanism explained",
+        "Trade-off defended",
+        "Failure/control described",
+        "Evidence and limitations stated"
+      ]
+    },
+    {
+      "answer": "Managed cloud features do not replace application tenancy, idempotency, budgets or release policy. Approved region constraints can force queueing/degraded SLOs. On AWS: identity/IAM and workload roles, Bedrock for managed foundation-model APIs, SageMaker for custom training/registry/hosting where needed, EKS/Lambda for workers, API Gateway for admission, object/metadata storage, Secrets Manager/KMS and CloudWatch. On Azure: Entra/workload identity, Azure model services, Azure ML, AKS/Functions, API Management, Key Vault and monitoring. These are responsibility mappings, not identical products. Application code still enforces tenant/resource authorization, quotas, budgets, evidence validation, retry safety, retention and evaluation gates. Pick one primary cloud and verify current support/regions before implementation. Keep confidential inputs within the approved region and preserve jobs in a durable queue/checkpoint store. Apply per-tenant admission and token/request budgets; use bounded exponential backoff with jitter for eligible transient failures, respecting provider signals. Distinguish queue delay from execution latency, support cancellation and expire stale jobs. Degrade to approved non-LLM responses or defer work instead of silently sending data elsewhere. A cross-region/provider fallback requires explicit policy and evaluation approval beforehand. If quota prevents the SLO, surface the trade-off and revise admission/SLO or obtain capacity; more local workers will not raise the provider quota.",
+      "pitfall": "Unapproved fallback can violate data policy even if it restores availability.",
+      "followup": "How do you prevent one large tenant from occupying the queue and quota budget?",
+      "checks": [
+        "Mechanism explained",
+        "Trade-off defended",
+        "Failure/control described",
+        "Evidence and limitations stated"
+      ]
+    },
+    {
+      "answer": "Python and Java are your implementation scope. A .NET tool adapter must state compatibility, dry-run/mock/executed status and real build/parity receipts. Capture the old/new build artifacts, runtime/framework/transitive dependencies, partner request/response traces with secrets redacted, configuration and identity/TLS behavior. Reproduce with a contract fixture against both versions to locate changed serialization, HTTP behavior, auth callbacks or trust settings. Check baseline test gaps before deciding that unit success proves parity. A Java version and a framework version can change different contracts. Accept only supported intentional changes with stakeholder-approved contract updates; otherwise repair or roll back through a tested artifact/data plan. Preserve the exact failing case as a regression test and report what remains untested. Python orchestrates snapshot intake, build/AST/dependency discovery, graph analysis, approved plan, recipe preview, isolated transform, checks, build/tests and receipts. Java fixtures exercise real runtime changes; .NET uses an appropriate tool adapter without claiming C# development depth. Prefer semantic recipes for supported mechanical edits, and constrained model proposals for ambiguous changes. Graph gaps from reflection/runtime wiring/generated code remain explicit: add focused source/runtime/contract evidence rather than treating zero edges as safety. Bind approval to plan, revision, allowed paths and artifact hash. A mock adapter demonstrates integration policy, not successful modernization of an unexecuted target.",
+      "pitfall": "A dependency graph is partial evidence; an empty blast radius is not proof of no consumers.",
+      "followup": "How do you prevent a plugin from turning a narrow plan into arbitrary shell execution?",
+      "checks": [
+        "Mechanism explained",
+        "Trade-off defended",
+        "Failure/control described",
+        "Evidence and limitations stated"
+      ]
+    },
+    {
+      "answer": "Include supply-chain/artifact integrity, access-controlled redacted traces, retention and revocation alongside injection controls. Attacker controls repository README content. Victim is the authenticated modernization agent and its execution gateway; target assets are secrets, code and provider credentials. The document may be acceptable evidence but its instructions are untrusted. Prevent secret reads through scoped paths/credentials, outbound upload through egress policy, arbitrary commands through typed allowlisted tools, and consequential operations through artifact-bound approval. Separate model analysis from executor authority; redact traces and prevent tool-result forgery. Test a poisoned README and assert the executor denies the requested read/upload even if the model proposes it. No prompt instruction alone establishes that guarantee. Authenticate the user, then authorize the requested tenant/resource from trusted identity and policy, not user-provided tenant_id. Apply checks at metadata/source APIs, retrieval candidate selection, post-fetch/context assembly, cache lookup/delivery, trace access and every tool operation. Use cache keys with principal/authorization context and source versions; avoid logging another tenant's raw data. Service roles may have broader infrastructure access, but the gateway must preserve end-user scope. Test guessed IDs, cross-tenant joins, stale permissions and active-run revocation. Encryption is necessary but does not fix an authorization bug.",
+      "pitfall": "Authenticated does not mean authorized for an arbitrary document ID.",
+      "followup": "How do you enforce the same authorization contract in batch jobs and synchronous requests?",
+      "checks": [
+        "Mechanism explained",
+        "Trade-off defended",
+        "Failure/control described",
+        "Evidence and limitations stated"
+      ]
+    },
+    {
+      "answer": "Illustrative peak: 50×3 calls/minute×4,000 tokens=600,000 tokens/minute. Add retry and queue headroom based on measurement; choose SLOs and costs explicitly. Start with an asynchronous job API: create immutable repo snapshot/job, query status/report, submit scoped approvals and cancel work. Store durable run state in a metadata DB; artifacts/evidence in object storage; queue ready work; execute in isolated short-lived workspaces. Python workers perform discovery, retrieval, transformation and validation via adapters, with Java fixture parity tests. Illustrative planning: 50 concurrent jobs at 3 calls/minute means 150 model calls/minute; at 4,000 total tokens/call, 600,000 tokens/minute before retries. Bound tenant fairness, call/token spend and wall time. Publish job/ingestion/provider SLOs, recovery objectives and exact-artifact approval. Measure time-to-validated-change and escaped regressions, not code churn.",
+      "pitfall": "500 applications is an inventory size, not enough information to determine throughput or storage.",
+      "followup": "What changes if model quota is one-third of your estimated peak requirement?",
+      "checks": [
+        "Mechanism explained",
+        "Trade-off defended",
+        "Failure/control described",
+        "Evidence and limitations stated"
+      ]
+    },
+    {
+      "answer": "Five engineers and 90 days suggests a measured vertical slice before a general platform. Buy commodity capabilities, standardize evidence and appoint owners; track adoption and escaped defects. Start with an asynchronous job API: create immutable repo snapshot/job, query status/report, submit scoped approvals and cancel work. Store durable run state in a metadata DB; artifacts/evidence in object storage; queue ready work; execute in isolated short-lived workspaces. Python workers perform discovery, retrieval, transformation and validation via adapters, with Java fixture parity tests. Illustrative planning: 50 concurrent jobs at 3 calls/minute means 150 model calls/minute; at 4,000 total tokens/call, 600,000 tokens/minute before retries. Bound tenant fairness, call/token spend and wall time. Publish job/ingestion/provider SLOs, recovery objectives and exact-artifact approval. Measure time-to-validated-change and escaped regressions, not code churn.",
+      "pitfall": "500 applications is an inventory size, not enough information to determine throughput or storage.",
+      "followup": "What changes if model quota is one-third of your estimated peak requirement?",
+      "checks": [
+        "Mechanism explained",
+        "Trade-off defended",
+        "Failure/control described",
+        "Evidence and limitations stated"
+      ]
+    },
+    {
+      "answer": "No factual project details may be invented. It is valid to distinguish a production architecture story from a new local AI capstone demonstration. Use an honest template: ‘In [real project], [specific stakeholder concern] blocked [decision]. My responsibility was [scope]. I compared [alternatives], gathered [actual evidence], and proposed [reversible pilot]. I personally [actions] and worked with [stakeholders] to agree [decision criteria]. The observed result was [truthful measured outcome or qualitative result], and [limitation/lesson] changed how I lead now.’ If there is no matching production example: ‘I have not owned that exact production ML situation. My relevant experience is [true adjacent case]; in this capstone I demonstrated [actual local evidence], not production operation.’ Never fill the blanks with fabricated scale or impact.",
+      "pitfall": "A polished invented story is worse than an honest experience boundary.",
+      "followup": "What did you personally decide, and what result can you substantiate?",
+      "checks": [
+        "Mechanism explained",
+        "Trade-off defended",
+        "Failure/control described",
+        "Evidence and limitations stated"
+      ]
+    }
+  ]
+}

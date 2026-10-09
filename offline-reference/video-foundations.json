@@ -1,0 +1,761 @@
+{
+  "verifiedOn": "2026-10-09",
+  "videos": [
+    {
+      "id": "video-python-objects",
+      "title": "Python OOP Tutorial 1: Classes and Instances",
+      "url": "https://www.youtube.com/watch?v=ZDa-Z5JzLYM",
+      "creator": "Corey Schafer",
+      "topics": [
+        "python"
+      ],
+      "days": [
+        1,
+        9,
+        27
+      ],
+      "level": "foundation",
+      "format": "implementation",
+      "why": "Focuses on the object and instance distinction needed to explain small maintainable Python services.",
+      "watchTask": "Explain which attributes belong to one ticket instance and why methods receive self; sketch two instances before running code.",
+      "practiceTask": "Implement Ticket(id, text) with two independent instances. Add assertions that changing one instance cannot mutate the other.",
+      "caution": "This is an introductory object model lesson. Type checking, validation and authorization need separate design and tests.",
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=ZDa-Z5JzLYM",
+          "note": "First-party indexed YouTube title/creator/topic metadata inspected on 2026-10-09; playback was not tested."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "video-python-async",
+      "title": "AsyncIO, await, and async - Concurrency in Python",
+      "url": "https://www.youtube.com/watch?v=K56nNuBEd0c",
+      "creator": "Socratica",
+      "topics": [
+        "python",
+        "async"
+      ],
+      "days": [
+        1,
+        9,
+        29
+      ],
+      "level": "foundation",
+      "format": "explanation",
+      "why": "Provides a focused explanation of coroutines and cooperative concurrency for I/O-bound services.",
+      "watchTask": "Describe when a coroutine yields control and predict the order of two asynchronous operations.",
+      "practiceTask": "Build two asyncio.sleep-based fake requests; compare sequential awaits with concurrent tasks. Add a timeout and cancel an unfinished task; record which results completed.",
+      "caution": "Simulated sleep demonstrates scheduling, not HTTP throughput. Async does not itself make CPU work parallel or blocking libraries safe.",
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=K56nNuBEd0c",
+          "note": "First-party indexed YouTube title/creator/topic metadata inspected on 2026-10-09; playback was not tested."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "video-fastapi-api",
+      "title": "Python API Development - Comprehensive Course for Beginners",
+      "url": "https://www.youtube.com/watch?v=0sOvCWFmrtA",
+      "creator": "freeCodeCamp.org / Sanjeev Thiyagarajan",
+      "topics": [
+        "python",
+        "fastapi"
+      ],
+      "days": [
+        9,
+        27,
+        29
+      ],
+      "level": "foundation",
+      "format": "course",
+      "why": "Publisher verifies a FastAPI API project with schemas, SQL, authentication and testing; useful for turning a model into an application contract.",
+      "watchTask": "Select routes, request models, database integration and pytest sections. Draw the request-to-service-to-database path and list failure responses.",
+      "practiceTask": "Implement a small POST /tickets endpoint with a strict schema and test valid input, missing fields, malformed input and another tenant's ID.",
+      "caution": "Recorded in 2021. Check current FastAPI, Pydantic and SQLAlchemy APIs; deployment platform instructions may have changed. Select sections within study time.",
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=0sOvCWFmrtA",
+          "note": "First-party indexed YouTube title/creator/topic metadata inspected on 2026-10-09; playback was not tested."
+        },
+        {
+          "url": "https://www.freecodecamp.org/news/creating-apis-with-python-free-19-hour-course/",
+          "note": "Publisher identifies Sanjeev Thiyagarajan and the FastAPI/API, SQL and testing syllabus."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "video-django-mvt",
+      "title": "Django Crash Course – Python Web Framework",
+      "url": "https://www.youtube.com/watch?v=0roB7wZMLqI",
+      "creator": "freeCodeCamp.org / Code With Abel",
+      "topics": [
+        "python",
+        "django"
+      ],
+      "days": [
+        9,
+        27
+      ],
+      "level": "foundation",
+      "format": "implementation",
+      "why": "An indexed 2025 crash course covers models, views, templates, forms and the admin interface.",
+      "watchTask": "Trace one submitted form through view, model and template. Explain what the framework supplies and where application rules belong.",
+      "practiceTask": "Create a local Ticket model, a list view and a form. Test invalid status and an unauthorized update; keep secrets out of settings committed to source.",
+      "caution": "A tutorial app is a starting point. Tenant isolation, deployment settings and access controls must be added and verified separately.",
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=0roB7wZMLqI",
+          "note": "First-party indexed YouTube title/creator/topic metadata inspected on 2026-10-09; playback was not tested."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "video-flask-routes",
+      "title": "Learn Flask for Python - Full Tutorial",
+      "url": "https://www.youtube.com/watch?v=Z1RJmh_OqeA",
+      "creator": "freeCodeCamp.org",
+      "topics": [
+        "python",
+        "flask"
+      ],
+      "days": [
+        9,
+        27
+      ],
+      "level": "foundation",
+      "format": "implementation",
+      "why": "Publisher-confirmed Flask crash course supplies a small framework contrast to FastAPI and Django.",
+      "watchTask": "Follow the request routing and template flow; explain which responsibilities you must explicitly add to a small Flask service.",
+      "practiceTask": "Build /health and a POST /tickets route locally. Return distinct malformed-JSON and invalid-schema responses, then add test-client assertions.",
+      "caution": "Recorded in 2020; verify modern Flask and extension APIs. Development server and debug mode are local development conveniences.",
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=Z1RJmh_OqeA",
+          "note": "Exact YouTube target and topic identified through a first-party publisher/creator page and its linked video; playback was not tested."
+        },
+        {
+          "url": "https://www.freecodecamp.org/news/learn-flask-for-python-full-tutorial",
+          "note": "Publisher's YouTube course link was followed and resolves to Z1RJmh_OqeA."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "video-statistics-bayes",
+      "title": "Bayes' Theorem, Clearly Explained!!!!",
+      "url": "https://www.youtube.com/watch?v=9wCnvr7Xw4E",
+      "creator": "StatQuest with Josh Starmer",
+      "topics": [
+        "statistics"
+      ],
+      "days": [
+        2,
+        3,
+        22
+      ],
+      "level": "foundation",
+      "format": "explanation",
+      "why": "Develops the conditional-probability foundation used to interpret positive predictions under low base rates.",
+      "watchTask": "Explain prior, likelihood and posterior in your own words; use a nonmedical defect-detection example.",
+      "practiceTask": "For 1,000 items, assume 1% defective, sensitivity 90% and false-positive rate 5%. Compute true positives, false positives and precision; explain why accuracy alone misleads.",
+      "caution": "The numbers in the practice task are synthetic. Bayesian reasoning alone does not establish model calibration or real-world error rates.",
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=9wCnvr7Xw4E",
+          "note": "First-party indexed YouTube title/creator/topic metadata inspected on 2026-10-09; playback was not tested."
+        },
+        {
+          "url": "https://statquest.org/video_index.html",
+          "note": "Creator index lists the probability lesson."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "video-ml-crossvalidation",
+      "title": "Machine Learning Fundamentals: Cross Validation",
+      "url": "https://www.youtube.com/watch?v=fSytzGwwBVw",
+      "creator": "StatQuest with Josh Starmer",
+      "topics": [
+        "ml",
+        "statistics",
+        "evaluation"
+      ],
+      "days": [
+        2,
+        3,
+        22
+      ],
+      "level": "foundation",
+      "format": "explanation",
+      "why": "Targets model comparison and evaluation splits instead of using a generic machine-learning search.",
+      "watchTask": "Draw training folds and validation folds, then explain why the final test set remains untouched during model selection.",
+      "practiceTask": "Create entity-grouped synthetic records and show that repeated entity IDs cannot cross train and validation boundaries. Record a group split and the independent final holdout.",
+      "caution": "Ordinary cross-validation does not automatically respect time or groups; choose the split to match deployment and fit preprocessing only on training data.",
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=fSytzGwwBVw",
+          "note": "First-party indexed YouTube title/creator/topic metadata inspected on 2026-10-09; playback was not tested."
+        },
+        {
+          "url": "https://statquest.org/video_index.html",
+          "note": "Creator index organizes machine-learning foundations; exact lesson identified through indexed YouTube metadata."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "video-ml-models",
+      "title": "Machine Learning for Everybody – Full Course",
+      "url": "https://www.youtube.com/watch?v=i_LwzRVP7bg",
+      "creator": "freeCodeCamp.org / Kylie Ying",
+      "topics": [
+        "ml",
+        "statistics"
+      ],
+      "days": [
+        2,
+        3
+      ],
+      "level": "foundation",
+      "format": "course",
+      "why": "Publisher lists classification, regression, KNN, logistic regression, SVM, clustering and PCA, allowing a deliberate model-family refresher.",
+      "watchTask": "Select classification versus regression and one baseline implementation. Explain assumptions and failure modes rather than listing algorithms.",
+      "practiceTask": "Compare a majority-class baseline with logistic regression on a documented synthetic classification dataset; report confusion matrix, split policy and one subgroup limitation.",
+      "caution": "This broad introduction includes TensorFlow sections. It does not substitute for the curriculum's separate PyTorch training exercise or leakage checks.",
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=i_LwzRVP7bg",
+          "note": "Exact YouTube target and topic identified through a first-party publisher/creator page and its linked video; playback was not tested."
+        },
+        {
+          "url": "https://www.freecodecamp.org/news/machine-learning-for-everybody",
+          "note": "Publisher lists Kylie Ying and model families; embedded video URL inspected as i_LwzRVP7bg."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "video-pytorch-workflow",
+      "title": "PyTorch for Deep Learning & Machine Learning – Full Course",
+      "url": "https://www.youtube.com/watch?v=V_xro1bcAuA",
+      "creator": "freeCodeCamp.org / Daniel Bourke",
+      "topics": [
+        "python",
+        "pytorch",
+        "ml"
+      ],
+      "days": [
+        4,
+        19
+      ],
+      "level": "foundation",
+      "format": "course",
+      "why": "Creator and publisher confirm tensors, training, evaluation, save/reload and classification modules.",
+      "watchTask": "Select tensor fundamentals and the workflow module; narrate forward pass, loss, gradients and optimizer update.",
+      "practiceTask": "Train a tiny CPU model with fixed seeds in an optional PyTorch environment. Check gradients, switch to evaluation mode, save/reload weights and compare predictions on held-out inputs.",
+      "caution": "Requires installed dependencies for actual execution. A stdlib gradient toy is concept practice and is not a PyTorch training result.",
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=V_xro1bcAuA",
+          "note": "Exact YouTube target and topic identified through a first-party publisher/creator page and its linked video; playback was not tested."
+        },
+        {
+          "url": "https://www.freecodecamp.org/news/learn-pytorch-for-deep-learning-in-day",
+          "note": "Daniel Bourke's publisher article lists modules and links to V_xro1bcAuA."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "video-transformer-gpt",
+      "title": "Let's build GPT: from scratch, in code, spelled out.",
+      "url": "https://www.youtube.com/watch?v=kCc8FmEb1nY",
+      "creator": "Andrej Karpathy",
+      "topics": [
+        "transformers",
+        "llm",
+        "pytorch"
+      ],
+      "days": [
+        4,
+        5,
+        15
+      ],
+      "level": "intermediate",
+      "format": "implementation",
+      "why": "The creator's course repository links this code-based decoder language-model lesson.",
+      "watchTask": "Trace one batch through embedding, causal attention and output logits; explain how future-token masking prevents training leakage.",
+      "practiceTask": "Using a small causal-attention fixture, change a future token and assert earlier outputs stay unchanged. Draw prefill versus one-step generation; optionally reproduce the PyTorch lesson.",
+      "caution": "A small character-level GPT is educational. It is not proof of enterprise LLM training scale, encoder-decoder equivalence or frontier-model quality.",
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=kCc8FmEb1nY",
+          "note": "Exact YouTube target and topic identified through a first-party publisher/creator page and its linked video; playback was not tested."
+        },
+        {
+          "url": "https://github.com/karpathy/nn-zero-to-hero",
+          "note": "Creator repository links Lecture 7 and its GPT implementation."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "video-llm-tokenizer",
+      "title": "Let's build the GPT Tokenizer",
+      "url": "https://www.youtube.com/watch?v=zduSFxRajkE",
+      "creator": "Andrej Karpathy",
+      "topics": [
+        "llm",
+        "transformers"
+      ],
+      "days": [
+        5,
+        15,
+        28
+      ],
+      "level": "intermediate",
+      "format": "implementation",
+      "why": "Creator explains encoding/decoding and byte-pair encoding as a separate component from the neural model.",
+      "watchTask": "Explain why visible characters, words, bytes and model tokens are different counts. Follow a merge and the encode/decode relationship.",
+      "practiceTask": "Implement a tiny byte-pair merge toy with encode/decode round-trip tests; compare ASCII, Unicode and punctuation examples. Label its counts as toy units.",
+      "caution": "Toy BPE is not a current provider's tokenizer. For a deployed model, use its documented encoding and include request framing plus reserved output capacity.",
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=zduSFxRajkE",
+          "note": "First-party indexed YouTube title/creator/topic metadata inspected on 2026-10-09; playback was not tested."
+        },
+        {
+          "url": "https://github.com/karpathy/nn-zero-to-hero",
+          "note": "Creator repository links Lecture 8 and describes the separate tokenization stage."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "video-llm-understanding",
+      "title": "Deep Dive into LLMs like ChatGPT",
+      "url": "https://www.youtube.com/watch?v=7xTGNNLPyMI",
+      "creator": "Andrej Karpathy",
+      "topics": [
+        "llm"
+      ],
+      "days": [
+        5,
+        15,
+        22,
+        23
+      ],
+      "level": "foundation",
+      "format": "explanation",
+      "why": "An author explanation gives conceptual context before specialized retrieval, adaptation and evaluation work.",
+      "watchTask": "Select pretraining, assistant behavior and limitations. Draw the training-versus-inference boundary and identify where an answer can become unsupported.",
+      "practiceTask": "Write a decision note for a ticket assistant distinguishing knowledge retrieval, behavioral adaptation and deterministic business rules; attach an evidence requirement to each claim.",
+      "caution": "General-audience explanation is not a current model ranking, service specification or measured hallucination rate.",
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=7xTGNNLPyMI",
+          "note": "First-party indexed YouTube title/creator/topic metadata inspected on 2026-10-09; playback was not tested."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "video-rag-lance",
+      "title": "Learn RAG From Scratch – Python AI Tutorial from a LangChain Engineer",
+      "url": "https://www.youtube.com/watch?v=sVcwVQRHIc8",
+      "creator": "freeCodeCamp.org / Lance Martin",
+      "topics": [
+        "python",
+        "rag"
+      ],
+      "days": [
+        6,
+        21,
+        24,
+        25
+      ],
+      "level": "intermediate",
+      "format": "course",
+      "why": "Indexed publisher metadata verifies indexing, retrieval, generation, query translation, routing and advanced retrieval approaches.",
+      "watchTask": "Select indexing, retrieval and generation first. Explain which stage failed when the right evidence was absent from the prompt.",
+      "practiceTask": "Use a small labeled document fixture: compare two chunk sizes, compute retrieval recall and inspect missed evidence. Add trusted tenant filtering before candidate selection.",
+      "caution": "Recorded in 2024; APIs and provider models may differ. Lexical offline retrieval is not an embedding/vector search implementation or an LLM answer-quality measurement.",
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=sVcwVQRHIc8",
+          "note": "First-party indexed YouTube title/creator/topic metadata inspected on 2026-10-09; playback was not tested."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "video-agent-basics",
+      "title": "Tips for building AI agents",
+      "url": "https://www.youtube.com/watch?v=LP5OCa20Zpg",
+      "creator": "Anthropic",
+      "topics": [
+        "agents",
+        "coding-agents"
+      ],
+      "days": [
+        8,
+        29
+      ],
+      "level": "foundation",
+      "format": "author discussion",
+      "why": "Authors discuss agents versus workflows, useful applications and pitfalls before adding autonomy.",
+      "watchTask": "State when fixed orchestration is enough and when the model should choose the next action. Name a stop condition.",
+      "practiceTask": "Design a bounded ticket-triage state machine with tool allowlists, step/time budgets and a failure route. Test a loop-producing proposal and a tool outside the allowlist.",
+      "caution": "Advice from a model vendor informs design; it does not prove that a multi-agent system is better or that prompts enforce permissions.",
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=LP5OCa20Zpg",
+          "note": "First-party indexed YouTube title/creator/topic metadata inspected on 2026-10-09; playback was not tested."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "video-mlops-pipeline",
+      "title": "MLOps Course – Build Machine Learning Production Grade Projects",
+      "url": "https://www.youtube.com/watch?v=-dJPoLm_gtE",
+      "creator": "freeCodeCamp.org / Ayush Singh",
+      "topics": [
+        "mlops",
+        "ml"
+      ],
+      "days": [
+        10,
+        13
+      ],
+      "level": "intermediate",
+      "format": "course",
+      "why": "Publisher identifies an end-to-end project using ZenML and MLflow from data cleaning through evaluation and deployment.",
+      "watchTask": "Select pipeline steps, experiment tracking and evaluation. Explain what must be recorded to reproduce one candidate.",
+      "practiceTask": "Create a local run manifest containing dataset hash, split IDs, code version, parameters and metrics. Reject promotion when any gate fails; optionally implement tracking with installed MLflow.",
+      "caution": "The course title is not a readiness certificate. Recorded library versions may differ; local synthetic gates do not establish live monitoring or production operations.",
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=-dJPoLm_gtE",
+          "note": "First-party indexed YouTube title/creator/topic metadata inspected on 2026-10-09; playback was not tested."
+        },
+        {
+          "url": "https://www.freecodecamp.org/news/mlops-course-learn-to-build-machine-learning-production-grade-projects",
+          "note": "Publisher identifies Ayush Singh, ZenML, MLflow and the pipeline syllabus."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "video-aws-iam",
+      "title": "AWS IAM Roles | Amazon Web Services",
+      "url": "https://www.youtube.com/watch?v=miij_0HkBws",
+      "creator": "Amazon Web Services",
+      "topics": [
+        "aws",
+        "security"
+      ],
+      "days": [
+        9,
+        10,
+        11,
+        29
+      ],
+      "level": "foundation",
+      "format": "implementation",
+      "why": "AWS's own builder guide covers IAM service roles and their configuration.",
+      "watchTask": "Explain the distinction between who can assume a role and what the assumed role may do; trace temporary credential use.",
+      "practiceTask": "Draft an inference-service trust policy and a least-privilege permission policy for one named resource. Review an overbroad wildcard counterexample; no cloud account is required for this design exercise.",
+      "caution": "Console screens can change. A drafted policy is design evidence; only an authorized cloud test can prove the deployed role's behavior.",
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=miij_0HkBws",
+          "note": "First-party indexed YouTube title/creator/topic metadata inspected on 2026-10-09; playback was not tested."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "video-azure-managedidentity",
+      "title": "Microsoft Azure Managed Identity Deep Dive",
+      "url": "https://www.youtube.com/watch?v=rC1TV0_sIrM",
+      "creator": "John Savill's Technical Training",
+      "topics": [
+        "azure",
+        "security"
+      ],
+      "days": [
+        9,
+        10,
+        11,
+        29
+      ],
+      "level": "intermediate",
+      "format": "implementation",
+      "why": "Creator metadata lists service principals, system/user-assigned identity, role assignment and resource-token demonstrations.",
+      "watchTask": "Compare system-assigned and user-assigned identity lifecycle; explain why identity issuance and permission assignment are separate.",
+      "practiceTask": "Draw app-to-Key-Vault authentication with managed identity and a restricted role. Specify a negative test for another principal and a rotation-free credential policy.",
+      "caution": "Recorded in 2022; current Azure/Entra terminology, supported services and network controls require current documentation. Watching does not prove an account deployment.",
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=rC1TV0_sIrM",
+          "note": "First-party indexed YouTube title/creator/topic metadata inspected on 2026-10-09; playback was not tested."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "video-security-promptinjection",
+      "title": "OWASP TOP 10 for LLM01: Prompt Injection",
+      "url": "https://www.youtube.com/watch?v=dq5jD_qE1Cg",
+      "creator": "Vandana Verma",
+      "topics": [
+        "security",
+        "agents"
+      ],
+      "days": [
+        11,
+        27,
+        30
+      ],
+      "level": "intermediate",
+      "format": "explanation",
+      "why": "Focused prompt-injection teaching connects untrusted content to the agent's authority boundary.",
+      "watchTask": "Identify attacker-controlled text, the target tool and the victim's authority. Distinguish an instruction attack from ordinary bad model output.",
+      "practiceTask": "Add a poisoned ticket asking for a payment to the local triage fixture. Assert the content is handled as data and cannot create an approval or invoke a financial executor.",
+      "caution": "LLM taxonomy changes over time. Prompt filtering alone cannot guarantee prevention; deterministic authorization must guard side effects.",
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=dq5jD_qE1Cg",
+          "note": "First-party indexed YouTube title/creator/topic metadata inspected on 2026-10-09; playback was not tested."
+        },
+        {
+          "url": "https://www.linkedin.com/pulse/prompt-injection-owasp-top-10-llm-vandana-verma-hppcc",
+          "note": "Creator article by Vandana Verma (July 18, 2025) identifies the full-video title as OWASP TOP 10 for LLM01: Prompt Injection. YouTube indexed result independently supplied exact dq5jD_qE1Cg title/creator."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "video-java-basics",
+      "title": "Java Full Course for Beginners",
+      "url": "https://www.youtube.com/watch?v=eIrMbAQSU34",
+      "creator": "Programming with Mosh",
+      "topics": [
+        "java"
+      ],
+      "days": [
+        7,
+        9,
+        12
+      ],
+      "level": "foundation",
+      "format": "course",
+      "why": "Currently indexed title and creator identify a Java foundation course for candidates moving from Python to JVM implementation.",
+      "watchTask": "Select types, reference behavior, methods and classes. Explain one Java/Python difference without claiming Java always runs faster.",
+      "practiceTask": "Build a small Java request-value class and a service function. Test null, invalid enum and boundary amount input with explicit failures.",
+      "caution": "This introductory course supports language fluency. Concurrency, JVM operation, security and Spring transaction behavior need separate practice.",
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=eIrMbAQSU34",
+          "note": "First-party indexed YouTube title/creator/topic metadata inspected on 2026-10-09; playback was not tested."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "video-spring-rest",
+      "title": "Spring Boot Tutorial for Beginners | Full Course 2025",
+      "url": "https://www.youtube.com/watch?v=Cw0J6jYJtzw",
+      "creator": "Amigoscode",
+      "topics": [
+        "java",
+        "spring"
+      ],
+      "days": [
+        9,
+        12,
+        27
+      ],
+      "level": "foundation",
+      "format": "implementation",
+      "why": "First-party indexed description confirms a hands-on Spring Boot/Spring MVC REST API tutorial.",
+      "watchTask": "Trace controller-to-service-to-repository flow and distinguish request validation from business invariants. Identify where a client consumes the API contract.",
+      "practiceTask": "Build GET and POST ticket endpoints with a service and repository, a transaction boundary and contract tests. Add unauthorized and invalid-request cases before presenting the API as a usable service.",
+      "caution": "The video supplies a backend starting point. The added authorization/transaction tests are curriculum assignments, not a claim that every security topic is taught in this video.",
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=Cw0J6jYJtzw",
+          "note": "First-party indexed YouTube title/creator/topic metadata inspected on 2026-10-09; playback was not tested."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "video-modernization-recipe",
+      "title": "Running your first recipe on the Moderne Platform",
+      "url": "https://www.youtube.com/watch?v=2-msv8LBmYg",
+      "creator": "Moderne and OpenRewrite",
+      "topics": [
+        "java",
+        "modernization"
+      ],
+      "days": [
+        7,
+        12,
+        13
+      ],
+      "level": "intermediate",
+      "format": "implementation",
+      "why": "Publisher demo and first-party indexed YouTube description show selecting recipes, running them and reviewing code changes.",
+      "watchTask": "Follow recipe selection and diff review. Distinguish deterministic semantic transformations from unconstrained generated edits.",
+      "practiceTask": "On a disposable Java fixture, select one documented recipe, inspect a dry run and run compile/behavior tests. Record unchanged behavior and a rollback plan; use current OSS plugin documentation if avoiding the hosted platform.",
+      "caution": "The YouTube index omits a display title; this label comes from the publisher's demo page. Platform demo counts and time savings are marketing examples, not personal results. Do not auto-commit.",
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=2-msv8LBmYg",
+          "note": "First-party indexed channel and detailed recipe-demo description inspected. YouTube title field was blank; publisher demo label used."
+        },
+        {
+          "url": "https://www.moderne.ai/downloads/running-your-first-recipe-on-the-moderne-platform-video",
+          "note": "Publisher provides the demo label; indexed YouTube description confirms recipe selection/run/review. Exact YouTube display title was unavailable."
+        }
+      ],
+      "verification": "identity-and-topic",
+      "titleKind": "publisher-demo-label"
+    },
+    {
+      "id": "video-mcp-python",
+      "title": "RAG & MCP Fundamentals – A Hands-On Crash Course",
+      "url": "https://www.youtube.com/watch?v=I7_WXKhyGms",
+      "creator": "freeCodeCamp.org",
+      "topics": [
+        "python",
+        "mcp",
+        "rag"
+      ],
+      "days": [
+        6,
+        8,
+        29
+      ],
+      "level": "intermediate",
+      "format": "course",
+      "why": "Publisher confirms Python SDK server/client construction and RAG document embeddings/chunking; its course link resolves to this exact video.",
+      "watchTask": "Select the server/client sections. Explain discovery, invocation and error handling, then separate tools, resources and prompts.",
+      "practiceTask": "Extend a local read-only client/server fixture with schema validation, protocol-version negotiation and an unknown-tool negative test. Document which pinned revision your transcript actually implements.",
+      "caution": "Published in January 2026; protocol and SDK behavior can change. Tutorial interoperability does not establish current remote OAuth, tenant authorization or all latest-revision features.",
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=I7_WXKhyGms",
+          "note": "Exact YouTube target and topic identified through a first-party publisher/creator page and its linked video; playback was not tested."
+        },
+        {
+          "url": "https://www.freecodecamp.org/news/learn-rag-and-mcp-fundamentals",
+          "note": "Publisher explicitly describes Python SDK server/client construction; course link followed to I7_WXKhyGms."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "video-coding-agent-context",
+      "title": "Claude Code best practices | Code w/ Claude",
+      "url": "https://www.youtube.com/watch?v=gv0WHhKelSE",
+      "creator": "Anthropic / Cal Rueb",
+      "topics": [
+        "coding-agents",
+        "agents",
+        "evaluation"
+      ],
+      "days": [
+        7,
+        8,
+        12,
+        13
+      ],
+      "level": "intermediate",
+      "format": "author discussion",
+      "why": "An Anthropic conference session offers the tool author's workflow perspective; pair it with the official best-practices article for context and evaluation exercises.",
+      "watchTask": "Explain what belongs in repository instructions versus task-specific context. Describe how to review a candidate patch and prove its behavior.",
+      "practiceTask": "Write a concise instruction file for a disposable project, a scoped repair prompt and three acceptance checks. Compare generated changes against tests and a human diff review; record failures as well as successes.",
+      "caution": "Presented in 2025; current commands may differ. The curriculum comparison task is not a claim that the talk supplies a complete controlled agent-evaluation methodology.",
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=gv0WHhKelSE",
+          "note": "First-party indexed YouTube title/creator/topic metadata inspected on 2026-10-09; playback was not tested."
+        },
+        {
+          "url": "https://www.anthropic.com/engineering/claude-code-best-practices",
+          "note": "Companion primary article provides context, workflow and evaluation recommendations."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "video-leadership-teams",
+      "title": "A Guide To Managing Technical Teams",
+      "url": "https://www.youtube.com/watch?v=jMpCF0Z623s",
+      "creator": "Continuous Delivery / Dave Farley",
+      "topics": [
+        "leadership"
+      ],
+      "days": [
+        13,
+        14,
+        30
+      ],
+      "level": "intermediate",
+      "format": "author discussion",
+      "why": "Creator teaches technical-team leadership as improving team effectiveness, supporting adoption planning and a truthful leadership defense.",
+      "watchTask": "Explain how a technical lead enables delivery and learning. Map one principle to a small accelerator pilot.",
+      "practiceTask": "Write a two-team pilot plan with a baseline, review policy, coaching, failure reporting and adoption criteria. Define cycle time, escaped defects and developer feedback; label all unmeasured figures as targets.",
+      "caution": "The AI pilot is an application exercise built from leadership principles, not an assertion that this video measures AI adoption. Use your real experience in interview stories.",
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=jMpCF0Z623s",
+          "note": "First-party indexed YouTube title/creator/topic metadata inspected on 2026-10-09; playback was not tested."
+        }
+      ],
+      "verification": "identity-and-topic"
+    },
+    {
+      "id": "video-evaluation-rag",
+      "title": "Deep Dive into LLM Evaluation with Weights & Biases",
+      "url": "https://www.youtube.com/watch?v=7EcznH0-of8",
+      "creator": "DeepLearningAI / Weights & Biases",
+      "topics": [
+        "evaluation",
+        "rag",
+        "llm"
+      ],
+      "days": [
+        6,
+        13,
+        21,
+        22,
+        23,
+        30
+      ],
+      "level": "intermediate",
+      "format": "implementation",
+      "why": "Workshop metadata explicitly focuses on RAG evaluation, supervised checks and model-assisted evaluation.",
+      "watchTask": "Explain the limits of eyeballing outputs and model judges. Separate retrieval coverage, answer support and task outcome metrics.",
+      "practiceTask": "Create a small fixed benchmark with answerable and unanswerable cases, trusted-scope cases and rubric labels. Compare retrieval recall, unsupported claims, latency and recorded cost; retain raw trace identifiers.",
+      "caution": "Recorded tooling may differ. A judge score is not ground truth; synthetic fixtures and measured local traces are not live-provider hallucination rates.",
+      "evidence": [
+        {
+          "url": "https://www.youtube.com/watch?v=7EcznH0-of8",
+          "note": "First-party indexed YouTube title/creator/topic metadata inspected on 2026-10-09; playback was not tested."
+        }
+      ],
+      "verification": "identity-and-topic"
+    }
+  ]
+}

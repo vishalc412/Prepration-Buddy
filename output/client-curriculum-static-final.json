@@ -1,0 +1,39 @@
+{
+  "status": "PASS",
+  "client_questions": 50,
+  "client_checks": 100,
+  "jd_drills": 8,
+  "jd_followups": 16,
+  "client_followups": 100,
+  "extended_days": 16,
+  "extended_modules": 80,
+  "extended_labs": 16,
+  "daily_minutes": 240,
+  "reference_files": [
+    "day15_foundations.py",
+    "day16_foundations.py",
+    "day17_foundations.py",
+    "day18_foundations.py",
+    "day19_foundations.py",
+    "day20_foundations.py",
+    "day21_scoped_rag.py",
+    "day22_hallucination_metrics.py",
+    "day23_model_selection.py",
+    "day24_vector_baselines.py",
+    "day25_hybrid_chunking.py",
+    "day26_graph_boundaries.py",
+    "day27_ticket_contract.py",
+    "day28_budget_selection.py",
+    "day29_durable_state.py",
+    "day30_financial_gate.py"
+  ],
+  "executed_fixtures": 0,
+  "execution": [],
+  "limits": [
+    "Length/schema checks do not prove factual accuracy or teaching effectiveness.",
+    "Primary-domain allowlist checks provenance shape, not page availability.",
+    "Only new Days 15\u201330 fixtures execute; no unchanged framework suites run.",
+    "Static AST guards and temporary cwd do not constitute an OS security sandbox."
+  ],
+  "embedded_parity": "PASS"
+}

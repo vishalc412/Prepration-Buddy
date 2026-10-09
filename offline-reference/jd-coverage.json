@@ -1,0 +1,4263 @@
+{
+  "version": 1,
+  "asOf": "2026-10-08",
+  "scopeNote": "Every revised JD bullet and original15modernization patterns plus22strengthening clusters mapped. Coverage status describes the strongest bounded tutorial activity, never proof of production experience. New practical case links are planned until independently recorded execution.",
+  "statuses": [
+    "runnable local",
+    "design exercise",
+    "optional external",
+    "credential/experience",
+    "language scope"
+  ],
+  "requirements": [
+    {
+      "id": "jd-responsibility-01",
+      "category": "Revised JD responsibility",
+      "requirement": "Design and develop AI-powered engineering accelerators and modernization solutions.",
+      "status": "design exercise",
+      "days": [
+        12,
+        13
+      ],
+      "lessonIds": [
+        "jd-accelerators"
+      ],
+      "scenarioIds": [
+        "agents-01"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day12_adapter.py"
+      ],
+      "caseIds": [
+        "case-modernization"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-responsibility-02",
+      "category": "Revised JD responsibility",
+      "requirement": "Build intelligent applications and agentic systems using generative AI, foundation models, tool calling, structured outputs, retrieval, and context-engineering techniques.",
+      "status": "runnable local",
+      "days": [
+        6,
+        7,
+        8,
+        21,
+        27,
+        29
+      ],
+      "lessonIds": [
+        "jd-context",
+        "jd-mcp-contract"
+      ],
+      "scenarioIds": [
+        "rag-01",
+        "rag-03",
+        "agents-02"
+      ],
+      "clientQuestionIds": [
+        "client-16",
+        "client-31",
+        "client-42"
+      ],
+      "labFiles": [
+        "day06_gateway.py",
+        "day07_retrieval.py",
+        "day29_durable_state.py"
+      ],
+      "caseIds": [
+        "case-enterprise",
+        "case-mcp"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-responsibility-03",
+      "category": "Revised JD responsibility",
+      "requirement": "Develop scalable enterprise applications, APIs, microservices, and automation frameworks.",
+      "status": "design exercise",
+      "days": [
+        9,
+        12,
+        13
+      ],
+      "lessonIds": [
+        "jd-java-fullstack",
+        "jd-cloud-operation"
+      ],
+      "scenarioIds": [
+        "fastapi-01",
+        "fastapi-02",
+        "django-02"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day09_api.py",
+        "QuoteFixture.java"
+      ],
+      "caseIds": [
+        "case-enterprise"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-responsibility-04",
+      "category": "Revised JD responsibility",
+      "requirement": "Build AI-assisted capabilities for code generation, modernization, testing, documentation, and software delivery.",
+      "status": "design exercise",
+      "days": [
+        8,
+        12,
+        13
+      ],
+      "lessonIds": [
+        "jd-accelerators",
+        "jd-context"
+      ],
+      "scenarioIds": [
+        "agents-01",
+        "evaluation-06"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day12_adapter.py"
+      ],
+      "caseIds": [
+        "case-modernization"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-responsibility-05",
+      "category": "Revised JD responsibility",
+      "requirement": "Design and implement secure AI-enabled workflows, Model Context Protocol clients and servers, reusable instructions and prompt assets, tool integrations, and shared engineering components.",
+      "status": "design exercise",
+      "days": [
+        8,
+        9,
+        11,
+        12,
+        29
+      ],
+      "lessonIds": [
+        "jd-mcp-contract",
+        "jd-mcp-security",
+        "jd-context"
+      ],
+      "scenarioIds": [
+        "agents-04"
+      ],
+      "clientQuestionIds": [
+        "client-42"
+      ],
+      "labFiles": [
+        "day29_durable_state.py"
+      ],
+      "caseIds": [
+        "case-mcp"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-responsibility-06",
+      "category": "Revised JD responsibility",
+      "requirement": "Establish evaluation frameworks, test datasets, quality thresholds, telemetry, tracing, and human-review controls for AI-assisted and agentic workflows, and monitor their reliability, security, latency, token usage, and cost in production.",
+      "status": "runnable local",
+      "days": [
+        9,
+        11,
+        21,
+        22,
+        23,
+        28,
+        29
+      ],
+      "lessonIds": [
+        "jd-evaluation"
+      ],
+      "scenarioIds": [
+        "evaluation-01",
+        "evaluation-02",
+        "evaluation-03"
+      ],
+      "clientQuestionIds": [
+        "client-18",
+        "client-19",
+        "client-36"
+      ],
+      "labFiles": [
+        "day22_hallucination_metrics.py"
+      ],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-responsibility-07",
+      "category": "Revised JD responsibility",
+      "requirement": "Collaborate with architects, engineering teams, and business stakeholders to deliver AI-first solutions.",
+      "status": "design exercise",
+      "days": [
+        13,
+        14,
+        30
+      ],
+      "lessonIds": [
+        "jd-delivery-leadership"
+      ],
+      "scenarioIds": [
+        "evaluation-06"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day13_capacity.py"
+      ],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-responsibility-08",
+      "category": "Revised JD responsibility",
+      "requirement": "Evaluate emerging AI technologies and drive innovation across engineering practices.",
+      "status": "design exercise",
+      "days": [
+        6,
+        20,
+        23
+      ],
+      "lessonIds": [
+        "jd-evaluation",
+        "jd-accelerators"
+      ],
+      "scenarioIds": [
+        "evaluation-03"
+      ],
+      "clientQuestionIds": [
+        "client-19"
+      ],
+      "labFiles": [],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-responsibility-09",
+      "category": "Revised JD responsibility",
+      "requirement": "Define success metrics, establish adoption plans, and measure the quality, productivity, cost, risk, and developer-experience impacts of AI-enabled engineering solutions from pilot through production.",
+      "status": "design exercise",
+      "days": [
+        13,
+        14,
+        30
+      ],
+      "lessonIds": [
+        "jd-delivery-leadership",
+        "jd-evaluation"
+      ],
+      "scenarioIds": [
+        "evaluation-03"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day13_capacity.py"
+      ],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-responsibility-10",
+      "category": "Revised JD responsibility",
+      "requirement": "Provide technical leadership, mentoring, and guidance to engineering teams.",
+      "status": "credential/experience",
+      "days": [
+        13,
+        14,
+        30
+      ],
+      "lessonIds": [
+        "jd-delivery-leadership"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day13_capacity.py"
+      ],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-qualification-01",
+      "category": "Revised JD required qualification",
+      "requirement": "Bachelor’s or master’s degree in Computer Science, Engineering, or a related field, or equivalent practical experience delivering complex enterprise software solutions.",
+      "status": "credential/experience",
+      "days": [],
+      "lessonIds": [],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-qualification-02",
+      "category": "Revised JD required qualification",
+      "requirement": "10+ years of professional software development experience.",
+      "status": "credential/experience",
+      "days": [],
+      "lessonIds": [],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-qualification-03",
+      "category": "Revised JD required qualification",
+      "requirement": "Deep hands-on expertise in Java-based full-stack engineering, plus demonstrated proficiency in Python and JavaScript or TypeScript for AI integration, automation, APIs, and modern web application development.",
+      "status": "language scope",
+      "days": [
+        1,
+        9,
+        12,
+        27,
+        29
+      ],
+      "lessonIds": [
+        "jd-java-fullstack"
+      ],
+      "scenarioIds": [
+        "fastapi-01"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "QuoteFixture.java",
+        "day12_adapter.py"
+      ],
+      "caseIds": [
+        "case-enterprise"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-qualification-04",
+      "category": "Revised JD required qualification",
+      "requirement": "Experience building enterprise-scale applications, APIs, microservices, and distributed systems.",
+      "status": "design exercise",
+      "days": [
+        9,
+        12,
+        13,
+        29
+      ],
+      "lessonIds": [
+        "jd-java-fullstack",
+        "jd-cloud-operation"
+      ],
+      "scenarioIds": [
+        "fastapi-02",
+        "django-02"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day29_durable_state.py"
+      ],
+      "caseIds": [
+        "case-enterprise"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-qualification-05",
+      "category": "Revised JD required qualification",
+      "requirement": "Strong understanding of cloud-native architectures, microservices, and software design principles.",
+      "status": "design exercise",
+      "days": [
+        10,
+        13,
+        29
+      ],
+      "lessonIds": [
+        "jd-cloud-operation",
+        "jd-java-fullstack"
+      ],
+      "scenarioIds": [
+        "async-05"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day13_capacity.py"
+      ],
+      "caseIds": [
+        "case-enterprise"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-qualification-06",
+      "category": "Revised JD required qualification",
+      "requirement": "Hands-on experience leveraging Generative AI and Large Language Models (LLMs) to improve software engineering productivity and modernization outcomes.",
+      "status": "design exercise",
+      "days": [
+        6,
+        8,
+        12,
+        23
+      ],
+      "lessonIds": [
+        "jd-accelerators",
+        "jd-evaluation"
+      ],
+      "scenarioIds": [
+        "evaluation-03"
+      ],
+      "clientQuestionIds": [
+        "client-19"
+      ],
+      "labFiles": [],
+      "caseIds": [
+        "case-modernization",
+        "case-evaluation"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-qualification-07",
+      "category": "Revised JD required qualification",
+      "requirement": "Hands-on experience with AI-assisted software development environments and coding agents, such as GitHub Copilot, Claude Code, OpenAI Codex, Gemini Code Assist, Amazon Q Developer, or comparable enterprise platforms.",
+      "status": "optional external",
+      "days": [
+        8,
+        12
+      ],
+      "lessonIds": [
+        "jd-context"
+      ],
+      "scenarioIds": [
+        "agents-01"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-modernization"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-qualification-08",
+      "category": "Revised JD required qualification",
+      "requirement": "Experience designing and evaluating instructions, prompts, context strategies, tool-use patterns, and multi-step AI workflows, including systematic testing for quality, reliability, safety, latency, and cost.",
+      "status": "design exercise",
+      "days": [
+        6,
+        8,
+        9,
+        21,
+        22,
+        28
+      ],
+      "lessonIds": [
+        "jd-context",
+        "jd-evaluation"
+      ],
+      "scenarioIds": [
+        "evaluation-01",
+        "evaluation-06"
+      ],
+      "clientQuestionIds": [
+        "client-18",
+        "client-36"
+      ],
+      "labFiles": [],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-qualification-09",
+      "category": "Revised JD required qualification",
+      "requirement": "Experience designing, developing, and integrating Model Context Protocol clients and servers, including authentication and authorization, tool and resource contracts, transport selection, error handling, observability, version compatibility, and secure deployment.",
+      "status": "design exercise",
+      "days": [
+        9,
+        10,
+        11,
+        29
+      ],
+      "lessonIds": [
+        "jd-mcp-contract",
+        "jd-mcp-security"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-mcp"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-qualification-10",
+      "category": "Revised JD required qualification",
+      "requirement": "Experience building AI-assisted solutions for code generation, modernization, testing, documentation, and software delivery automation.",
+      "status": "design exercise",
+      "days": [
+        8,
+        12,
+        13
+      ],
+      "lessonIds": [
+        "jd-accelerators",
+        "jd-context"
+      ],
+      "scenarioIds": [
+        "agents-01"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day12_adapter.py"
+      ],
+      "caseIds": [
+        "case-modernization"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-qualification-11",
+      "category": "Revised JD required qualification",
+      "requirement": "Apply secure-by-design engineering practices to AI-generated code and agentic workflows, including threat modeling, least-privilege tool access, secrets protection, dependency and license scanning, software supply-chain controls, and mandatory human review before production release.",
+      "status": "design exercise",
+      "days": [
+        11,
+        12,
+        30
+      ],
+      "lessonIds": [
+        "jd-mcp-security",
+        "jd-delivery-leadership"
+      ],
+      "scenarioIds": [
+        "agents-01",
+        "flask-06"
+      ],
+      "clientQuestionIds": [
+        "client-48"
+      ],
+      "labFiles": [
+        "day11_adversarial.py",
+        "day30_financial_gate.py"
+      ],
+      "caseIds": [
+        "case-modernization",
+        "case-mcp"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-qualification-12",
+      "category": "Revised JD required qualification",
+      "requirement": "Experience with Git, CI/CD pipelines, Agile methodologies, and modern software engineering practices.",
+      "status": "design exercise",
+      "days": [
+        9,
+        12,
+        13
+      ],
+      "lessonIds": [
+        "jd-delivery-leadership"
+      ],
+      "scenarioIds": [
+        "evaluation-06"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-modernization"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-qualification-13",
+      "category": "Revised JD required qualification",
+      "requirement": "Hands-on experience designing and operating production workloads on at least one major cloud platform—AWS, Microsoft Azure, or Google Cloud—with working knowledge of cloud security, identity, networking, containers, platform services, observability, and cost management.",
+      "status": "optional external",
+      "days": [
+        10,
+        11,
+        13,
+        29
+      ],
+      "lessonIds": [
+        "jd-cloud-operation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [
+        "client-46"
+      ],
+      "labFiles": [
+        "day10_cloud_plan.py"
+      ],
+      "caseIds": [
+        "case-enterprise"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-qualification-14",
+      "category": "Revised JD required qualification",
+      "requirement": "Strong analytical, problem-solving, communication, and collaboration skills.",
+      "status": "credential/experience",
+      "days": [
+        13,
+        14,
+        30
+      ],
+      "lessonIds": [
+        "jd-delivery-leadership"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day13_capacity.py"
+      ],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-language-01",
+      "category": "Revised JD language subrequirement",
+      "requirement": "Java Full Stack Development",
+      "status": "design exercise",
+      "days": [
+        1,
+        9,
+        12
+      ],
+      "lessonIds": [
+        "jd-java-fullstack"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "QuoteFixture.java",
+        "day12_adapter.py"
+      ],
+      "caseIds": [
+        "case-enterprise"
+      ],
+      "evidence": "Existing Java reference supplied; actual compile/run verification for the new practical case is pending.",
+      "limits": "Java and Python have downloadable local exercises. JavaScript/TypeScript is an acknowledged bridge assignment; no JS/TS coding proficiency is certified. The dependency-free Java case does not execute Spring Boot.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-language-02",
+      "category": "Revised JD language subrequirement",
+      "requirement": "Python",
+      "status": "runnable local",
+      "days": [
+        1,
+        9,
+        12
+      ],
+      "lessonIds": [
+        "jd-java-fullstack"
+      ],
+      "scenarioIds": [
+        "fastapi-01"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day01_inventory.py"
+      ],
+      "caseIds": [
+        "case-enterprise"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Java and Python have downloadable local exercises. JavaScript/TypeScript is an acknowledged bridge assignment; no JS/TS coding proficiency is certified. The dependency-free Java case does not execute Spring Boot.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-language-03",
+      "category": "Revised JD language subrequirement",
+      "requirement": "JavaScript / TypeScript",
+      "status": "language scope",
+      "days": [
+        1,
+        9,
+        12
+      ],
+      "lessonIds": [
+        "jd-java-fullstack"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-enterprise"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Java and Python have downloadable local exercises. JavaScript/TypeScript is an acknowledged bridge assignment; no JS/TS coding proficiency is certified. The dependency-free Java case does not execute Spring Boot.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-preferred-01",
+      "category": "Revised JD preferred qualification",
+      "requirement": "Experience building AI agents and intelligent automation solutions.",
+      "status": "runnable local",
+      "days": [
+        8,
+        29,
+        30
+      ],
+      "lessonIds": [
+        "jd-mcp-security"
+      ],
+      "scenarioIds": [
+        "agents-02"
+      ],
+      "clientQuestionIds": [
+        "client-42"
+      ],
+      "labFiles": [
+        "day29_durable_state.py"
+      ],
+      "caseIds": [
+        "case-mcp"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-preferred-02",
+      "category": "Revised JD preferred qualification",
+      "requirement": "Familiarity with RAG (Retrieval-Augmented Generation), tool calling, context management, and enterprise AI architectures.",
+      "status": "runnable local",
+      "days": [
+        7,
+        21,
+        24,
+        25,
+        28
+      ],
+      "lessonIds": [
+        "jd-context"
+      ],
+      "scenarioIds": [
+        "rag-01",
+        "rag-03"
+      ],
+      "clientQuestionIds": [
+        "client-16",
+        "client-20"
+      ],
+      "labFiles": [
+        "day07_retrieval.py"
+      ],
+      "caseIds": [
+        "case-enterprise",
+        "case-evaluation"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-preferred-03",
+      "category": "Revised JD preferred qualification",
+      "requirement": "Experience developing AI accelerators, prompt libraries, or developer productivity solutions.",
+      "status": "design exercise",
+      "days": [
+        6,
+        8,
+        12,
+        13
+      ],
+      "lessonIds": [
+        "jd-accelerators",
+        "jd-context"
+      ],
+      "scenarioIds": [
+        "agents-01"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-modernization"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-preferred-04",
+      "category": "Revised JD preferred qualification",
+      "requirement": "Experience supporting application modernization and cloud transformation initiatives.",
+      "status": "design exercise",
+      "days": [
+        10,
+        12,
+        13
+      ],
+      "lessonIds": [
+        "jd-accelerators",
+        "jd-cloud-operation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day10_cloud_plan.py",
+        "day12_adapter.py"
+      ],
+      "caseIds": [
+        "case-modernization"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-preferred-05",
+      "category": "Revised JD preferred qualification",
+      "requirement": "Experience applying responsible and trustworthy AI practices across the solution lifecycle, including privacy, security, data governance, intellectual-property protection, human oversight, model and tool evaluation, auditability, and risk management.",
+      "status": "design exercise",
+      "days": [
+        11,
+        22,
+        27,
+        30
+      ],
+      "lessonIds": [
+        "jd-delivery-leadership",
+        "jd-mcp-security"
+      ],
+      "scenarioIds": [
+        "rag-02",
+        "evaluation-02"
+      ],
+      "clientQuestionIds": [
+        "client-18",
+        "client-48"
+      ],
+      "labFiles": [
+        "day11_adversarial.py"
+      ],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-preferred-06",
+      "category": "Revised JD preferred qualification",
+      "requirement": "Experience mentoring teams and driving AI-first engineering practices.",
+      "status": "credential/experience",
+      "days": [
+        13,
+        14,
+        30
+      ],
+      "lessonIds": [
+        "jd-delivery-leadership"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day13_capacity.py"
+      ],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-competency-01",
+      "category": "Revised JD competency",
+      "requirement": "AI-First Mindset",
+      "status": "design exercise",
+      "days": [
+        6,
+        12,
+        13
+      ],
+      "lessonIds": [
+        "jd-accelerators"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-modernization"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-competency-02",
+      "category": "Revised JD competency",
+      "requirement": "AI-Assisted Software Development",
+      "status": "design exercise",
+      "days": [
+        8,
+        12
+      ],
+      "lessonIds": [
+        "jd-context"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-modernization"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-competency-03",
+      "category": "Revised JD competency",
+      "requirement": "Prompt Engineering & AI Workflow Design",
+      "status": "design exercise",
+      "days": [
+        6,
+        8,
+        27
+      ],
+      "lessonIds": [
+        "jd-context"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-modernization"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-competency-04",
+      "category": "Revised JD competency",
+      "requirement": "MCP Server Development & Integration",
+      "status": "design exercise",
+      "days": [
+        9,
+        29
+      ],
+      "lessonIds": [
+        "jd-mcp-contract",
+        "jd-mcp-security"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-modernization"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-competency-05",
+      "category": "Revised JD competency",
+      "requirement": "Agentic AI Solutions",
+      "status": "design exercise",
+      "days": [
+        8,
+        29,
+        30
+      ],
+      "lessonIds": [
+        "jd-mcp-security"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-modernization"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-competency-06",
+      "category": "Revised JD competency",
+      "requirement": "Intelligent Automation",
+      "status": "design exercise",
+      "days": [
+        8,
+        12
+      ],
+      "lessonIds": [
+        "jd-accelerators"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-modernization"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-competency-07",
+      "category": "Revised JD competency",
+      "requirement": "Software Architecture & Design",
+      "status": "design exercise",
+      "days": [
+        9,
+        10,
+        13
+      ],
+      "lessonIds": [
+        "jd-java-fullstack",
+        "jd-cloud-operation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-modernization"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-competency-08",
+      "category": "Revised JD competency",
+      "requirement": "Technical Leadership",
+      "status": "credential/experience",
+      "days": [
+        13,
+        14,
+        30
+      ],
+      "lessonIds": [
+        "jd-delivery-leadership"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-competency-09",
+      "category": "Revised JD competency",
+      "requirement": "Innovation & Continuous Learning",
+      "status": "design exercise",
+      "days": [
+        6,
+        20,
+        23
+      ],
+      "lessonIds": [
+        "jd-evaluation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-competency-10",
+      "category": "Revised JD competency",
+      "requirement": "Collaboration & Influence",
+      "status": "credential/experience",
+      "days": [
+        13,
+        14,
+        30
+      ],
+      "lessonIds": [
+        "jd-delivery-leadership"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-overview-01",
+      "category": "Revised JD overview",
+      "requirement": "Lead AI-enabled application modernization and software engineering acceleration initiatives.",
+      "status": "design exercise",
+      "days": [
+        12,
+        13,
+        30
+      ],
+      "lessonIds": [
+        "jd-accelerators",
+        "jd-delivery-leadership"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-modernization",
+        "case-evaluation"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local synthetic practice does not demonstrate production deployment or the candidate’s professional experience.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "jd-overview-02",
+      "category": "Revised JD overview",
+      "requirement": "Establish AI-assisted practices and improve developer productivity, software quality, delivery speed and modernization throughput.",
+      "status": "design exercise",
+      "days": [
+        9,
+        13,
+        30
+      ],
+      "lessonIds": [
+        "jd-evaluation",
+        "jd-delivery-leadership"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "No measured real-team adoption or causal productivity gain is supplied; scorecard data must be labeled illustrative until a real pilot runs.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    }
+  ],
+  "modernizationPatterns": [
+    {
+      "id": "original-pattern-01",
+      "category": "Original modernization pattern",
+      "requirement": "Java upgrades",
+      "status": "design exercise",
+      "days": [
+        12
+      ],
+      "lessonIds": [
+        "jd-accelerators"
+      ],
+      "scenarioIds": [
+        "agents-01"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "QuoteFixture.java",
+        "day12_adapter.py"
+      ],
+      "caseIds": [
+        "case-modernization"
+      ],
+      "evidence": "Java source/reference is supplied; prior offline-reference/qa-review.md excluded actual Java compile/run from its execution scope. New case execution receipt is pending.",
+      "limits": "Existing compiler-target fixture covers five Java behaviors on the same installed runtime; it does not prove source/runtime migration across JDK environments.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "original-pattern-02",
+      "category": "Original modernization pattern",
+      "requirement": ".NET upgrades",
+      "status": "language scope",
+      "days": [
+        12
+      ],
+      "lessonIds": [
+        "jd-accelerators"
+      ],
+      "scenarioIds": [
+        "evaluation-02"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day12_adapter.py"
+      ],
+      "caseIds": [
+        "case-modernization"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Python adapter planning only. No C# source migration, .NET build or runtime parity was executed.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "original-pattern-03",
+      "category": "Original modernization pattern",
+      "requirement": "HTTP → HTTPS",
+      "status": "optional external",
+      "days": [
+        10,
+        11
+      ],
+      "lessonIds": [
+        "jd-cloud-operation"
+      ],
+      "scenarioIds": [
+        "flask-04"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-enterprise"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "TLS termination and identity are design topics; local case HTTP uses loopback and does not provision certificates or enforce production TLS.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "original-pattern-04",
+      "category": "Original modernization pattern",
+      "requirement": "Security remediation",
+      "status": "runnable local",
+      "days": [
+        11,
+        27,
+        30
+      ],
+      "lessonIds": [
+        "jd-mcp-security",
+        "jd-delivery-leadership"
+      ],
+      "scenarioIds": [
+        "flask-06",
+        "agents-01"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day11_adversarial.py",
+        "day27_ticket_contract.py"
+      ],
+      "caseIds": [
+        "case-modernization",
+        "case-mcp"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Policy/adversarial fixtures are executable; actual CVE scanning, exploit validation and production remediation remain external.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "original-pattern-05",
+      "category": "Original modernization pattern",
+      "requirement": "Containerization",
+      "status": "optional external",
+      "days": [
+        10,
+        13
+      ],
+      "lessonIds": [
+        "jd-cloud-operation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-enterprise"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Container architecture and probe/network policy exercises; no cluster or deployed container operation is evidenced.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "original-pattern-06",
+      "category": "Original modernization pattern",
+      "requirement": "Middleware modernization",
+      "status": "design exercise",
+      "days": [
+        12,
+        13
+      ],
+      "lessonIds": [
+        "jd-accelerators"
+      ],
+      "scenarioIds": [
+        "fastapi-06"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day12_adapter.py"
+      ],
+      "caseIds": [
+        "case-modernization"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Versioned contracts and adapter planning, not an executed middleware/application-server replacement.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "original-pattern-07",
+      "category": "Original modernization pattern",
+      "requirement": "Database modernization",
+      "status": "design exercise",
+      "days": [
+        9,
+        12,
+        29
+      ],
+      "lessonIds": [
+        "jd-java-fullstack"
+      ],
+      "scenarioIds": [
+        "django-04",
+        "django-05"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day29_durable_state.py"
+      ],
+      "caseIds": [
+        "case-enterprise"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "SQLite transaction fixtures do not demonstrate an engine migration, backfill or zero-downtime schema rollout.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "original-pattern-08",
+      "category": "Original modernization pattern",
+      "requirement": "Cloud migration readiness",
+      "status": "design exercise",
+      "days": [
+        10,
+        13,
+        29
+      ],
+      "lessonIds": [
+        "jd-cloud-operation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day10_cloud_plan.py"
+      ],
+      "caseIds": [
+        "case-enterprise"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Capability and readiness worksheet only; provider-specific IaC and deployed recovery drills are external.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "original-pattern-09",
+      "category": "Original modernization pattern",
+      "requirement": "Dependency modernization",
+      "status": "design exercise",
+      "days": [
+        1,
+        12
+      ],
+      "lessonIds": [
+        "jd-accelerators"
+      ],
+      "scenarioIds": [
+        "agents-01"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day01_inventory.py",
+        "day12_adapter.py"
+      ],
+      "caseIds": [
+        "case-modernization"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Inventory and controlled fixtures; dependency version facts require an advisory/source catalog, and real CVE/OpenRewrite runs are optional external.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "original-pattern-10",
+      "category": "Original modernization pattern",
+      "requirement": "Automated code transformation",
+      "status": "runnable local",
+      "days": [
+        8,
+        12
+      ],
+      "lessonIds": [
+        "jd-accelerators"
+      ],
+      "scenarioIds": [
+        "agents-01"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day12_adapter.py"
+      ],
+      "caseIds": [
+        "case-modernization"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local bounded patch fixture; no claim of general semantic transformation coverage or behavior preservation beyond tested cases.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "original-pattern-11",
+      "category": "Original modernization pattern",
+      "requirement": "AI-assisted modernization",
+      "status": "design exercise",
+      "days": [
+        6,
+        8,
+        12
+      ],
+      "lessonIds": [
+        "jd-context",
+        "jd-accelerators"
+      ],
+      "scenarioIds": [
+        "agents-01",
+        "agents-04"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day08_workflow.py"
+      ],
+      "caseIds": [
+        "case-modernization"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Deterministic offline proposals teach boundaries; no live LLM/coding-agent generation is required or evidenced.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "original-pattern-12",
+      "category": "Original modernization pattern",
+      "requirement": "Automated testing and validation",
+      "status": "runnable local",
+      "days": [
+        3,
+        4,
+        8,
+        12
+      ],
+      "lessonIds": [
+        "jd-evaluation"
+      ],
+      "scenarioIds": [
+        "agents-01",
+        "evaluation-06"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day11_adversarial.py",
+        "QuoteFixture.java"
+      ],
+      "caseIds": [
+        "case-modernization",
+        "case-evaluation"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local assertion/build gates are bounded; real repository integration suites and security tools are separately required.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "original-pattern-13",
+      "category": "Original modernization pattern",
+      "requirement": "GitHub Copilot integration",
+      "status": "optional external",
+      "days": [
+        8,
+        12
+      ],
+      "lessonIds": [
+        "jd-context"
+      ],
+      "scenarioIds": [
+        "agents-01"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-modernization"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Instructions/review design plus official docs; no authenticated Copilot account integration or measured coding-agent run.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "original-pattern-14",
+      "category": "Original modernization pattern",
+      "requirement": "AI agent workflows",
+      "status": "runnable local",
+      "days": [
+        8,
+        29,
+        30
+      ],
+      "lessonIds": [
+        "jd-mcp-security"
+      ],
+      "scenarioIds": [
+        "agents-02",
+        "agents-03"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day29_durable_state.py",
+        "day30_financial_gate.py"
+      ],
+      "caseIds": [
+        "case-mcp",
+        "case-modernization"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Deterministic workflow/state fixtures, not unrestricted autonomous behavior or external effect guarantees.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "original-pattern-15",
+      "category": "Original modernization pattern",
+      "requirement": "Self-service modernization platforms",
+      "status": "design exercise",
+      "days": [
+        12,
+        13
+      ],
+      "lessonIds": [
+        "jd-accelerators",
+        "jd-java-fullstack"
+      ],
+      "scenarioIds": [
+        "fastapi-02"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-enterprise",
+        "case-modernization"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Portal and task-contract design; new cases remain planned until validated and do not prove deployed multi-team platform adoption.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    }
+  ],
+  "mlClusters": [
+    {
+      "id": "original-ml-01",
+      "category": "Original strengthening cluster",
+      "requirement": "Python",
+      "status": "runnable local",
+      "days": [
+        1,
+        27
+      ],
+      "lessonIds": [
+        "jd-java-fullstack"
+      ],
+      "scenarioIds": [
+        "python-01",
+        "async-01"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day01_inventory.py",
+        "day27_ticket_contract.py"
+      ],
+      "caseIds": [
+        "case-modernization"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Standard-library exercises and negative contract tests.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "original-ml-02",
+      "category": "Original strengthening cluster",
+      "requirement": "Statistics",
+      "status": "runnable local",
+      "days": [
+        2,
+        19,
+        22
+      ],
+      "lessonIds": [
+        "jd-evaluation"
+      ],
+      "scenarioIds": [
+        "evaluation-01"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day22_hallucination_metrics.py"
+      ],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Bayes/interval/rate reasoning; synthetic denominators are not measured production quality.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "original-ml-03",
+      "category": "Original strengthening cluster",
+      "requirement": "Classical machine learning / Scikit-learn",
+      "status": "optional external",
+      "days": [
+        2,
+        3
+      ],
+      "lessonIds": [
+        "jd-evaluation"
+      ],
+      "scenarioIds": [
+        "python-05"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day02_baselines.py",
+        "day03_grouped.py"
+      ],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Real library training code is supplied; installed scikit-learn/Pandas required. This audit did not execute these labs.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "original-ml-04",
+      "category": "Original strengthening cluster",
+      "requirement": "Deep learning",
+      "status": "optional external",
+      "days": [
+        4,
+        19
+      ],
+      "lessonIds": [],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day04_torch.py"
+      ],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Real PyTorch training code is supplied; torch installation and execution receipt required.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "original-ml-05",
+      "category": "Original strengthening cluster",
+      "requirement": "NLP",
+      "status": "runnable local",
+      "days": [
+        5,
+        15
+      ],
+      "lessonIds": [],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day15_foundations.py"
+      ],
+      "caseIds": [],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local attention mechanics plus BERT/GPT teaching; no full pretrained NLP model execution.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "original-ml-06",
+      "category": "Original strengthening cluster",
+      "requirement": "PyTorch / TensorFlow",
+      "status": "optional external",
+      "days": [
+        4
+      ],
+      "lessonIds": [],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day04_torch.py"
+      ],
+      "caseIds": [],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "PyTorch path is supplied; TensorFlow is an alternative framework topic, with no TensorFlow lab or execution.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "original-ml-07",
+      "category": "Original strengthening cluster",
+      "requirement": "ML lifecycle",
+      "status": "design exercise",
+      "days": [
+        3,
+        9
+      ],
+      "lessonIds": [
+        "jd-evaluation"
+      ],
+      "scenarioIds": [
+        "evaluation-05"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day09_lineage.py"
+      ],
+      "caseIds": [],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Lineage and promotion simulation; trained registry integration remains external.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "original-ml-08",
+      "category": "Original strengthening cluster",
+      "requirement": "ML deployment",
+      "status": "optional external",
+      "days": [
+        9,
+        10
+      ],
+      "lessonIds": [
+        "jd-cloud-operation",
+        "jd-java-fullstack"
+      ],
+      "scenarioIds": [
+        "fastapi-01"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day09_api.py"
+      ],
+      "caseIds": [
+        "case-enterprise"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local serving wrapper requires FastAPI; no deployed authenticated model endpoint or container rollout.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "original-ml-09",
+      "category": "Original strengthening cluster",
+      "requirement": "MLOps",
+      "status": "design exercise",
+      "days": [
+        9,
+        13
+      ],
+      "lessonIds": [
+        "jd-evaluation"
+      ],
+      "scenarioIds": [
+        "evaluation-06"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day09_lineage.py"
+      ],
+      "caseIds": [],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Version/drift/rollback simulation; real registry and production monitoring remain integrations.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "original-ml-10",
+      "category": "Original strengthening cluster",
+      "requirement": "Model evaluation",
+      "status": "runnable local",
+      "days": [
+        3,
+        22,
+        23
+      ],
+      "lessonIds": [
+        "jd-evaluation"
+      ],
+      "scenarioIds": [
+        "evaluation-01",
+        "evaluation-02"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day22_hallucination_metrics.py"
+      ],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local fixture metrics/gates run; no candidate production accuracy or natural-language benchmark claimed.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "original-ml-11",
+      "category": "Original strengthening cluster",
+      "requirement": "LLM internals",
+      "status": "runnable local",
+      "days": [
+        5,
+        15,
+        17,
+        18,
+        20
+      ],
+      "lessonIds": [],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day15_foundations.py"
+      ],
+      "caseIds": [],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Mechanism toys plus Transformer/MoE/Mamba/BitNet distinctions; not real model training/inference.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "original-ml-12",
+      "category": "Original strengthening cluster",
+      "requirement": "Embeddings",
+      "status": "design exercise",
+      "days": [
+        7,
+        24
+      ],
+      "lessonIds": [
+        "jd-context"
+      ],
+      "scenarioIds": [
+        "rag-04"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day24_vector_baselines.py"
+      ],
+      "caseIds": [
+        "case-enterprise"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Hand-authored vector and metric fixture; no genuine embedding encoder integration.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "original-ml-13",
+      "category": "Original strengthening cluster",
+      "requirement": "Vector databases / ANN",
+      "status": "design exercise",
+      "days": [
+        7,
+        24
+      ],
+      "lessonIds": [],
+      "scenarioIds": [
+        "rag-04"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day24_vector_baselines.py"
+      ],
+      "caseIds": [],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Exact/probe simulation; no Faiss/HNSW/vector database server integration.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "original-ml-14",
+      "category": "Original strengthening cluster",
+      "requirement": "RAG",
+      "status": "runnable local",
+      "days": [
+        7,
+        21,
+        25
+      ],
+      "lessonIds": [
+        "jd-context"
+      ],
+      "scenarioIds": [
+        "rag-01",
+        "rag-02",
+        "rag-03"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day07_retrieval.py"
+      ],
+      "caseIds": [
+        "case-enterprise"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Lexical retrieval, scope and extractive answer fixtures; not dense+LLM production RAG.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "original-ml-15",
+      "category": "Original strengthening cluster",
+      "requirement": "LLM evaluation",
+      "status": "runnable local",
+      "days": [
+        9,
+        22,
+        23
+      ],
+      "lessonIds": [
+        "jd-evaluation"
+      ],
+      "scenarioIds": [
+        "evaluation-01",
+        "evaluation-02",
+        "evaluation-03"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day22_hallucination_metrics.py"
+      ],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Synthetic fixed-response report and gates; model judge/live LLM quality external.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "original-ml-16",
+      "category": "Original strengthening cluster",
+      "requirement": "Fine-tuning",
+      "status": "optional external",
+      "days": [
+        5,
+        6
+      ],
+      "lessonIds": [],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "LoRA mechanics and decision criteria; no checkpoint adaptation, fine-tuning run or model-quality gain.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "original-ml-17",
+      "category": "Original strengthening cluster",
+      "requirement": "AI agents",
+      "status": "runnable local",
+      "days": [
+        8,
+        29,
+        30
+      ],
+      "lessonIds": [
+        "jd-mcp-contract",
+        "jd-mcp-security"
+      ],
+      "scenarioIds": [
+        "agents-01",
+        "agents-02",
+        "agents-03"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day29_durable_state.py"
+      ],
+      "caseIds": [
+        "case-modernization"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Bounded deterministic tools and state; live model planning external.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "original-ml-18",
+      "category": "Original strengthening cluster",
+      "requirement": "AI security",
+      "status": "runnable local",
+      "days": [
+        11,
+        27,
+        30
+      ],
+      "lessonIds": [
+        "jd-mcp-security"
+      ],
+      "scenarioIds": [
+        "agents-04",
+        "flask-06"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day11_adversarial.py",
+        "day30_financial_gate.py"
+      ],
+      "caseIds": [],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Local authority boundary tests; not a pentest, sandbox or injection-immunity guarantee.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "original-ml-19",
+      "category": "Original strengthening cluster",
+      "requirement": "Responsible AI",
+      "status": "design exercise",
+      "days": [
+        11,
+        22
+      ],
+      "lessonIds": [
+        "jd-delivery-leadership"
+      ],
+      "scenarioIds": [
+        "evaluation-02"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Risk/privacy/governance decisions; no certification or compliance proof.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "original-ml-20",
+      "category": "Original strengthening cluster",
+      "requirement": "Token optimization",
+      "status": "runnable local",
+      "days": [
+        6,
+        23,
+        28
+      ],
+      "lessonIds": [
+        "jd-evaluation"
+      ],
+      "scenarioIds": [
+        "evaluation-03"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day28_budget_selection.py"
+      ],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Supplied-unit packing and quality-gate arithmetic; real tokenizer/provider counts optional external.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "original-ml-21",
+      "category": "Original strengthening cluster",
+      "requirement": "AI governance",
+      "status": "design exercise",
+      "days": [
+        11,
+        13,
+        30
+      ],
+      "lessonIds": [
+        "jd-delivery-leadership"
+      ],
+      "scenarioIds": [
+        "evaluation-06"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Approval, retention, owner and release evidence design; organization policy deployment untested.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    },
+    {
+      "id": "original-ml-22",
+      "category": "Original strengthening cluster",
+      "requirement": "AI/ML system design",
+      "status": "design exercise",
+      "days": [
+        10,
+        13,
+        29
+      ],
+      "lessonIds": [
+        "jd-cloud-operation",
+        "jd-java-fullstack"
+      ],
+      "scenarioIds": [
+        "evaluation-03"
+      ],
+      "clientQuestionIds": [],
+      "labFiles": [
+        "day13_capacity.py"
+      ],
+      "caseIds": [],
+      "evidence": "Mapped to authored lessons and local reference contracts; a teaching link is not execution proof.",
+      "limits": "Capacity and recovery assumptions are planning values; workload-scale validation external.",
+      "nextAction": "Complete the linked practice and retain your own execution or review evidence."
+    }
+  ],
+  "gapGrid": [
+    {
+      "domain": "Python",
+      "status": "runnable local",
+      "days": [
+        1,
+        27
+      ],
+      "coverageIds": [
+        "original-ml-01"
+      ],
+      "lessonIds": [
+        "jd-java-fullstack"
+      ],
+      "limits": "Course coverage and self-assessment do not certify interview readiness or professional experience. Standard-library exercises and negative contract tests."
+    },
+    {
+      "domain": "ML",
+      "status": "optional external",
+      "days": [
+        2,
+        3
+      ],
+      "coverageIds": [
+        "original-ml-03"
+      ],
+      "lessonIds": [
+        "jd-evaluation"
+      ],
+      "limits": "Course coverage and self-assessment do not certify interview readiness or professional experience. Real library training code is supplied; installed scikit-learn/Pandas required. This audit did not execute these labs."
+    },
+    {
+      "domain": "Statistics",
+      "status": "runnable local",
+      "days": [
+        2,
+        19,
+        22
+      ],
+      "coverageIds": [
+        "original-ml-02"
+      ],
+      "lessonIds": [
+        "jd-evaluation"
+      ],
+      "limits": "Course coverage and self-assessment do not certify interview readiness or professional experience. Bayes/interval/rate reasoning; synthetic denominators are not measured production quality."
+    },
+    {
+      "domain": "Deep Learning",
+      "status": "optional external",
+      "days": [
+        4,
+        19
+      ],
+      "coverageIds": [
+        "original-ml-04"
+      ],
+      "lessonIds": [],
+      "limits": "Course coverage and self-assessment do not certify interview readiness or professional experience. Real PyTorch training code is supplied; torch installation and execution receipt required."
+    },
+    {
+      "domain": "NLP",
+      "status": "runnable local",
+      "days": [
+        5,
+        15
+      ],
+      "coverageIds": [
+        "original-ml-05"
+      ],
+      "lessonIds": [],
+      "limits": "Course coverage and self-assessment do not certify interview readiness or professional experience. Local attention mechanics plus BERT/GPT teaching; no full pretrained NLP model execution."
+    },
+    {
+      "domain": "LLM",
+      "status": "runnable local",
+      "days": [
+        5,
+        15,
+        17,
+        18,
+        20
+      ],
+      "coverageIds": [
+        "original-ml-11"
+      ],
+      "lessonIds": [],
+      "limits": "Course coverage and self-assessment do not certify interview readiness or professional experience. Mechanism toys plus Transformer/MoE/Mamba/BitNet distinctions; not real model training/inference."
+    },
+    {
+      "domain": "Prompt Engineering",
+      "status": "design exercise",
+      "days": [
+        6,
+        27
+      ],
+      "coverageIds": [
+        "jd-responsibility-02",
+        "jd-qualification-08"
+      ],
+      "lessonIds": [
+        "jd-context",
+        "jd-evaluation"
+      ],
+      "limits": "Course coverage and self-assessment do not certify interview readiness or professional experience. Mechanism toys plus Transformer/MoE/Mamba/BitNet distinctions; not real model training/inference."
+    },
+    {
+      "domain": "RAG",
+      "status": "runnable local",
+      "days": [
+        7,
+        21,
+        25
+      ],
+      "coverageIds": [
+        "original-ml-14"
+      ],
+      "lessonIds": [
+        "jd-context"
+      ],
+      "limits": "Course coverage and self-assessment do not certify interview readiness or professional experience. Lexical retrieval, scope and extractive answer fixtures; not dense+LLM production RAG."
+    },
+    {
+      "domain": "AI Agents",
+      "status": "runnable local",
+      "days": [
+        8,
+        29,
+        30
+      ],
+      "coverageIds": [
+        "original-ml-17"
+      ],
+      "lessonIds": [
+        "jd-mcp-contract",
+        "jd-mcp-security"
+      ],
+      "limits": "Course coverage and self-assessment do not certify interview readiness or professional experience. Bounded deterministic tools and state; live model planning external."
+    },
+    {
+      "domain": "MLOps",
+      "status": "design exercise",
+      "days": [
+        9,
+        13
+      ],
+      "coverageIds": [
+        "original-ml-09"
+      ],
+      "lessonIds": [
+        "jd-evaluation"
+      ],
+      "limits": "Course coverage and self-assessment do not certify interview readiness or professional experience. Version/drift/rollback simulation; real registry and production monitoring remain integrations."
+    },
+    {
+      "domain": "Cloud AI",
+      "status": "optional external",
+      "days": [
+        10,
+        11,
+        13,
+        29
+      ],
+      "coverageIds": [
+        "jd-qualification-13"
+      ],
+      "lessonIds": [
+        "jd-cloud-operation"
+      ],
+      "limits": "Course coverage and self-assessment do not certify interview readiness or professional experience. Local serving wrapper requires FastAPI; no deployed authenticated model endpoint or container rollout."
+    },
+    {
+      "domain": "AI Security",
+      "status": "runnable local",
+      "days": [
+        11,
+        27,
+        30
+      ],
+      "coverageIds": [
+        "original-ml-18"
+      ],
+      "lessonIds": [
+        "jd-mcp-security"
+      ],
+      "limits": "Course coverage and self-assessment do not certify interview readiness or professional experience. Local authority boundary tests; not a pentest, sandbox or injection-immunity guarantee."
+    },
+    {
+      "domain": "Software Architecture",
+      "status": "design exercise",
+      "days": [
+        10,
+        13,
+        29
+      ],
+      "coverageIds": [
+        "original-ml-22"
+      ],
+      "lessonIds": [
+        "jd-cloud-operation",
+        "jd-java-fullstack"
+      ],
+      "limits": "Course coverage and self-assessment do not certify interview readiness or professional experience. Capacity and recovery assumptions are planning values; workload-scale validation external."
+    },
+    {
+      "domain": "Modernization",
+      "status": "design exercise",
+      "days": [
+        1,
+        8,
+        12,
+        13
+      ],
+      "coverageIds": [
+        "jd-responsibility-01",
+        "original-pattern-01",
+        "original-pattern-10"
+      ],
+      "lessonIds": [
+        "jd-accelerators",
+        "jd-context"
+      ],
+      "limits": "Course coverage and self-assessment do not certify interview readiness or professional experience. Capacity and recovery assumptions are planning values; workload-scale validation external."
+    },
+    {
+      "domain": "DevOps",
+      "status": "design exercise",
+      "days": [
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "coverageIds": [
+        "jd-qualification-12",
+        "jd-qualification-13"
+      ],
+      "lessonIds": [
+        "jd-cloud-operation",
+        "jd-delivery-leadership"
+      ],
+      "limits": "Course coverage and self-assessment do not certify interview readiness or professional experience. Version/drift/rollback simulation; real registry and production monitoring remain integrations."
+    },
+    {
+      "domain": "System Design",
+      "status": "design exercise",
+      "days": [
+        10,
+        13,
+        29
+      ],
+      "coverageIds": [
+        "original-ml-22"
+      ],
+      "lessonIds": [
+        "jd-cloud-operation",
+        "jd-java-fullstack"
+      ],
+      "limits": "Course coverage and self-assessment do not certify interview readiness or professional experience. Capacity and recovery assumptions are planning values; workload-scale validation external."
+    },
+    {
+      "domain": "Leadership",
+      "status": "credential/experience",
+      "days": [
+        13,
+        14,
+        30
+      ],
+      "coverageIds": [
+        "jd-responsibility-10",
+        "jd-preferred-06"
+      ],
+      "lessonIds": [
+        "jd-delivery-leadership"
+      ],
+      "limits": "Course coverage and self-assessment do not certify interview readiness or professional experience. Capacity and recovery assumptions are planning values; workload-scale validation external."
+    }
+  ],
+  "cases": [
+    {
+      "id": "case-modernization",
+      "title": "Python-orchestrated Java modernization vertical slice",
+      "status": "runnable local",
+      "implementationState": "Reference source shipped; author local fixture execution passed. Independent execution and embedded parity are recorded in output/practical-validation.json.",
+      "limits": "Small supplied fixture; not a universal dependency scanner, Java rewrite engine, .NET migration or cloud deployment.",
+      "receipt": "output/practical-validation.json"
+    },
+    {
+      "id": "case-mcp",
+      "title": "Real stdio MCP client/server subset",
+      "status": "runnable local",
+      "implementationState": "Reference source shipped; author local fixture execution passed. Independent execution and embedded parity are recorded in output/practical-validation.json.",
+      "limits": "Pin implemented legacy2025-11-25; HTTP OAuth and latest2026 core are explicitly unimplemented design extensions.",
+      "receipt": "output/practical-validation.json"
+    },
+    {
+      "id": "case-enterprise",
+      "title": "Real Spring Boot API and FastAPI integration vertical slice",
+      "status": "runnable local",
+      "implementationState": "Reference source shipped; author local fixture execution passed. Independent execution and embedded parity are recorded in output/practical-validation.json.",
+      "limits": "Spring Boot and FastAPI HTTP are executed locally. Fixture tokens, SQLite and teaching outputs do not prove OIDC, distributed production operation, cloud deployment or live model quality.",
+      "receipt": "output/practical-validation.json"
+    },
+    {
+      "id": "case-evaluation",
+      "title": "Evaluation, traces and adoption gate harness",
+      "status": "runnable local",
+      "implementationState": "Reference source shipped; author local fixture execution passed. Independent execution and embedded parity are recorded in output/practical-validation.json.",
+      "limits": "Fixed local records and explicit teaching cost units; no live model benchmark or causal pilot impact.",
+      "receipt": "output/practical-validation.json"
+    }
+  ],
+  "sourceRequests": [
+    "attachment7e383abd-0ed7-4638-8c49-580186985b50",
+    "attachmentf9284642-a3a4-45f7-b8e2-16c0ee754f90"
+  ],
+  "platformScope": [
+    {
+      "id": "original-target-01",
+      "category": "Original target role skill/tool",
+      "requirement": "Python",
+      "status": "runnable local",
+      "days": [
+        1,
+        27,
+        29
+      ],
+      "lessonIds": [
+        "jd-java-fullstack"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-enterprise"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Python/SQLite local assertion fixtures; not arbitrary SQL engine or enterprise-scale operation.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-02",
+      "category": "Original target role skill/tool",
+      "requirement": "Machine Learning",
+      "status": "optional external",
+      "days": [
+        2,
+        3,
+        4,
+        6
+      ],
+      "lessonIds": [
+        "jd-evaluation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Relevant theory and genuine library code supplied where declared; actual library installation/training, TensorFlow and fine-tuning integrations require separate receipts.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-03",
+      "category": "Original target role skill/tool",
+      "requirement": "Statistics",
+      "status": "optional external",
+      "days": [
+        2,
+        3,
+        4,
+        6
+      ],
+      "lessonIds": [
+        "jd-evaluation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Relevant theory and genuine library code supplied where declared; actual library installation/training, TensorFlow and fine-tuning integrations require separate receipts.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-04",
+      "category": "Original target role skill/tool",
+      "requirement": "Scikit-learn",
+      "status": "optional external",
+      "days": [
+        2,
+        3,
+        4,
+        6
+      ],
+      "lessonIds": [
+        "jd-evaluation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Relevant theory and genuine library code supplied where declared; actual library installation/training, TensorFlow and fine-tuning integrations require separate receipts.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-05",
+      "category": "Original target role skill/tool",
+      "requirement": "TensorFlow / PyTorch",
+      "status": "optional external",
+      "days": [
+        2,
+        3,
+        4,
+        6
+      ],
+      "lessonIds": [
+        "jd-evaluation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Relevant theory and genuine library code supplied where declared; actual library installation/training, TensorFlow and fine-tuning integrations require separate receipts.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-06",
+      "category": "Original target role skill/tool",
+      "requirement": "Generative AI",
+      "status": "runnable local",
+      "days": [
+        5,
+        6,
+        15,
+        23,
+        28
+      ],
+      "lessonIds": [
+        "jd-context",
+        "jd-evaluation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Mechanism/contract fixtures and supplied-unit calculations; no live model call, actual tokenizer or pretrained model inference claim.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-07",
+      "category": "Original target role skill/tool",
+      "requirement": "LLMs",
+      "status": "runnable local",
+      "days": [
+        5,
+        6,
+        15,
+        23,
+        28
+      ],
+      "lessonIds": [
+        "jd-context",
+        "jd-evaluation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Mechanism/contract fixtures and supplied-unit calculations; no live model call, actual tokenizer or pretrained model inference claim.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-08",
+      "category": "Original target role skill/tool",
+      "requirement": "NLP",
+      "status": "runnable local",
+      "days": [
+        5,
+        6,
+        15,
+        23,
+        28
+      ],
+      "lessonIds": [
+        "jd-context",
+        "jd-evaluation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Mechanism/contract fixtures and supplied-unit calculations; no live model call, actual tokenizer or pretrained model inference claim.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-09",
+      "category": "Original target role skill/tool",
+      "requirement": "Deep Learning",
+      "status": "optional external",
+      "days": [
+        2,
+        3,
+        4,
+        6
+      ],
+      "lessonIds": [
+        "jd-evaluation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Relevant theory and genuine library code supplied where declared; actual library installation/training, TensorFlow and fine-tuning integrations require separate receipts.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-10",
+      "category": "Original target role skill/tool",
+      "requirement": "Prompt Engineering",
+      "status": "runnable local",
+      "days": [
+        5,
+        6,
+        15,
+        23,
+        28
+      ],
+      "lessonIds": [
+        "jd-context",
+        "jd-evaluation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Mechanism/contract fixtures and supplied-unit calculations; no live model call, actual tokenizer or pretrained model inference claim.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-11",
+      "category": "Original target role skill/tool",
+      "requirement": "Embeddings",
+      "status": "design exercise",
+      "days": [
+        7,
+        24,
+        25
+      ],
+      "lessonIds": [
+        "jd-context"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-enterprise"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Vector/ANN concept fixture plus lexical retrieval. Actual embedding encoder/vector-database integration remains optional external.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-12",
+      "category": "Original target role skill/tool",
+      "requirement": "Vector Databases",
+      "status": "design exercise",
+      "days": [
+        7,
+        24,
+        25
+      ],
+      "lessonIds": [
+        "jd-context"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-enterprise"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Vector/ANN concept fixture plus lexical retrieval. Actual embedding encoder/vector-database integration remains optional external.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-13",
+      "category": "Original target role skill/tool",
+      "requirement": "RAG",
+      "status": "runnable local",
+      "days": [
+        7,
+        8,
+        21,
+        29
+      ],
+      "lessonIds": [
+        "jd-context",
+        "jd-mcp-security"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-enterprise",
+        "case-mcp"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Local permissioned lexical/extractive or deterministic workflow fixtures; not autonomous live-model production behavior.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-14",
+      "category": "Original target role skill/tool",
+      "requirement": "AI Agents",
+      "status": "runnable local",
+      "days": [
+        7,
+        8,
+        21,
+        29
+      ],
+      "lessonIds": [
+        "jd-context",
+        "jd-mcp-security"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-enterprise",
+        "case-mcp"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Local permissioned lexical/extractive or deterministic workflow fixtures; not autonomous live-model production behavior.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-15",
+      "category": "Original target role skill/tool",
+      "requirement": "Model evaluation",
+      "status": "optional external",
+      "days": [
+        2,
+        3,
+        4,
+        6
+      ],
+      "lessonIds": [
+        "jd-evaluation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Relevant theory and genuine library code supplied where declared; actual library installation/training, TensorFlow and fine-tuning integrations require separate receipts.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-16",
+      "category": "Original target role skill/tool",
+      "requirement": "Fine-tuning",
+      "status": "optional external",
+      "days": [
+        2,
+        3,
+        4,
+        6
+      ],
+      "lessonIds": [
+        "jd-evaluation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Relevant theory and genuine library code supplied where declared; actual library installation/training, TensorFlow and fine-tuning integrations require separate receipts.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-17",
+      "category": "Original target role skill/tool",
+      "requirement": "ML pipelines",
+      "status": "optional external",
+      "days": [
+        2,
+        3,
+        4,
+        6
+      ],
+      "lessonIds": [
+        "jd-evaluation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Relevant theory and genuine library code supplied where declared; actual library installation/training, TensorFlow and fine-tuning integrations require separate receipts.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-18",
+      "category": "Original target role skill/tool",
+      "requirement": "MLOps",
+      "status": "design exercise",
+      "days": [
+        9,
+        12,
+        13
+      ],
+      "lessonIds": [
+        "jd-evaluation",
+        "jd-delivery-leadership"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-evaluation",
+        "case-modernization"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Local lineage/gate/report exercises. Real registry, CI platform and deployment gates require their own runs.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-19",
+      "category": "Original target role skill/tool",
+      "requirement": "REST APIs",
+      "status": "design exercise",
+      "days": [
+        9,
+        13,
+        29
+      ],
+      "lessonIds": [
+        "jd-java-fullstack",
+        "jd-cloud-operation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-enterprise"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Framework references/local simulations and capacity assumptions; new real loopbackJava/Python case pending execution. No load/availability guarantee.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-20",
+      "category": "Original target role skill/tool",
+      "requirement": "SQL",
+      "status": "runnable local",
+      "days": [
+        1,
+        27,
+        29
+      ],
+      "lessonIds": [
+        "jd-java-fullstack"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-enterprise"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Python/SQLite local assertion fixtures; not arbitrary SQL engine or enterprise-scale operation.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-21",
+      "category": "Original target role skill/tool",
+      "requirement": "NoSQL",
+      "status": "design exercise",
+      "days": [
+        9,
+        12,
+        13,
+        29
+      ],
+      "lessonIds": [
+        "jd-java-fullstack",
+        "jd-accelerators"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-enterprise",
+        "case-modernization"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "API/state/outbox and migration design examples; no real broker, NoSQL migration, SaaS credential flow or middleware runtime replacement.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-22",
+      "category": "Original target role skill/tool",
+      "requirement": "AWS / Azure / GCP",
+      "status": "optional external",
+      "days": [
+        10,
+        11,
+        13,
+        29
+      ],
+      "lessonIds": [
+        "jd-cloud-operation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-enterprise"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Provider/platform capability design; no live cloud, container, IaC or Kubernetes deployment receipt.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-23",
+      "category": "Original target role skill/tool",
+      "requirement": "Docker",
+      "status": "optional external",
+      "days": [
+        10,
+        11,
+        13,
+        29
+      ],
+      "lessonIds": [
+        "jd-cloud-operation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-enterprise"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Provider/platform capability design; no live cloud, container, IaC or Kubernetes deployment receipt.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-24",
+      "category": "Original target role skill/tool",
+      "requirement": "Kubernetes",
+      "status": "optional external",
+      "days": [
+        10,
+        11,
+        13,
+        29
+      ],
+      "lessonIds": [
+        "jd-cloud-operation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-enterprise"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Provider/platform capability design; no live cloud, container, IaC or Kubernetes deployment receipt.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-25",
+      "category": "Original target role skill/tool",
+      "requirement": "CI/CD",
+      "status": "design exercise",
+      "days": [
+        9,
+        12,
+        13
+      ],
+      "lessonIds": [
+        "jd-delivery-leadership"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-modernization"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Git/CI delivery design and review constraints; course does not commit/push or provision a CI release pipeline.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-26",
+      "category": "Original target role skill/tool",
+      "requirement": "Git",
+      "status": "design exercise",
+      "days": [
+        9,
+        12,
+        13
+      ],
+      "lessonIds": [
+        "jd-delivery-leadership"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-modernization"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Git/CI delivery design and review constraints; course does not commit/push or provision a CI release pipeline.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-27",
+      "category": "Original target role skill/tool",
+      "requirement": "Azure OpenAI",
+      "status": "optional external",
+      "days": [
+        10,
+        11,
+        13,
+        29
+      ],
+      "lessonIds": [
+        "jd-cloud-operation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-enterprise"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Provider/platform capability design; no live cloud, container, IaC or Kubernetes deployment receipt.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-28",
+      "category": "Original target role skill/tool",
+      "requirement": "AWS Bedrock",
+      "status": "optional external",
+      "days": [
+        10,
+        11,
+        13,
+        29
+      ],
+      "lessonIds": [
+        "jd-cloud-operation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-enterprise"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Provider/platform capability design; no live cloud, container, IaC or Kubernetes deployment receipt.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-29",
+      "category": "Original target role skill/tool",
+      "requirement": "Vertex AI",
+      "status": "optional external",
+      "days": [
+        10,
+        11,
+        13,
+        29
+      ],
+      "lessonIds": [
+        "jd-cloud-operation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-enterprise"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Provider/platform capability design; no live cloud, container, IaC or Kubernetes deployment receipt.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-30",
+      "category": "Original target role skill/tool",
+      "requirement": "LangChain",
+      "status": "optional external",
+      "days": [
+        6,
+        7,
+        8,
+        12
+      ],
+      "lessonIds": [
+        "jd-context",
+        "jd-accelerators"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-mcp",
+        "case-modernization"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Architecture/adapters and primary reference study; no executed authenticated framework/product integration.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-31",
+      "category": "Original target role skill/tool",
+      "requirement": "LlamaIndex",
+      "status": "optional external",
+      "days": [
+        6,
+        7,
+        8,
+        12
+      ],
+      "lessonIds": [
+        "jd-context",
+        "jd-accelerators"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-mcp",
+        "case-modernization"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Architecture/adapters and primary reference study; no executed authenticated framework/product integration.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-32",
+      "category": "Original target role skill/tool",
+      "requirement": "Semantic Kernel",
+      "status": "optional external",
+      "days": [
+        6,
+        7,
+        8,
+        12
+      ],
+      "lessonIds": [
+        "jd-context",
+        "jd-accelerators"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-mcp",
+        "case-modernization"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Architecture/adapters and primary reference study; no executed authenticated framework/product integration.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-33",
+      "category": "Original target role skill/tool",
+      "requirement": "AI security",
+      "status": "runnable local",
+      "days": [
+        11,
+        27,
+        29,
+        30
+      ],
+      "lessonIds": [
+        "jd-mcp-security",
+        "jd-delivery-leadership"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-mcp",
+        "case-enterprise"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Local identity-policy/scope/approval assertions only; real OAuth/OIDC and deployment security are external integrations.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-34",
+      "category": "Original target role skill/tool",
+      "requirement": "responsible AI",
+      "status": "design exercise",
+      "days": [
+        11,
+        22,
+        30
+      ],
+      "lessonIds": [
+        "jd-delivery-leadership"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Risk, retention, privacy and governance decisions; no compliance certification or formal legal conclusion.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-35",
+      "category": "Original target role skill/tool",
+      "requirement": "privacy",
+      "status": "design exercise",
+      "days": [
+        11,
+        22,
+        30
+      ],
+      "lessonIds": [
+        "jd-delivery-leadership"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Risk, retention, privacy and governance decisions; no compliance certification or formal legal conclusion.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-36",
+      "category": "Original target role skill/tool",
+      "requirement": "scalability",
+      "status": "design exercise",
+      "days": [
+        9,
+        13,
+        29
+      ],
+      "lessonIds": [
+        "jd-java-fullstack",
+        "jd-cloud-operation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-enterprise"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Framework references/local simulations and capacity assumptions; new real loopbackJava/Python case pending execution. No load/availability guarantee.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-37",
+      "category": "Original target role skill/tool",
+      "requirement": "reliability",
+      "status": "design exercise",
+      "days": [
+        9,
+        13,
+        29
+      ],
+      "lessonIds": [
+        "jd-java-fullstack",
+        "jd-cloud-operation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-enterprise"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Framework references/local simulations and capacity assumptions; new real loopbackJava/Python case pending execution. No load/availability guarantee.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-38",
+      "category": "Original target role skill/tool",
+      "requirement": "Java",
+      "status": "design exercise",
+      "days": [
+        12
+      ],
+      "lessonIds": [
+        "jd-java-fullstack",
+        "jd-accelerators"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-modernization",
+        "case-enterprise"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Java reference code; .NET adapter plans only. Neither substitutes for a verified source/runtime migration.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-39",
+      "category": "Original target role skill/tool",
+      "requirement": ".NET",
+      "status": "language scope",
+      "days": [
+        12
+      ],
+      "lessonIds": [
+        "jd-java-fullstack",
+        "jd-accelerators"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-modernization",
+        "case-enterprise"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Java reference code; .NET adapter plans only. Neither substitutes for a verified source/runtime migration.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-40",
+      "category": "Original target role skill/tool",
+      "requirement": "application modernization",
+      "status": "design exercise",
+      "days": [
+        1,
+        8,
+        12,
+        13
+      ],
+      "lessonIds": [
+        "jd-accelerators",
+        "jd-context"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-modernization"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Inventory and bounded transformation/approval exercises. Real current advisory analysis, broad automated repair and enterprise adoption remain separately evaluated.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-41",
+      "category": "Original target role skill/tool",
+      "requirement": "dependency analysis",
+      "status": "design exercise",
+      "days": [
+        1,
+        8,
+        12,
+        13
+      ],
+      "lessonIds": [
+        "jd-accelerators",
+        "jd-context"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-modernization"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Inventory and bounded transformation/approval exercises. Real current advisory analysis, broad automated repair and enterprise adoption remain separately evaluated.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-42",
+      "category": "Original target role skill/tool",
+      "requirement": "build pipelines",
+      "status": "design exercise",
+      "days": [
+        9,
+        12,
+        13
+      ],
+      "lessonIds": [
+        "jd-evaluation",
+        "jd-delivery-leadership"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-evaluation",
+        "case-modernization"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Local lineage/gate/report exercises. Real registry, CI platform and deployment gates require their own runs.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-43",
+      "category": "Original target role skill/tool",
+      "requirement": "APIs",
+      "status": "design exercise",
+      "days": [
+        9,
+        13,
+        29
+      ],
+      "lessonIds": [
+        "jd-java-fullstack",
+        "jd-cloud-operation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-enterprise"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Framework references/local simulations and capacity assumptions; new real loopbackJava/Python case pending execution. No load/availability guarantee.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-44",
+      "category": "Original target role skill/tool",
+      "requirement": "microservices",
+      "status": "design exercise",
+      "days": [
+        9,
+        13,
+        29
+      ],
+      "lessonIds": [
+        "jd-java-fullstack",
+        "jd-cloud-operation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-enterprise"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Framework references/local simulations and capacity assumptions; new real loopbackJava/Python case pending execution. No load/availability guarantee.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-45",
+      "category": "Original target role skill/tool",
+      "requirement": "event-driven architecture",
+      "status": "design exercise",
+      "days": [
+        9,
+        12,
+        13,
+        29
+      ],
+      "lessonIds": [
+        "jd-java-fullstack",
+        "jd-accelerators"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-enterprise",
+        "case-modernization"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "API/state/outbox and migration design examples; no real broker, NoSQL migration, SaaS credential flow or middleware runtime replacement.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-46",
+      "category": "Original target role skill/tool",
+      "requirement": "AI-assisted development",
+      "status": "design exercise",
+      "days": [
+        1,
+        8,
+        12,
+        13
+      ],
+      "lessonIds": [
+        "jd-accelerators",
+        "jd-context"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-modernization"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Inventory and bounded transformation/approval exercises. Real current advisory analysis, broad automated repair and enterprise adoption remain separately evaluated.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-47",
+      "category": "Original target role skill/tool",
+      "requirement": "GitHub Copilot",
+      "status": "optional external",
+      "days": [
+        6,
+        7,
+        8,
+        12
+      ],
+      "lessonIds": [
+        "jd-context",
+        "jd-accelerators"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-mcp",
+        "case-modernization"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Architecture/adapters and primary reference study; no executed authenticated framework/product integration.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-48",
+      "category": "Original target role skill/tool",
+      "requirement": "AI agents",
+      "status": "runnable local",
+      "days": [
+        7,
+        8,
+        21,
+        29
+      ],
+      "lessonIds": [
+        "jd-context",
+        "jd-mcp-security"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-enterprise",
+        "case-mcp"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Local permissioned lexical/extractive or deterministic workflow fixtures; not autonomous live-model production behavior.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-49",
+      "category": "Original target role skill/tool",
+      "requirement": "prompt engineering",
+      "status": "runnable local",
+      "days": [
+        5,
+        6,
+        15,
+        23,
+        28
+      ],
+      "lessonIds": [
+        "jd-context",
+        "jd-evaluation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Mechanism/contract fixtures and supplied-unit calculations; no live model call, actual tokenizer or pretrained model inference claim.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-50",
+      "category": "Original target role skill/tool",
+      "requirement": "model selection",
+      "status": "runnable local",
+      "days": [
+        5,
+        6,
+        15,
+        23,
+        28
+      ],
+      "lessonIds": [
+        "jd-context",
+        "jd-evaluation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Mechanism/contract fixtures and supplied-unit calculations; no live model call, actual tokenizer or pretrained model inference claim.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-51",
+      "category": "Original target role skill/tool",
+      "requirement": "token optimization",
+      "status": "runnable local",
+      "days": [
+        5,
+        6,
+        15,
+        23,
+        28
+      ],
+      "lessonIds": [
+        "jd-context",
+        "jd-evaluation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Mechanism/contract fixtures and supplied-unit calculations; no live model call, actual tokenizer or pretrained model inference claim.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-52",
+      "category": "Original target role skill/tool",
+      "requirement": "AI governance",
+      "status": "design exercise",
+      "days": [
+        11,
+        22,
+        30
+      ],
+      "lessonIds": [
+        "jd-delivery-leadership"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-evaluation"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Risk, retention, privacy and governance decisions; no compliance certification or formal legal conclusion.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-53",
+      "category": "Original target role skill/tool",
+      "requirement": "authentication",
+      "status": "runnable local",
+      "days": [
+        11,
+        27,
+        29,
+        30
+      ],
+      "lessonIds": [
+        "jd-mcp-security",
+        "jd-delivery-leadership"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-mcp",
+        "case-enterprise"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Local identity-policy/scope/approval assertions only; real OAuth/OIDC and deployment security are external integrations.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-54",
+      "category": "Original target role skill/tool",
+      "requirement": "authorization",
+      "status": "runnable local",
+      "days": [
+        11,
+        27,
+        29,
+        30
+      ],
+      "lessonIds": [
+        "jd-mcp-security",
+        "jd-delivery-leadership"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-mcp",
+        "case-enterprise"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Local identity-policy/scope/approval assertions only; real OAuth/OIDC and deployment security are external integrations.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-55",
+      "category": "Original target role skill/tool",
+      "requirement": "databases",
+      "status": "design exercise",
+      "days": [
+        9,
+        12,
+        13,
+        29
+      ],
+      "lessonIds": [
+        "jd-java-fullstack",
+        "jd-accelerators"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-enterprise",
+        "case-modernization"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "API/state/outbox and migration design examples; no real broker, NoSQL migration, SaaS credential flow or middleware runtime replacement.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-56",
+      "category": "Original target role skill/tool",
+      "requirement": "messaging",
+      "status": "design exercise",
+      "days": [
+        9,
+        12,
+        13,
+        29
+      ],
+      "lessonIds": [
+        "jd-java-fullstack",
+        "jd-accelerators"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-enterprise",
+        "case-modernization"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "API/state/outbox and migration design examples; no real broker, NoSQL migration, SaaS credential flow or middleware runtime replacement.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-57",
+      "category": "Original target role skill/tool",
+      "requirement": "SaaS integrations",
+      "status": "design exercise",
+      "days": [
+        9,
+        12,
+        13,
+        29
+      ],
+      "lessonIds": [
+        "jd-java-fullstack",
+        "jd-accelerators"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-enterprise",
+        "case-modernization"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "API/state/outbox and migration design examples; no real broker, NoSQL migration, SaaS credential flow or middleware runtime replacement.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-58",
+      "category": "Original target role skill/tool",
+      "requirement": "middleware",
+      "status": "design exercise",
+      "days": [
+        9,
+        12,
+        13,
+        29
+      ],
+      "lessonIds": [
+        "jd-java-fullstack",
+        "jd-accelerators"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-enterprise",
+        "case-modernization"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "API/state/outbox and migration design examples; no real broker, NoSQL migration, SaaS credential flow or middleware runtime replacement.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-59",
+      "category": "Original target role skill/tool",
+      "requirement": "application servers",
+      "status": "design exercise",
+      "days": [
+        9,
+        12,
+        13,
+        29
+      ],
+      "lessonIds": [
+        "jd-java-fullstack",
+        "jd-accelerators"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-enterprise",
+        "case-modernization"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "API/state/outbox and migration design examples; no real broker, NoSQL migration, SaaS credential flow or middleware runtime replacement.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-60",
+      "category": "Original target role skill/tool",
+      "requirement": "AWS",
+      "status": "optional external",
+      "days": [
+        10,
+        11,
+        13,
+        29
+      ],
+      "lessonIds": [
+        "jd-cloud-operation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-enterprise"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Provider/platform capability design; no live cloud, container, IaC or Kubernetes deployment receipt.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-61",
+      "category": "Original target role skill/tool",
+      "requirement": "Azure",
+      "status": "optional external",
+      "days": [
+        10,
+        11,
+        13,
+        29
+      ],
+      "lessonIds": [
+        "jd-cloud-operation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-enterprise"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Provider/platform capability design; no live cloud, container, IaC or Kubernetes deployment receipt.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-62",
+      "category": "Original target role skill/tool",
+      "requirement": "GCP",
+      "status": "optional external",
+      "days": [
+        10,
+        11,
+        13,
+        29
+      ],
+      "lessonIds": [
+        "jd-cloud-operation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-enterprise"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Provider/platform capability design; no live cloud, container, IaC or Kubernetes deployment receipt.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-63",
+      "category": "Original target role skill/tool",
+      "requirement": "Infrastructure as Code",
+      "status": "optional external",
+      "days": [
+        10,
+        11,
+        13,
+        29
+      ],
+      "lessonIds": [
+        "jd-cloud-operation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-enterprise"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Provider/platform capability design; no live cloud, container, IaC or Kubernetes deployment receipt.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-64",
+      "category": "Original target role skill/tool",
+      "requirement": "DevOps",
+      "status": "design exercise",
+      "days": [
+        9,
+        12,
+        13
+      ],
+      "lessonIds": [
+        "jd-delivery-leadership"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-modernization"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Git/CI delivery design and review constraints; course does not commit/push or provision a CI release pipeline.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-65",
+      "category": "Original target role skill/tool",
+      "requirement": "secure coding",
+      "status": "runnable local",
+      "days": [
+        11,
+        27,
+        29,
+        30
+      ],
+      "lessonIds": [
+        "jd-mcp-security",
+        "jd-delivery-leadership"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-mcp",
+        "case-enterprise"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Local identity-policy/scope/approval assertions only; real OAuth/OIDC and deployment security are external integrations.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-66",
+      "category": "Original target role skill/tool",
+      "requirement": "dependency management",
+      "status": "design exercise",
+      "days": [
+        1,
+        8,
+        12,
+        13
+      ],
+      "lessonIds": [
+        "jd-accelerators",
+        "jd-context"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-modernization"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Inventory and bounded transformation/approval exercises. Real current advisory analysis, broad automated repair and enterprise adoption remain separately evaluated.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-67",
+      "category": "Original target role skill/tool",
+      "requirement": "vulnerability remediation",
+      "status": "design exercise",
+      "days": [
+        1,
+        8,
+        12,
+        13
+      ],
+      "lessonIds": [
+        "jd-accelerators",
+        "jd-context"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-modernization"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Inventory and bounded transformation/approval exercises. Real current advisory analysis, broad automated repair and enterprise adoption remain separately evaluated.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-68",
+      "category": "Original target role skill/tool",
+      "requirement": "TLS / HTTPS",
+      "status": "optional external",
+      "days": [
+        10,
+        11
+      ],
+      "lessonIds": [
+        "jd-mcp-security",
+        "jd-cloud-operation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-enterprise",
+        "case-mcp"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "TLS/OAuth/OIDC architecture questions; loopback prototypes and fixture tokens do not implement those standards.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-69",
+      "category": "Original target role skill/tool",
+      "requirement": "modern identity",
+      "status": "optional external",
+      "days": [
+        10,
+        11
+      ],
+      "lessonIds": [
+        "jd-mcp-security",
+        "jd-cloud-operation"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-enterprise",
+        "case-mcp"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "TLS/OAuth/OIDC architecture questions; loopback prototypes and fixture tokens do not implement those standards.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-70",
+      "category": "Original target role skill/tool",
+      "requirement": "self-service developer platforms",
+      "status": "design exercise",
+      "days": [
+        1,
+        8,
+        12,
+        13
+      ],
+      "lessonIds": [
+        "jd-accelerators",
+        "jd-context"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-modernization"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Inventory and bounded transformation/approval exercises. Real current advisory analysis, broad automated repair and enterprise adoption remain separately evaluated.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-71",
+      "category": "Original target role skill/tool",
+      "requirement": "modernization accelerators",
+      "status": "design exercise",
+      "days": [
+        1,
+        8,
+        12,
+        13
+      ],
+      "lessonIds": [
+        "jd-accelerators",
+        "jd-context"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-modernization"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Inventory and bounded transformation/approval exercises. Real current advisory analysis, broad automated repair and enterprise adoption remain separately evaluated.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    },
+    {
+      "id": "original-target-72",
+      "category": "Original target role skill/tool",
+      "requirement": "automated validation",
+      "status": "design exercise",
+      "days": [
+        9,
+        12,
+        13
+      ],
+      "lessonIds": [
+        "jd-evaluation",
+        "jd-delivery-leadership"
+      ],
+      "scenarioIds": [],
+      "clientQuestionIds": [],
+      "labFiles": [],
+      "caseIds": [
+        "case-evaluation",
+        "case-modernization"
+      ],
+      "evidence": "Explicit mapping of a bullet in original target-role request, with current tutorial boundary.",
+      "limits": "Local lineage/gate/report exercises. Real registry, CI platform and deployment gates require their own runs.",
+      "nextAction": "Use the mapped lesson/case, then collect the separately required integration or experience evidence."
+    }
+  ]
+}

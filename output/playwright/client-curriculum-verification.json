@@ -1,0 +1,36 @@
+{
+  "status": "PASS",
+  "counts": {
+    "days": 30,
+    "modules": 155,
+    "labs": 30,
+    "client": 50,
+    "checks": 100,
+    "mins": 240,
+    "hours": 4,
+    "day": 14
+  },
+  "verified": [
+    "30\u00d76 teaching panes",
+    "all50\u00d73 client panes",
+    "attention mask visibility",
+    "output reserve arithmetic",
+    "zero claim failure rate persistence",
+    "Challenge main/follow-up answer gates",
+    "progressive hints",
+    "fixed check feedback",
+    "revisit queue/search focus",
+    "10-question circuit",
+    "30daylab download",
+    "legacy14-day answers/code/evidence retained",
+    "new day30 scores/reload/export/import",
+    "1440/847/390 layouts",
+    "single-file offline startup and teaching",
+    "8 revisedJD drills, hints, main/follow-up gates and persistence"
+  ],
+  "runtimeErrors": 0,
+  "remoteRequests": 0,
+  "learnerStorageUntouched": true,
+  "artifact_sha256": "b5919a9c91318bdef601f051e1db5c48f3357325686703e2a760e48453922f7c",
+  "artifact_bytes": 1679455
+}

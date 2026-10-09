@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "videoReviewCannotUnlockAnswers": true,
+  "caseAttemptGatePreserved": true,
+  "compactTeacherSidebar": true,
+  "runtimeErrors": 0,
+  "screenshot": "output/playwright/buddy-curated-tutorials.png",
+  "learnerStorageUntouched": true,
+  "artifact": {
+    "path": "/Users/vishalchawla/ai-modernization-interview-bootcamp/index.html",
+    "bytes": 2036349,
+    "sha256": "b4e76dec8d2822c4c09f8814be871abd9deb5b775ad4463823e6e5b9e9ca6e1b"
+  }
+}

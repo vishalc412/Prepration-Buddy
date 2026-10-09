@@ -1,0 +1,122 @@
+{
+  "status": "PASS",
+  "case_count": 4,
+  "coverage_entries": 154,
+  "gap_rows": 17,
+  "source_files": 22,
+  "fingerprints": {
+    "case-modernization/fixtures/after/BehaviorProbe.java": "5b300d99b0028793ba73579032dd7895f5bcc2a5ccd0ba52c13fa1226ecfa70d",
+    "case-modernization/fixtures/after/InvoiceService.java": "455438c2368d0e616763e15ba0060d424ac8f166fa95d8f0fa5fe4f7ccbce919",
+    "case-modernization/fixtures/after/PricePolicy.java": "6fe0938b694cb986d68ee5e0801ee99c519dff75e16ac229d99660823b2318e0",
+    "case-modernization/fixtures/after/ReceiptApi.java": "c3b077a742b1746c9159902174ff207a6e2a5aec606efd21b42ea7bd8c48dbcd",
+    "case-modernization/fixtures/before/BehaviorProbe.java": "5b300d99b0028793ba73579032dd7895f5bcc2a5ccd0ba52c13fa1226ecfa70d",
+    "case-modernization/fixtures/before/InvoiceService.java": "455438c2368d0e616763e15ba0060d424ac8f166fa95d8f0fa5fe4f7ccbce919",
+    "case-modernization/fixtures/before/PricePolicy.java": "80fac5c4f2cbdbb53262bd25f2fbdd95b451cf475889d7254cc6c06d5b0ead02",
+    "case-modernization/fixtures/before/ReceiptApi.java": "c3b077a742b1746c9159902174ff207a6e2a5aec606efd21b42ea7bd8c48dbcd",
+    "case-modernization/modernization_case.py": "51d107cc1de895ff06018be7070c82145abb267624c92d2ccb602c87a730fa1b",
+    "case-mcp/client.py": "19fdb0991efdb4054bff097c39bc6577ece3eb96accec3e3a20af5b0e09442d8",
+    "case-mcp/server.py": "6f7e65a0c6cf3d5ca5964aa658c7fc0618ab6d01723dc652ff410360650f3a24",
+    "case-enterprise/README.md": "4bf4c5435e38eb303b1b5fd9a4cef4ca26194a46c5e73010c322fa4a4cebb0b2",
+    "case-enterprise/pom.xml": "3b91b191df26f984c47e7e308443478842126710fc6c335374c562260108a9b4",
+    "case-enterprise/EnterpriseGateway.java": "47a986246b2068006cbe6b195d7bc888336b9d9bee17b8f779587091a1fa5a2d",
+    "case-enterprise/python_service.py": "28f623a052b60e59403cee8df069b9466d3549f3db8952770b438d5b16412f1d",
+    "case-enterprise/seed_sources.json": "d212b91ec2fa65431b0036e8729c25841105478c63e786e795d820c22114af0e",
+    "case-enterprise/requirements-tested.txt": "744a4e51ac762d306dd0e7c3d66e122dbee294fc5c466d354bf4c0f02e75a5c7",
+    "case-enterprise/integration_test.py": "9e933e70cfc73136f3b07a716c0b286d6153a7babcd1d976181212747260ea6b",
+    "case-enterprise/Dockerfile.python": "ccc501ba16b9831dd9ea9c7300a8f7f3441382c30afdc4c69b447ea46ddbb251",
+    "case-enterprise/Dockerfile.java": "bbd4cd48bfea5a3995b4fc00bf0d5f32035c63e40502442a3d9bb8933a6c2655",
+    "case-enterprise/deployment-exercise.yaml": "91074d0e2e0402a332b7452ce3a56b614cbf3e89cc28cee42e9ea872ef1e2861",
+    "case-evaluation/evaluate.py": "48be32e91ee927cb49d80c55293c0c66abb68f297159744415ce1be75a4be319"
+  },
+  "execution": [
+    {
+      "case": "case-modernization",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-I",
+        "modernization_case.py",
+        "--self-test"
+      ],
+      "exit_code": 0,
+      "stdout_tail": "",
+      "stderr_tail": "test_actual_java_semantic_and_compile_failures (__main__.BuiltinTests.test_actual_java_semantic_and_compile_failures) ... ok\ntest_complete_run_parity_graph_preview_approval_replay (__main__.BuiltinTests.test_complete_run_parity_graph_preview_approval_replay) ... ok\ntest_inventory_bound_and_hard_link (__main__.BuiltinTests.test_inventory_bound_and_hard_link) ... ok\ntest_noop_preview_and_drift_after_replay (__main__.BuiltinTests.test_noop_preview_and_drift_after_replay) ... ok\ntest_preview_cannot_cross_fixture_root (__main__.BuiltinTests.test_preview_cannot_cross_fixture_root) ... ok\ntest_stale_dependency_change_and_tampered_patch (__main__.BuiltinTests.test_stale_dependency_change_and_tampered_patch) ... ok\ntest_unknown_actor_and_forged_identity (__main__.BuiltinTests.test_unknown_actor_and_forged_identity) ... ok\ntest_unsupported_exact_recipe_and_path_boundaries (__main__.BuiltinTests.test_unsupported_exact_recipe_and_path_boundaries) ... ok\n\n----------------------------------------------------------------------\nRan 8 tests in 9.851s\n\nOK\n",
+      "execution_boundary": "independent reviewer; disposable local fixture, not learner work"
+    },
+    {
+      "case": "case-mcp",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-I",
+        "client.py"
+      ],
+      "exit_code": 0,
+      "stdout_tail": "{\n  \"status\": \"PASS\",\n  \"protocol\": \"2025-11-25 scoped legacy subset\",\n  \"checks\": [\n    \"pre-initialization denied\",\n    \"initialize, acknowledge, discover typed tool\",\n    \"structured output and injection text remains data\",\n    \"path escape, principal override, argument types rejected\",\n    \"resource allowlist and prompt contract\",\n    \"unknown method, malformed JSON and bounded input\",\n    \"symlink escape rejected\",\n    \"trusted launcher authorization enforced for tools and resources\",\n    \"unsupported negotiated revision refused\"\n  ],\n  \"limits\": [\n    \"No OAuth/HTTP/latest protocol or universal SDK conformance tested\",\n    \"Read-only fixture, no arbitrary repositories or code execution\"\n  ]\n}\n",
+      "stderr_tail": "",
+      "execution_boundary": "independent reviewer; disposable local fixture, not learner work"
+    },
+    {
+      "case": "case-enterprise",
+      "command": [
+        "/private/tmp/enterprise-case-validation/bin/python",
+        "integration_test.py",
+        "--offline-maven"
+      ],
+      "exit_code": 0,
+      "stdout_tail": "PASS enterprise: actual Spring Boot -> FastAPI HTTP, scoped citations, abstention, validation, injection-data isolation, denied writes, durable replay, conflict, concurrent duplicates, restart and outage\nFinal temporary SQLite counts: tickets=3 commands=3 outbox=3; no bank/model/cloud calls\n",
+      "stderr_tail": "",
+      "execution_boundary": "independent reviewer; disposable local fixture, not learner work"
+    },
+    {
+      "case": "case-evaluation",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-I",
+        "evaluate.py"
+      ],
+      "exit_code": 0,
+      "stdout_tail": "{\n  \"status\": \"PASS\",\n  \"selected_candidate\": \"cheap_good\",\n  \"reports\": {\n    \"cheap_bad\": {\n      \"dataset_version\": \"synthetic-support-v1\",\n      \"requests\": 10,\n      \"label_accuracy\": 1.0,\n      \"retrieval_recall_at_2\": 1.0,\n      \"accepted\": 8,\n      \"accepted_rate\": 0.8,\n      \"claim_count\": 10,\n      \"unsupported_count\": 2,\n      \"unsupported_claim_rate\": 0.2,\n      \"unsupported_wilson_interval\": [\n        0.056680947980693314,\n        0.5098431532792765\n      ],\n      \"security_incidents\": 1,\n      \"p95_ms\": 120.0,\n      \"cost_usd\": 0.020000000000000004,\n      \"cost_per_accepted_usd\": 0.0025000000000000005,\n      \"tokens\": 1100,\n      \"gate_pass\": false\n    },\n    \"cheap_good\": {\n      \"dataset_version\": \"synthetic-support-v1\",\n      \"requests\": 10,\n      \"label_accuracy\": 1.0,\n      \"retrieval_recall_at_2\": 1.0,\n      \"accepted\": 10,\n      \"accepted_rate\": 1.0,\n      \"claim_count\": 10,\n      \"unsupported_count\": 0,\n      \"unsupported_claim_rate\": 0.0,\n      \"unsupported_wilson_interval\": [\n        0,\n        0.2775401687666166\n      ],\n      \"security_incidents\": 0,\n      \"p95_ms\": 120.0,\n      \"cost_usd\": 0.020000000000000004,\n      \"cost_per_accepted_usd\": 0.0020000000000000005,\n      \"tokens\": 1100,\n      \"gate_pass\": true\n    },\n    \"expensive\": {\n      \"dataset_version\": \"synthetic-support-v1\",\n      \"requests\": 10,\n      \"label_accuracy\": 1.0,\n      \"retrieval_recall_at_2\": 1.0,\n      \"accepted\": 10,\n      \"accepted_rate\": 1.0,\n      \"claim_count\": 10,\n      \"unsupported_count\": 0,\n      \"unsupported_claim_rate\": 0.0,\n      \"unsupported_wilson_interval\": [\n        0,\n        0.2775401687666166\n      ],\n      \"security_incidents\": 0,\n      \"p95_ms\": 600.0,\n      \"cost_usd\": 0.30000000000000004,\n      \"cost_per_accepted_usd\": 0.030000000000000006,\n      \"tokens\": 1100,\n      \"gate_pass\": false\n    }\n  },\n  \"pilot\": {\n    \"before_minutes_per_accepted\": 30.0,\n    \"after_minutes_per_accepted\": 21.0,\n    \"relative_active_time_reduction\": 0.3,\n    \"after_adoption_rate\": 0.8,\n    \"after_defects_per_accepted\": 0.0,\n    \"limit\": \"Synthetic cohorts; no causal productivity or enterprise adoption claim.\"\n  },\n  \"checks\": [\n    \"tenant-filtered retrieval\",\n    \"correct label with unsupported claims rejected\",\n    \"one security incident blocks release\",\n    \"zero accepted/no claims denominators remain unknown\",\n    \"finite/type validation\",\n    \"duplicate identity rejected\",\n    \"durable SQL trace records\",\n    \"zero errors still has confidence interval\",\n    \"comparable pilot arithmetic\"\n  ],\n  \"limits\": [\n    \"Synthetic outputs and claim labels; not live model quality\",\n    \"Lexical retrieval, not embeddings or ANN\",\n    \"Manual governance/approval remains separate from quality gate\"\n  ]\n}\n",
+      "stderr_tail": "",
+      "execution_boundary": "independent reviewer; disposable local fixture, not learner work"
+    }
+  ],
+  "limits": [
+    "Author/reviewer execution does not mark learner work complete.",
+    "Coverage links and length checks do not prove professional proficiency.",
+    "Actual framework packages/JDK/offline Maven cache are prepared prerequisites.",
+    "Local prototype tests do not certify production, OAuth or current MCP interoperability."
+  ],
+  "embedded_parity": "PASS",
+  "artifact_sha256": "403cd4c6e9f89163d4eaccc70434c53740fbfacfdc6c0318010544d4e6116065",
+  "artifact_bytes": 1964659,
+  "zip_roundtrip": [
+    {
+      "case": "case-modernization",
+      "files": 9,
+      "bytes": 32609,
+      "status": "PASS",
+      "boundary": "exact JavaScript writer, independent Python ZIP reader"
+    },
+    {
+      "case": "case-mcp",
+      "files": 2,
+      "bytes": 14125,
+      "status": "PASS",
+      "boundary": "exact JavaScript writer, independent Python ZIP reader"
+    },
+    {
+      "case": "case-enterprise",
+      "files": 10,
+      "bytes": 37345,
+      "status": "PASS",
+      "boundary": "exact JavaScript writer, independent Python ZIP reader"
+    },
+    {
+      "case": "case-evaluation",
+      "files": 1,
+      "bytes": 11853,
+      "status": "PASS",
+      "boundary": "exact JavaScript writer, independent Python ZIP reader"
+    }
+  ],
+  "receipt_kind": "independent reviewer execution; not learner or author receipt"
+}

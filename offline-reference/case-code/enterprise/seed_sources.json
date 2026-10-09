@@ -1,0 +1,5 @@
+[
+  {"tenant":"acme","source_id":"acme-refund","version":2,"text":"Acme refunds standard orders within 30 days. Final sale orders are excluded."},
+  {"tenant":"acme","source_id":"acme-support","version":1,"text":"Acme technical support operates on weekdays."},
+  {"tenant":"bravo","source_id":"bravo-refund","version":9,"text":"Bravo refunds standard orders within 90 days. Bravo refund policy is tenant specific."}
+]

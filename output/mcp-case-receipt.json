@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "protocol": "2025-11-25 scoped legacy subset",
+  "checks": [
+    "pre-initialization denied",
+    "initialize, acknowledge, discover typed tool",
+    "structured output and injection text remains data",
+    "path escape, principal override, argument types rejected",
+    "resource allowlist and prompt contract",
+    "unknown method, malformed JSON and bounded input",
+    "symlink escape rejected",
+    "trusted launcher authorization enforced for tools and resources",
+    "unsupported negotiated revision refused"
+  ],
+  "limits": [
+    "No OAuth/HTTP/latest protocol or universal SDK conformance tested",
+    "Read-only fixture, no arbitrary repositories or code execution"
+  ]
+}

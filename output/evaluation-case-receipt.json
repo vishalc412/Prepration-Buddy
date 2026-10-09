@@ -1,0 +1,93 @@
+{
+  "status": "PASS",
+  "selected_candidate": "cheap_good",
+  "reports": {
+    "cheap_bad": {
+      "dataset_version": "synthetic-support-v1",
+      "requests": 10,
+      "label_accuracy": 1.0,
+      "retrieval_recall_at_2": 1.0,
+      "accepted": 8,
+      "accepted_rate": 0.8,
+      "claim_count": 10,
+      "unsupported_count": 2,
+      "unsupported_claim_rate": 0.2,
+      "unsupported_wilson_interval": [
+        0.056680947980693314,
+        0.5098431532792765
+      ],
+      "security_incidents": 1,
+      "p95_ms": 120.0,
+      "cost_usd": 0.020000000000000004,
+      "cost_per_accepted_usd": 0.0025000000000000005,
+      "tokens": 1100,
+      "gate_pass": false
+    },
+    "cheap_good": {
+      "dataset_version": "synthetic-support-v1",
+      "requests": 10,
+      "label_accuracy": 1.0,
+      "retrieval_recall_at_2": 1.0,
+      "accepted": 10,
+      "accepted_rate": 1.0,
+      "claim_count": 10,
+      "unsupported_count": 0,
+      "unsupported_claim_rate": 0.0,
+      "unsupported_wilson_interval": [
+        0,
+        0.2775401687666166
+      ],
+      "security_incidents": 0,
+      "p95_ms": 120.0,
+      "cost_usd": 0.020000000000000004,
+      "cost_per_accepted_usd": 0.0020000000000000005,
+      "tokens": 1100,
+      "gate_pass": true
+    },
+    "expensive": {
+      "dataset_version": "synthetic-support-v1",
+      "requests": 10,
+      "label_accuracy": 1.0,
+      "retrieval_recall_at_2": 1.0,
+      "accepted": 10,
+      "accepted_rate": 1.0,
+      "claim_count": 10,
+      "unsupported_count": 0,
+      "unsupported_claim_rate": 0.0,
+      "unsupported_wilson_interval": [
+        0,
+        0.2775401687666166
+      ],
+      "security_incidents": 0,
+      "p95_ms": 600.0,
+      "cost_usd": 0.30000000000000004,
+      "cost_per_accepted_usd": 0.030000000000000006,
+      "tokens": 1100,
+      "gate_pass": false
+    }
+  },
+  "pilot": {
+    "before_minutes_per_accepted": 30.0,
+    "after_minutes_per_accepted": 21.0,
+    "relative_active_time_reduction": 0.3,
+    "after_adoption_rate": 0.8,
+    "after_defects_per_accepted": 0.0,
+    "limit": "Synthetic cohorts; no causal productivity or enterprise adoption claim."
+  },
+  "checks": [
+    "tenant-filtered retrieval",
+    "correct label with unsupported claims rejected",
+    "one security incident blocks release",
+    "zero accepted/no claims denominators remain unknown",
+    "finite/type validation",
+    "duplicate identity rejected",
+    "durable SQL trace records",
+    "zero errors still has confidence interval",
+    "comparable pilot arithmetic"
+  ],
+  "limits": [
+    "Synthetic outputs and claim labels; not live model quality",
+    "Lexical retrieval, not embeddings or ANN",
+    "Manual governance/approval remains separate from quality gate"
+  ]
+}

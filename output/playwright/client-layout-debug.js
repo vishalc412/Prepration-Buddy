@@ -1,0 +1,4 @@
+async existingPage => {
+ const ctx=await existingPage.context().browser().newContext({viewport:{width:390,height:844}});
+ try{const p=await ctx.newPage();await p.goto('http://127.0.0.1:8987/index.html');await p.getByRole('button',{name:'Train for client interview →',exact:true}).click();await p.locator('[data-action="client-select"][data-id="client-50"]').click();await p.screenshot({path:'output/playwright/client-phone-overflow.png'});return await p.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth,offenders:[...document.querySelectorAll('body *')].filter(e=>e.getBoundingClientRect().right>innerWidth+1&&e.getBoundingClientRect().width>0).slice(0,18).map(e=>({tag:e.tagName,cls:e.className,id:e.id,right:e.getBoundingClientRect().right,width:e.getBoundingClientRect().width,text:(e.textContent||'').slice(0,90)}))}));}finally{await ctx.close()}
+}

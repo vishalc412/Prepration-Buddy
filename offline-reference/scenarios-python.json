@@ -1,0 +1,932 @@
+[
+  {
+    "id": "python-01",
+    "track": "Python",
+    "day": 1,
+    "title": "Dirty settlement CSV: preserve every row",
+    "level": "Applied",
+    "minutes": 150,
+    "context": "Finance receives a 4 GB settlement export every night. A vendor changed whitespace and currency casing; one row contains NaN, another includes an extra delimiter. Yesterday's script converted amounts to float, skipped exceptions and loaded the whole file. Finance now cannot explain the gap between received and posted records. Build a streaming validator that emits accepted records and a quarantine ledger containing original values, row number and a concrete rejection reason. A malformed file header is a file-level failure; malformed individual rows remain visible.",
+    "constraints": [
+      "4 GB input; target resident memory below 128 MB, measured separately from this tiny fixture.",
+      "USD and INR only; amount range 0 through 1,000,000 inclusive; no fractional cents.",
+      "ID length 1..64 after trimming; account for every logical CSV record."
+    ],
+    "requirements": [
+      "Use csv.DictReader over an open text stream; do not call read() on the full file.",
+      "Require exact ordered header id,currency,amount and reject extra/missing columns.",
+      "Normalize ID, currency and exact decimal amount; reject non-finite values.",
+      "Write accepted JSONL and rejected JSONL incrementally; reconcile accepted + rejected against processed rows."
+    ],
+    "questions": [
+      {
+        "prompt": "Why is a generator alone insufficient to guarantee bounded memory or zero silent loss?",
+        "answer": "A generator limits how input records are produced, but a downstream list, growing set, unbounded error buffer or buffered output can still retain the entire dataset. Here the reader iterates logical CSV records, and each accepted or rejected record is immediately written to its sink. The parser holds one current row plus normal stream buffers. Counters provide reconciliation without retaining every row. Error handling covers expected validation errors; unexpected programming or sink failures propagate and fail the run rather than producing a false success report. A reject record retains original field values and the CSV record number, which is not necessarily a physical line number when quoted fields span lines. Real acceptance also needs a large-file memory measurement and a tested restart/output-publishing strategy; the small fixture demonstrates record accounting, not a production memory benchmark.",
+        "checks": [
+          "Names at least two downstream structures that can defeat streaming.",
+          "Distinguishes rejected row from fatal sink/parser failure.",
+          "Reconciles two accepted plus four rejected records."
+        ]
+      },
+      {
+        "prompt": "How would you add duplicate detection without breaking the memory budget?",
+        "answer": "An in-memory set of every ID grows with file cardinality and contradicts a fixed memory budget. I would first define whether duplicates mean repeated IDs or identical business payloads, and whether the rule spans one file or multiple settlement days. For exact cross-file detection, a durable keyed store with a unique constraint can make the business identity explicit. Within a local exercise, SQLite can store the identity and canonical payload hash on disk, with transactions that keep output status aligned with duplicate decisions. Identical duplicates can be marked replayed; different payloads under one identity become conflicts requiring review. A Bloom filter alone cannot certify exact rejection because false positives could lose legitimate settlements. Any probabilistic prefilter needs a definitive lookup before suppressing a row. Restart semantics must preserve IDs and reject evidence across interrupted runs.",
+        "checks": [
+          "Avoids unbounded set and Bloom-filter-only rejection.",
+          "Defines exact replay versus changed-payload conflict.",
+          "Explains restart behavior and durable identity."
+        ]
+      }
+    ],
+    "hints": [
+      "First list which failures belong to a row and which invalidate the whole run.",
+      "csv.DictReader represents extra fields under key None and missing fields with value None.",
+      "Validate Decimal.is_finite() before comparisons; write rejects immediately and keep only counters."
+    ],
+    "acceptance": [
+      "Fixture has six records: exactly two accepted and four quarantined.",
+      "Whitespace/case input becomes id=a1, currency=USD, amount=10.00.",
+      "NaN, fractional cent, unsupported currency and extra column each produce a visible reject.",
+      "Wrong header raises ValueError before any success report; zero amount is accepted."
+    ],
+    "pitfalls": [
+      "float(\"NaN\") can bypass naive range logic; reject non-finite numbers explicitly.",
+      "Broad except Exception followed by continue hides parser, coding and disk failures."
+    ],
+    "twist": "Finance adds exact duplicate detection across 30 days and restart after a half-written output file. Design disk-backed identity plus atomic output publication; state how replay affects counts.",
+    "solution": "Begin by freezing the data contract before implementing recovery. The reference validates the header once, then iterates records from csv.DictReader. It tests column shape, trimmed ID, supported currency and Decimal amount in that order, producing specific reasons. Decimal rejects fractional cents by comparing the value with its cent-quantized form; finite and bounded checks occur first. Expected ValueError and InvalidOperation failures become quarantine entries with original values. Accepted records receive stable text formatting, so 0 becomes 0.00 without binary floating-point drift. Sink writes sit outside the validation catch block: disk errors remain fatal. The executable fixture writes temporary JSONL files, reads those tiny outputs only for assertions and proves reconciliation. Production additions include bounded field size, durable run IDs, secure quarantine retention and atomic final-output promotion; none should be claimed as implemented by this sample.",
+    "assignment": {
+      "objective": "Implement a streaming settlement validator with row-level quarantine and explicit file failure.",
+      "steps": [
+        "Write the header and row-shape checks before amount parsing.",
+        "Implement Decimal normalization and JSONL sinks without accumulating records.",
+        "Add the six-row dirty fixture and assert counts, reasons and normalized values.",
+        "Run the reference, then modify one fixture to a missing amount and explain its quarantine record.",
+        "Design a separate disk-full test and large-input memory benchmark; do not report them as already executed."
+      ],
+      "run": [
+        "python3 scenario_python_csv.py"
+      ],
+      "files": [
+        {
+          "name": "scenario_python_csv.py",
+          "language": "python",
+          "code": "\"\"\"Python 3.11+; stdlib. Streaming row validation with explicit quarantine.\"\"\"\nimport csv\nimport io\nimport json\nfrom decimal import Decimal, InvalidOperation\nfrom pathlib import Path\nfrom tempfile import TemporaryDirectory\n\n\ndef ingest(source, accepted, rejected):\n    reader = csv.DictReader(source)\n    if reader.fieldnames != [\"id\", \"currency\", \"amount\"]:\n        raise ValueError(\"header must be id,currency,amount\")\n    counts = {\"accepted\": 0, \"rejected\": 0}\n    for number, row in enumerate(reader, 2):\n        error = None\n        try:\n            if None in row or any(v is None for v in row.values()):\n                raise ValueError(\"wrong column count\")\n            identity = row[\"id\"].strip()\n            currency = row[\"currency\"].strip().upper()\n            raw = row[\"amount\"].strip()\n            if not identity or len(identity) > 64:\n                raise ValueError(\"invalid id\")\n            if currency not in {\"USD\", \"INR\"}:\n                raise ValueError(\"unsupported currency\")\n            amount = Decimal(raw)\n            if not amount.is_finite() or amount < 0 or amount > Decimal(\"1000000\"):\n                raise ValueError(\"amount out of range\")\n            if amount != amount.quantize(Decimal(\"0.01\")):\n                raise ValueError(\"fractional cent\")\n            normalized = {\"id\": identity, \"currency\": currency, \"amount\": format(amount, \".2f\")}\n        except (ValueError, InvalidOperation) as exc:\n            error = str(exc) or \"invalid decimal\"\n        if error is not None:\n            rejected.write(json.dumps({\"row\": number, \"raw\": row, \"reason\": error}) + \"\\n\")\n            counts[\"rejected\"] += 1\n        else:\n            accepted.write(json.dumps(normalized) + \"\\n\")\n            counts[\"accepted\"] += 1\n    return counts\n\n\ndef main():\n    fixture = \"id,currency,amount\\n a1 , usd ,10.00\\na2,INR,NaN\\na3,USD,0.001\\na4,EUR,2\\na5,USD,2,extra\\na6,INR,0\\n\"\n    with TemporaryDirectory() as directory:\n        folder = Path(directory)\n        with (folder / \"ok.jsonl\").open(\"w\") as good, (folder / \"bad.jsonl\").open(\"w\") as bad:\n            counts = ingest(io.StringIO(fixture), good, bad)\n        rows = [json.loads(x) for x in (folder / \"ok.jsonl\").read_text().splitlines()]\n        errors = [json.loads(x) for x in (folder / \"bad.jsonl\").read_text().splitlines()]\n        assert counts == {\"accepted\": 2, \"rejected\": 4}\n        assert rows[0] == {\"id\": \"a1\", \"currency\": \"USD\", \"amount\": \"10.00\"}\n        assert rows[1][\"amount\"] == \"0.00\"\n        assert len(errors) == 4 and all(x[\"raw\"] and x[\"reason\"] for x in errors)\n        try:\n            ingest(io.StringIO(\"wrong,header\\n\"), io.StringIO(), io.StringIO())\n        except ValueError:\n            pass\n        else:\n            raise AssertionError(\"bad header accepted\")\n    print(\"PASS streaming CSV: 2 accepted, 4 quarantined, header rejected\")\n\n\nif __name__ == \"__main__\":\n    main()\n"
+        }
+      ],
+      "limits": "Executed locally with Python 3.14; uses Python 3.11+ standard-library APIs. Synthetic fixtures only; no provider, socket, installation or model call. Assertions demonstrate stated local behavior, not production throughput, persistence or cross-process guarantees."
+    },
+    "sources": [
+      {
+        "label": "CSV logical-record parsing",
+        "url": "https://docs.python.org/3/library/csv.html"
+      },
+      {
+        "label": "Exact decimal arithmetic",
+        "url": "https://docs.python.org/3/library/decimal.html"
+      }
+    ]
+  },
+  {
+    "id": "python-02",
+    "track": "Python",
+    "day": 1,
+    "title": "Invoice reconciliation: cents, currency and replay",
+    "level": "Applied",
+    "minutes": 150,
+    "context": "An invoicing service disagrees with the accounting ledger by one cent on promotional prices. A retry worker also posts the same invoice twice after an acknowledgement timeout. Finance specifies ROUND_HALF_UP per extended line, then sums rounded lines; currency must never be mixed. Implement a local reference ledger whose invoice identity is replay-safe and rejects changed content. Be precise about what a process-local dictionary proves and what needs a transactional database in production.",
+    "constraints": [
+      "Unit prices are decimal strings of at most 32 characters, bounded from 0 to 1,000,000.",
+      "Quantity is an actual integer from 1 through 10,000; bool is rejected.",
+      "USD or INR; same invoice identity must preserve currency and ordered line payload."
+    ],
+    "requirements": [
+      "Multiply exact Decimal price by quantity and round each line to cents with ROUND_HALF_UP.",
+      "Sum already rounded lines; do not round one combined subtotal instead.",
+      "Return original receipt for unchanged invoice replay.",
+      "Reject changed currency or changed line payload under the same invoice ID.",
+      "Reject non-finite, negative or invalid quantities before inserting ledger state."
+    ],
+    "questions": [
+      {
+        "prompt": "Two lines each cost 0.005 with quantity one. Why is the required invoice total 0.02?",
+        "answer": "The policy rounds each extended line independently. Decimal(\"0.005\") multiplied by one is exactly 0.005; ROUND_HALF_UP quantization to 0.01 produces 0.01 for each line, so their sum is 0.02. Rounding the unrounded sum once would produce 0.01 and would implement a different accounting rule. Binary float introduces another source of disagreement because common decimal fractions are not represented exactly. I therefore accept monetary inputs as strings, parse Decimal directly and name the rounding mode explicitly rather than relying on global context defaults. Currency stays attached to the receipt and cannot silently change on replay. Tests must cover half-cent boundaries, multiple quantities, zero amounts and invalid numeric forms. The code demonstrates a supplied accounting contract; it does not establish what a particular jurisdiction or payment provider requires.",
+        "checks": [
+          "Computes each rounded line and total correctly.",
+          "Distinguishes sum-of-rounded-lines from rounded-sum.",
+          "Uses string-to-Decimal and an explicit mode."
+        ]
+      },
+      {
+        "prompt": "What transaction would make invoice replay safety survive two concurrent API workers?",
+        "answer": "The dictionary reference checks the old payload and inserts a receipt in one process, but it has no cross-process lock, crash recovery or durable transaction. A production ledger needs a unique business identity such as tenant plus invoice ID, a canonical request fingerprint, and a transaction that records the financial posting together with its replay receipt. A second worker encountering the unique identity reads the stored fingerprint: same content returns the original result; changed content becomes a conflict instead of a second posting. If an external payment provider participates, its idempotency key and reconciliation protocol must align with the ledger; a database transaction alone cannot atomically commit a remote side effect. Receipt status must distinguish accepted, rejected and uncertain outcomes. Tests should race requests, kill a worker between boundaries and verify postings, not merely compare HTTP response bodies.",
+        "checks": [
+          "Uses unique identity, fingerprint and atomic receipt/posting boundary.",
+          "Explains remote-provider transaction gap.",
+          "Requires concurrency/crash tests beyond dictionary demo."
+        ]
+      }
+    ],
+    "hints": [
+      "Write the accounting formula in words: round each price-times-quantity, then add.",
+      "Construct Decimal from strings; reject NaN and Infinity before range checks.",
+      "Store original payload alongside receipt; compare both currency and lines on every replay."
+    ],
+    "acceptance": [
+      "Two 0.005 lines yield exactly 0.02.",
+      "19.995 times quantity three yields 59.99 under supplied per-line policy.",
+      "Unchanged replay returns the same receipt and ledger still has one entry.",
+      "Changed currency or amount raises Conflict.",
+      "NaN, Infinity, negative price, bool quantity and zero quantity raise errors."
+    ],
+    "pitfalls": [
+      "Decimal constructed from float preserves the float approximation.",
+      "type(True) is bool but isinstance(True, int) is true; validate intended quantity type."
+    ],
+    "twist": "An invoice is corrected after posting. Design an explicit reversal/adjustment identity rather than overwriting the old receipt; explain audit history and cross-currency rejection.",
+    "solution": "The reference separates numeric policy from replay policy. line_total validates the input representation and bounds, creates Decimal from the supplied string, rejects non-finite prices and checks that quantity is an actual integer. It applies ROUND_HALF_UP after multiplication, not at input parsing or after summing all lines. Ledger.post validates currency and invoice presence, builds a payload tuple and computes the total. An existing identity returns the stored receipt only when the full supplied payload matches. Reusing an ID with different currency or price raises Conflict, so a correction needs a separate business operation. The executable tests demonstrate the half-cent example, unchanged replay, two conflict paths and invalid input rejection. This reference intentionally uses process-local memory. Durable concurrency safety needs database uniqueness and transaction boundaries, and remote charging requires provider-aware reconciliation; the example makes neither stronger claim.",
+    "assignment": {
+      "objective": "Build an exact-decimal invoice calculator with unchanged-replay receipts and conflict detection.",
+      "steps": [
+        "Implement line_total and first verify the 0.005 boundary on two lines.",
+        "Reject non-finite amounts and bool quantities explicitly.",
+        "Add identity-to-payload-and-receipt ledger entries.",
+        "Test unchanged replay, changed currency, changed amount and invalid inputs.",
+        "Sketch the transactional replacement and identify its external side-effect boundary."
+      ],
+      "run": [
+        "python3 scenario_python_money.py"
+      ],
+      "files": [
+        {
+          "name": "scenario_python_money.py",
+          "language": "python",
+          "code": "\"\"\"Python 3.11+; stdlib. Explicit line rounding and replay-safe invoice ledger.\"\"\"\nfrom decimal import Decimal, ROUND_HALF_UP\n\n\nclass Conflict(ValueError):\n    pass\n\n\ndef line_total(price_text, quantity):\n    if not isinstance(price_text, str) or len(price_text) > 32:\n        raise ValueError(\"price must be a short decimal string\")\n    price = Decimal(price_text)\n    if not price.is_finite() or price < 0 or price > Decimal(\"1000000\"):\n        raise ValueError(\"invalid price\")\n    if type(quantity) is not int or not 1 <= quantity <= 10000:\n        raise ValueError(\"invalid quantity\")\n    return (price * quantity).quantize(Decimal(\"0.01\"), rounding=ROUND_HALF_UP)\n\n\nclass Ledger:\n    def __init__(self):\n        self.entries = {}\n\n    def post(self, invoice_id, currency, lines):\n        if not invoice_id or currency not in {\"USD\", \"INR\"} or not lines:\n            raise ValueError(\"invalid invoice\")\n        payload = (currency, tuple((price, qty) for price, qty in lines))\n        total = sum((line_total(price, qty) for price, qty in lines), Decimal(\"0.00\"))\n        previous = self.entries.get(invoice_id)\n        if previous is not None:\n            if previous[0] != payload:\n                raise Conflict(\"invoice id reused with a different payload\")\n            return previous[1]\n        receipt = {\"invoice\": invoice_id, \"currency\": currency, \"total\": format(total, \".2f\")}\n        self.entries[invoice_id] = (payload, receipt)\n        return receipt\n\n\ndef main():\n    ledger = Ledger()\n    first = ledger.post(\"inv-1\", \"USD\", [(\"0.005\", 1), (\"0.005\", 1)])\n    assert first[\"total\"] == \"0.02\"  # Round each line, then sum.\n    assert ledger.post(\"inv-1\", \"USD\", [(\"0.005\", 1), (\"0.005\", 1)]) is first\n    assert len(ledger.entries) == 1\n    for operation in (\n        lambda: ledger.post(\"inv-1\", \"INR\", [(\"0.005\", 1), (\"0.005\", 1)]),\n        lambda: ledger.post(\"inv-1\", \"USD\", [(\"1.00\", 1)]),\n    ):\n        try:\n            operation()\n        except Conflict:\n            pass\n        else:\n            raise AssertionError(\"changed replay accepted\")\n    for price, qty in [(\"NaN\", 1), (\"-1\", 1), (\"Infinity\", 1), (\"1\", True), (\"1\", 0)]:\n        try:\n            line_total(price, qty)\n        except ValueError:\n            pass\n        else:\n            raise AssertionError(\"invalid amount/quantity accepted\")\n    assert ledger.post(\"inv-2\", \"INR\", [(\"19.995\", 3)])[\"total\"] == \"59.99\"\n    print(\"PASS Decimal ledger: rounding, unchanged replay, conflicts, invalid inputs\")\n\n\nif __name__ == \"__main__\":\n    main()\n"
+        }
+      ],
+      "limits": "Executed locally with Python 3.14; uses Python 3.11+ standard-library APIs. Synthetic fixtures only; no provider, socket, installation or model call. Assertions demonstrate stated local behavior, not production throughput, persistence or cross-process guarantees."
+    },
+    "sources": [
+      {
+        "label": "Decimal quantization and rounding",
+        "url": "https://docs.python.org/3/library/decimal.html"
+      }
+    ]
+  },
+  {
+    "id": "python-03",
+    "track": "Python",
+    "day": 1,
+    "title": "A timeout after acceptance: retry without double effect",
+    "level": "Principal",
+    "minutes": 180,
+    "context": "An order adapter sends a charge request. The remote system durably accepts it, then the connection fails before the response reaches your worker. Operations proposes creating a fresh request ID on every retry. Build a deterministic provider simulator and bounded retry client proving why the original business idempotency key must survive every attempt. Handle permanent rejection and exhausted retry budgets as different visible outcomes.",
+    "constraints": [
+      "Default three attempts; configurable attempt budget 1..5.",
+      "Backoff schedule 0.1, 0.2 seconds for three attempts, capped at 0.5.",
+      "One unchanged key plus payload produces at most one simulated provider effect."
+    ],
+    "requirements": [
+      "Use a stable business key across every attempt.",
+      "Persist simulated provider receipt before raising an ambiguous transport failure.",
+      "Reject key reuse with changed payload.",
+      "Retry only declared transient errors; permanent errors propagate immediately.",
+      "Expose exhausted attempts as UnknownOutcome requiring reconciliation, not success or a fresh-key retry."
+    ],
+    "questions": [
+      {
+        "prompt": "Why is an HTTP timeout not evidence that a charge failed?",
+        "answer": "A timeout describes what the caller observed, not whether the provider committed the operation. The provider might receive nothing, reject before mutation, commit and lose the reply, or still be processing the request. Automatically issuing a new identity could create a second effect after the first commit. The reference deliberately stores an accepted receipt before raising its first transient exception. Its second attempt reuses the original key and receives that receipt without incrementing the effect counter. This behavior depends on a provider contract that durably associates key, payload and receipt; a client-side cache alone cannot guarantee it. When the budget ends, the client returns an explicit uncertain state through UnknownOutcome. An operator or reconciliation job queries by the same business identity and resolves the state before a new charge can be authorized.",
+        "checks": [
+          "Separates caller transport observation from provider commit.",
+          "Explains stored receipt before ambiguous error.",
+          "Preserves original identity during reconciliation."
+        ]
+      },
+      {
+        "prompt": "How would retry policy change under a 300 ms end-to-end deadline and an overloaded provider?",
+        "answer": "Attempt count is only one bound. I would compute a monotonic overall deadline and allocate remaining time across connection, provider processing and backoff, refusing another attempt when it cannot fit. Production retries should add bounded jitter, respect meaningful provider retry guidance and share admission limits so a fleet cannot multiply overload into a retry storm. Permanent business rejection, validation failure and changed-payload conflict remain non-retryable. A circuit breaker can reduce repeated calls while dependency health is bad, but it does not resolve an already ambiguous operation. The demonstration injects a sleep recorder rather than waiting, making its count and backoff assertions deterministic. It does not model real request deadlines, randomized scheduling or provider rate limits. I would add fake-clock tests for budget expiry and race reconciliation against delayed acceptance before claiming those behaviors.",
+        "checks": [
+          "Names total deadline and per-attempt/backoff budget.",
+          "Avoids retrying validation and permanent rejection.",
+          "States simulator limitations and extra fake-clock tests."
+        ]
+      }
+    ],
+    "hints": [
+      "Draw commit and response as separate events. Place the fixture failure after the commit.",
+      "Store key plus amount plus receipt inside the provider; check mismatch before returning a replay.",
+      "Retry TransientError only and raise UnknownOutcome when max_attempts is exhausted."
+    ],
+    "acceptance": [
+      "Ambiguous first response leads to two attempts but exactly one simulated effect.",
+      "Changed amount under the accepted key raises PermanentError.",
+      "Always-transient provider uses three attempts and recorded waits [0.1, 0.2].",
+      "Permanent rejection uses exactly one attempt.",
+      "No exhausted-budget path returns accepted or silently drops the order."
+    ],
+    "pitfalls": [
+      "Changing idempotency key on retry creates a new operation.",
+      "A blanket except Exception retry repeats business rejection and programmer bugs."
+    ],
+    "twist": "Provider does not support idempotency and its status endpoint lags by five minutes. Design an uncertain-state queue and business approval boundary; explain why immediate blind retries cannot guarantee no duplicates.",
+    "solution": "The provider fixture keeps a map from key to original amount and receipt. For the ambiguous mode, submit increments the simulated effect counter, stores its accepted receipt and then raises TransientError only on the first call. A repeated unchanged key reads that stored receipt; a changed amount fails permanently. The retry loop catches only TransientError, retains the same key and applies a bounded exponential delay through an injected sleep function. At the final transient failure it raises UnknownOutcome with the original exception chained for diagnosis. Separate tests exercise accepted-after-timeout, mismatch, exhaustion and permanent rejection. No real charge or network request occurs. The one-effect property is a property of the provider simulator's idempotency contract, not a universal retry guarantee. The production design must also define durable key retention, reconciliation, deadlines, authentication and crash recovery around external acceptance.",
+    "assignment": {
+      "objective": "Implement bounded retries against a provider simulator with a lost acknowledgement after durable acceptance.",
+      "steps": [
+        "Create the provider receipt map and an effect counter.",
+        "Inject the first transport failure after storing an accepted receipt.",
+        "Implement retry classification and preserve the same key and payload.",
+        "Inject sleep recording and assert attempt counts/backoff without wall-clock sleeps.",
+        "Add a changed-payload test and document uncertain-state reconciliation."
+      ],
+      "run": [
+        "python3 scenario_python_retry.py"
+      ],
+      "files": [
+        {
+          "name": "scenario_python_retry.py",
+          "language": "python",
+          "code": "\"\"\"Python 3.11+; stdlib. Simulated provider, no external charges or waits.\"\"\"\nclass TransientError(Exception):\n    pass\n\n\nclass PermanentError(Exception):\n    pass\n\n\nclass UnknownOutcome(Exception):\n    pass\n\n\nclass Provider:\n    def __init__(self, mode):\n        self.mode = mode\n        self.receipts = {}\n        self.attempts = 0\n        self.effects = 0\n\n    def submit(self, key, amount):\n        self.attempts += 1\n        if key in self.receipts:\n            stored_amount, receipt = self.receipts[key]\n            if stored_amount != amount:\n                raise PermanentError(\"idempotency key payload mismatch\")\n            return receipt\n        if self.mode == \"permanent\":\n            raise PermanentError(\"request rejected\")\n        if self.mode == \"always-transient\":\n            raise TransientError(\"unavailable before acceptance\")\n        self.effects += 1\n        receipt = {\"key\": key, \"amount\": amount, \"status\": \"accepted\"}\n        self.receipts[key] = (amount, receipt)\n        if self.mode == \"ambiguous\" and self.attempts == 1:\n            raise TransientError(\"connection failed after durable acceptance\")\n        return receipt\n\n\ndef submit_with_retry(provider, key, amount, max_attempts=3, sleep=lambda _: None):\n    if type(max_attempts) is not int or max_attempts < 1 or max_attempts > 5:\n        raise ValueError(\"attempt budget must be 1..5\")\n    for attempt in range(max_attempts):\n        try:\n            return provider.submit(key, amount)\n        except TransientError as exc:\n            if attempt + 1 == max_attempts:\n                raise UnknownOutcome(\"budget exhausted; reconcile using original key\") from exc\n            sleep(min(0.1 * 2 ** attempt, 0.5))\n    raise AssertionError(\"unreachable\")\n\n\ndef main():\n    waits = []\n    provider = Provider(\"ambiguous\")\n    receipt = submit_with_retry(provider, \"order-7\", \"20.00\", sleep=waits.append)\n    assert receipt[\"status\"] == \"accepted\" and provider.effects == 1\n    assert provider.attempts == 2 and waits == [0.1]\n    try:\n        submit_with_retry(provider, \"order-7\", \"21.00\")\n    except PermanentError:\n        pass\n    else:\n        raise AssertionError(\"different payload reused key\")\n    down = Provider(\"always-transient\")\n    waits = []\n    try:\n        submit_with_retry(down, \"order-8\", \"20.00\", sleep=waits.append)\n    except UnknownOutcome:\n        pass\n    else:\n        raise AssertionError(\"exhaustion silently accepted\")\n    assert down.attempts == 3 and down.effects == 0 and waits == [0.1, 0.2]\n    rejected = Provider(\"permanent\")\n    try:\n        submit_with_retry(rejected, \"order-9\", \"20.00\")\n    except PermanentError:\n        pass\n    else:\n        raise AssertionError(\"permanent rejection hidden\")\n    assert rejected.attempts == 1\n    print(\"PASS bounded retries: ambiguous replay exactly one simulated effect; exhausted/permanent visible\")\n\n\nif __name__ == \"__main__\":\n    main()\n"
+        }
+      ],
+      "limits": "Executed locally with Python 3.14; uses Python 3.11+ standard-library APIs. Synthetic fixtures only; no provider, socket, installation or model call. Assertions demonstrate stated local behavior, not production throughput, persistence or cross-process guarantees."
+    },
+    "sources": [
+      {
+        "label": "Retry simulator exception semantics",
+        "url": "https://docs.python.org/3/tutorial/errors.html"
+      }
+    ]
+  },
+  {
+    "id": "python-04",
+    "track": "Python",
+    "day": 1,
+    "title": "Cross-request tags and a consumed generator",
+    "level": "Foundation",
+    "minutes": 120,
+    "context": "A Python ingestion helper uses def collect(row, tags=[]). Customer B suddenly inherits Customer A's tags. A second helper creates a generator of normalized records; the metrics logger consumes it, so the storage writer writes zero records. You are asked to explain both bugs, propose the smallest safe API contract and design regression tests before patching the service.",
+    "constraints": [
+      "10,000 requests per minute; request metadata must remain isolated.",
+      "Input iterator may represent 5 million records and is single-pass.",
+      "Logging must not retain raw customer payloads or materialize the dataset."
+    ],
+    "requirements": [
+      "Explain default-argument evaluation time and shared mutable object identity.",
+      "Choose either caller-owned mutation or copy semantics and document the boundary.",
+      "Count records in the same streaming pass that persists them.",
+      "Ensure generator resources close on early exit and failure."
+    ],
+    "questions": [
+      {
+        "prompt": "What precisely happens with tags=[] across calls, and what would your replacement guarantee?",
+        "answer": "Python evaluates default argument expressions when the function is defined. The list object stored as the default is then reused by calls that omit tags, so appending for one request changes the same list seen by another request. I would use tags=None, create a new list inside the function, and decide whether an explicitly supplied list should be mutated or copied. For an enrichment helper that returns request-local metadata, copying supplied tags is the safer documented contract; callers retain ownership of their input. Tests should call twice without tags, then call with an external list and verify that list stays unchanged. A nested metadata dictionary needs another ownership decision because a shallow copy still shares nested objects. The fix should address the actual mutation boundary rather than indiscriminately deep-copying every input at significant cost.",
+        "checks": [
+          "Explains definition-time object reuse.",
+          "Tests omitted default twice and supplied-list ownership.",
+          "Mentions shallow-copy nested ownership limits."
+        ]
+      },
+      {
+        "prompt": "Why does counting a generator before saving it produce zero writes, and how can both counts and persistence stay streaming?",
+        "answer": "A generator is an iterator whose execution state advances as values are requested. Iterating it to compute sum(1 for _ in records) exhausts the same object; a later storage loop finds no remaining values. I would put validation, persistence and counters in one pass, and increment the committed counter only after the sink acknowledges the intended durability boundary. Generated, accepted, rejected and committed counts should remain distinct. Rebuilding the generator can repeat side effects or reread changing input; itertools.tee can accumulate a large buffer when consumers progress unevenly. Neither is a default memory-safe solution. If the stream owns an open file or database cursor, use a context manager and explicit closure on early termination. A regression test should use a single-pass iterator that raises if a second pass is attempted and verify both writes and counters.",
+        "checks": [
+          "Identifies exhaustion of the same iterator object.",
+          "Avoids tee/materialization as guaranteed memory-safe fixes.",
+          "Separates accepted from committed counts."
+        ]
+      }
+    ],
+    "hints": [
+      "Inspect collect.__defaults__ and object IDs across two omitted-argument calls.",
+      "Write two loops over the same generator and observe that only the first runs.",
+      "Keep one persistence loop with explicit counters; close owned resources in a context manager."
+    ],
+    "acceptance": [
+      "Two default-tag calls produce independent lists with no inherited values.",
+      "Supplied tags remain unchanged under the selected copy contract.",
+      "Three generated rows yield exactly three writes and committed count three.",
+      "A sink failure after two writes reports two committed and does not claim all three succeeded."
+    ],
+    "pitfalls": [
+      "Using tags = tags or [] silently treats a deliberately empty caller list as absent.",
+      "Counting before committing overstates durability when the sink fails."
+    ],
+    "twist": "One metadata field contains a nested list and persistence batches 500 records. Define nested ownership and what happens to the 500-record batch after a partial acknowledgement.",
+    "solution": "First reproduce both failures with tiny inputs instead of refactoring the ingestion pipeline. Record the shared default list identity and show one caller's append appearing in the next call. Replace the default with None and construct a fresh list, copying supplied tags if that is the chosen contract. Next demonstrate generator exhaustion with a three-row iterator. Combine normalization, persistence and counters in one loop so every row has one observable outcome. Place the committed counter after the sink acknowledgement, while preserving a separate attempted or accepted counter. Use a context manager around any generator-owned file or cursor, including early-stop behavior. Tests then cover omitted arguments, caller-owned lists, nested metadata policy, single-pass iteration and a failing sink. This scenario is a debugging exercise, not an included runnable assignment; learners should write their own minimal reproduction and attach evidence before scoring themselves.",
+    "assignment": null,
+    "sources": [
+      {
+        "label": "Default argument evaluation",
+        "url": "https://docs.python.org/3/tutorial/controlflow.html#default-argument-values"
+      },
+      {
+        "label": "Generator iteration",
+        "url": "https://docs.python.org/3/tutorial/classes.html#generators"
+      }
+    ]
+  },
+  {
+    "id": "python-05",
+    "track": "Python",
+    "day": 1,
+    "title": "Fraud score looks perfect: hidden data leakage",
+    "level": "Principal",
+    "minutes": 150,
+    "context": "A fraud classifier reports 99.8% validation accuracy after a Python notebook shuffled two million transaction rows. Several transactions belong to the same customer, chargebacks arrive thirty days later and a feature named resolved_status was copied from an operational table. Product wants deployment tomorrow. Investigate leakage, define an evaluation contract and propose a corrected data preparation pipeline without pretending one metric proves safety.",
+    "constraints": [
+      "2 million transactions, 90 days of history, chargeback labels delayed 30 days.",
+      "Positive fraud rate 0.2%; same customer can contribute 200 transactions.",
+      "Scoring features must exist at decision time; holdout remains untouched by tuning."
+    ],
+    "requirements": [
+      "Audit event time, feature availability time and label maturation.",
+      "Use customer/group and temporal separation appropriate to deployment.",
+      "Fit preprocessing only on training partitions and persist learned state.",
+      "Compare rare-event metrics, calibration and business costs against a baseline.",
+      "Keep threshold selection separate from final holdout reporting."
+    ],
+    "questions": [
+      {
+        "prompt": "Which three mechanisms could create the suspicious score, and how would you isolate each?",
+        "answer": "First, resolved_status can encode an outcome that is only known after the fraud decision, so I would trace its availability timestamp and remove it unless a point-in-time join proves it existed earlier. Second, customer overlap lets a random row split share near-duplicate behavior across train and validation; I would inspect entity intersections and compare group-separated evaluation. Third, preprocessing, feature selection or target encoding may have been fitted on all rows before the split, leaking validation distribution or labels into learned parameters. I would rebuild the pipeline with fitting limited to the training fold and perform these audits independently. Temporal label delay also means recent negative labels may be immature rather than genuinely negative. A corrected evaluation must specify the prediction moment, maturation window and future deployment population. Perfect-looking aggregate accuracy is especially weak when the majority-class baseline is already 99.8%.",
+        "checks": [
+          "Identifies post-outcome feature, entity overlap and fit-before-split leakage.",
+          "States label maturation and decision-time join rule.",
+          "Computes 99.8% all-negative accuracy baseline."
+        ]
+      },
+      {
+        "prompt": "How would you choose an operating threshold without using the final holdout?",
+        "answer": "I would choose a development validation scheme that matches the deployment timeline and customer boundaries, then estimate precision, recall and workload at candidate thresholds using only development data. A business cost model needs explicit false-positive review cost, missed-fraud loss and investigation capacity; thresholds should be chosen against those constraints instead of maximizing generic accuracy. If probabilities drive monetary decisions, calibration should use an independent calibration set or suitable out-of-fold predictions, not the final holdout. Once preprocessing, features, model and threshold are frozen, evaluate the untouched future holdout and report counts, uncertainty and subgroup behavior. Confidence intervals should account for correlated customer events rather than treating every row as independent. Production monitoring then watches delayed labels, data drift and investigation load, with a rollback trigger. No notebook score alone proves causal business benefit or safe rollout.",
+        "checks": [
+          "Keeps calibration/threshold choice off final holdout.",
+          "Uses rare-event counts and review capacity.",
+          "Addresses clustered uncertainty and delayed labels."
+        ]
+      }
+    ],
+    "hints": [
+      "Compute the all-negative baseline before interpreting 99.8%.",
+      "For each feature, ask what the service knew at the exact prediction timestamp.",
+      "Print customer intersections between partitions and record where every fit() occurs."
+    ],
+    "acceptance": [
+      "An all-negative baseline scores 99.8% accuracy but zero fraud recall.",
+      "resolved_status unavailable at scoring time is excluded or reconstructed with point-in-time proof.",
+      "Training and group holdout customer IDs have empty intersection when that is the selected contract.",
+      "Every learned preprocessing object is fitted only on training data.",
+      "Threshold changes after viewing final holdout invalidate its role as untouched final evidence."
+    ],
+    "pitfalls": [
+      "Removing one suspicious column does not eliminate group or preprocessing leakage.",
+      "Recent unreported fraud cannot be assumed to be a confirmed negative label."
+    ],
+    "twist": "Business insists on scoring returning customers, not unseen customers. Compare a future-time returning-customer slice with a separate cold-start slice; justify both without silently changing the original deployment population.",
+    "solution": "Start from the decision boundary: define exactly when the fraud score is produced and which tables were available then. Build a feature availability inventory rather than relying on column names. Exclude post-outcome state and reconstruct operational joins as of the prediction timestamp. Reserve mature future labels for evaluation and document how the thirty-day delay censors recent data. Partition customers and time to match the intended deployment population; report cold-start and returning-customer behavior separately if both matter. Fit transformations within training partitions, compare against an all-negative and a simple business-rule baseline, and choose thresholds on development evidence. Freeze the entire pipeline before touching the final holdout. The deliverable is an auditable split and evaluation design with concrete counterexamples, not a claim that a replacement model has already been trained or validated. Learners should articulate remaining uncertainty explicitly.",
+    "assignment": null,
+    "sources": [
+      {
+        "label": "Data leakage and preprocessing pitfalls",
+        "url": "https://scikit-learn.org/stable/common_pitfalls.html"
+      },
+      {
+        "label": "Group-aware validation",
+        "url": "https://scikit-learn.org/stable/modules/cross_validation.html#group-k-fold"
+      }
+    ]
+  },
+  {
+    "id": "python-06",
+    "track": "Python",
+    "day": 1,
+    "title": "Memory grows overnight despite yielding rows",
+    "level": "Applied",
+    "minutes": 120,
+    "context": "A Python report exporter processes eight million events with a generator, yet its resident memory grows from 200 MB to 4 GB and the container is killed. It stores per-customer lists, formats one giant JSON string and appends exceptions to a debug list. Operations says the generator proves streaming. Diagnose retained objects and design a measurement-driven fix with bounded output and useful error evidence.",
+    "constraints": [
+      "8 million events; container limit 512 MB; target working set below 350 MB.",
+      "200,000 customers; raw event size 1 KB; error volume may reach 5%.",
+      "Output order must follow input; errors need IDs/reasons without raw secrets."
+    ],
+    "requirements": [
+      "Separate Python allocation evidence from overall process RSS.",
+      "Identify retaining collections and giant serialization allocations.",
+      "Choose bounded aggregation or spill-to-disk strategy with exact semantics.",
+      "Stream output and quarantine evidence without silently discarding errors.",
+      "Measure identical workloads before and after with warmup and repeat runs."
+    ],
+    "questions": [
+      {
+        "prompt": "How would tracemalloc help, and what important memory could it miss?",
+        "answer": "tracemalloc can compare snapshots of traced Python allocations and identify where dictionaries, lists and formatted strings accumulate. I would take a baseline after imports and warmup, then snapshots after fixed record counts, grouping by traceback so growing allocations can be linked to retaining code paths. I would pair that evidence with process RSS and container metrics because traced Python allocation totals do not account for every native-library allocation, memory map, allocator arena or external process. A snapshot shows allocation sites, not necessarily the complete object-retention path. The per-customer lists and debug exception list are obvious hypotheses, but the fix should be validated against measured growth. A peak during one enormous json.dumps call may disappear before the final snapshot, so peak tracking and timed sampling matter. Repeated comparable workloads are needed before asserting a stable bounded working set.",
+        "checks": [
+          "Distinguishes traced Python allocations from RSS/native memory.",
+          "Uses comparable record-count snapshots and peak observations.",
+          "Does not infer ownership solely from allocation sites."
+        ]
+      },
+      {
+        "prompt": "How can exact customer aggregation work when cardinality exceeds the in-memory budget?",
+        "answer": "A generator does not reduce the number of distinct aggregate keys. If customer cardinality exceeds the budget, I would use a disk-backed aggregation table or partition data by a stable customer hash and process one bounded partition at a time. The correct choice depends on whether output requires input order, customer ordering or only final totals. SQLite with a unique customer key can update exact totals transactionally without retaining every customer's raw events; an external-sort design is another option for a batch. Error evidence should stream to a separate bounded-retention sink, while counters summarize categories. I would avoid treating a cache eviction as deletion of an aggregate unless the evicted state is durably merged. Tests compare disk-backed totals with a small trusted in-memory calculation, then vary key cardinality independently of row count. Disk space, interruption and duplicate replay need their own failure tests.",
+        "checks": [
+          "Acknowledges cardinality growth despite generator input.",
+          "Preserves exact aggregates when evicting or partitioning.",
+          "Tests disk-backed results and failure/restart boundaries."
+        ]
+      }
+    ],
+    "hints": [
+      "List every collection that outlives one row, including captured exception objects.",
+      "Measure peak memory during serialization, not only after export ends.",
+      "Replace giant strings and retained raw events with incremental writes and disk-backed exact aggregates."
+    ],
+    "acceptance": [
+      "Fixed row count with increasing unique customers exposes aggregate-cardinality memory growth.",
+      "Injected 5% failures produce all expected reject IDs plus category counts.",
+      "Small disk-backed aggregate totals match the trusted in-memory baseline exactly.",
+      "Output preserves selected ordering contract and no full JSON string is retained.",
+      "Before/after report names both traced-allocation peak and process RSS measurement boundaries."
+    ],
+    "pitfalls": [
+      "Exception objects may retain traceback frames and large referenced inputs.",
+      "LRU eviction without durable aggregate merge corrupts final totals."
+    ],
+    "twist": "Disk budget is also capped at 2 GB and report deadline is thirty minutes. State which input/retention contracts must change and reject a design that silently sacrifices exactness.",
+    "solution": "Reproduce the growth with controlled fixtures where row count, distinct customers and error rate can be varied independently. Take allocation snapshots and RSS observations at equivalent checkpoints, including the serialization peak. Remove storage of raw events when only aggregate totals are required; stream rejects with sanitized identifiers and reason categories. If exact aggregate cardinality cannot fit memory, use a disk-backed table or a bounded partition/external-sort design, preserving the chosen output ordering contract. Serialize one record or chunk at a time instead of creating one giant string. Verify arithmetic against a small trusted baseline and make disk-full, interruption and duplicate replay explicit. Record measured results and remaining limits rather than assuming that yield or fewer lines of code proves bounded memory. This is a design/debug question; implementation and performance receipts belong to the learner's attached evidence.",
+    "assignment": null,
+    "sources": [
+      {
+        "label": "tracemalloc snapshots and limitations",
+        "url": "https://docs.python.org/3/library/tracemalloc.html"
+      }
+    ]
+  },
+  {
+    "id": "async-01",
+    "track": "Async Python",
+    "day": 1,
+    "title": "Bounded worker queue: retain failures and order",
+    "level": "Applied",
+    "minutes": 180,
+    "context": "A document enrichment job creates one asyncio task per document. For a million documents it exhausts memory, then returns only successful results, losing visibility into failed records. Build a fixed-worker pipeline with a bounded queue. The exercise fixture is small, but it must preserve input order, represent expected item errors and allow unexpected programming failures to fail the run.",
+    "constraints": [
+      "Reference configuration: three workers, queue capacity four.",
+      "Fixture: 100 non-negative integers plus one rejected negative integer.",
+      "Every fixture record produces one ordered outcome; no task per input record."
+    ],
+    "requirements": [
+      "Use asyncio.Queue(maxsize=capacity) and await put() for producer backpressure.",
+      "Create only a fixed number of workers inside TaskGroup.",
+      "Return indexed ok/error outcomes for expected domain failure.",
+      "Use task_done() in finally and join() to account for queue work.",
+      "Propagate external cancellation and unexpected programmer exceptions."
+    ],
+    "questions": [
+      {
+        "prompt": "Why does wrapping a million create_task calls in a semaphore still risk memory exhaustion?",
+        "answer": "A semaphore limits how many task bodies enter a critical region, but it does not limit the number of already-created task objects, captured inputs or waiting coroutines. Creating a task for every document can therefore allocate memory proportional to the entire dataset even when only three tasks actively call the dependency. A bounded queue with a fixed worker pool limits queued work and active coroutine count, and await queue.put suspends the producer when capacity is reached. The reference preserves outcomes in an ordered list because its fixture is intentionally finite; that output structure still grows with item count and is not a million-document memory solution. A production version would stream outcomes to a durable indexed sink or maintain a bounded reorder window. I would measure producer, queue, worker and result-buffer memory separately before claiming total bounded memory.",
+        "checks": [
+          "Distinguishes active-call bound from created-task count.",
+          "Uses fixed workers and bounded queue.",
+          "Acknowledges ordered output list still grows."
+        ]
+      },
+      {
+        "prompt": "Which failures should become row results, and which should cancel the whole pipeline?",
+        "answer": "Expected domain rejection, such as a negative fixture value, becomes an error outcome with its original input index and reason. That lets a batch complete with explicit per-item accounting rather than silently omitting failures. A programming TypeError, corrupted configuration or sink failure should escape the worker and fail the TaskGroup; siblings are then cancelled and awaited through structured concurrency. queue.task_done belongs in finally so both normal and rejected items are acknowledged to the in-process queue. It does not mean an item has been durably committed outside the process. CancelledError must propagate instead of becoming an ordinary successful row result, because cancellation is a control-flow request. Tests need both the expected rejection and an unexpected wrong-type input to prove the policy boundary. If durable resumability is required, queue acknowledgement must be connected to persisted processing state rather than inferred from join().",
+        "checks": [
+          "Makes expected domain failures explicit indexed outcomes.",
+          "Lets TypeError and cancellation escape.",
+          "Separates queue accounting from external durable commit."
+        ]
+      }
+    ],
+    "hints": [
+      "Replace one-task-per-item with exactly three long-lived workers.",
+      "Put task_done() in finally, including sentinel and rejected-item paths.",
+      "Store result at original index; catch only the declared per-item validation error."
+    ],
+    "acceptance": [
+      "101 inputs produce 101 outcomes in original index order.",
+      "Input -1 produces status=error with reason negative fixture.",
+      "max_active never exceeds three; max_queued never exceeds four.",
+      "Empty input completes with zero outcomes and no hanging workers.",
+      "Wrong-type item causes an ExceptionGroup containing TypeError, rather than a shortened success list.",
+      "External cancellation reaches caller and all fixed worker tasks have terminated."
+    ],
+    "pitfalls": [
+      "Semaphore alone does not bound pending task objects.",
+      "join() hangs if any get() path forgets task_done()."
+    ],
+    "twist": "One early document takes five minutes while later results complete quickly. Design a bounded reorder window plus timeout policy; explain when preserving strict order requires backpressure.",
+    "solution": "The reference allocates one queue and exactly the configured number of workers. The producer awaits every put, so queue capacity exerts real backpressure instead of merely recording a desired limit. Each worker retrieves an indexed item, tracks active concurrency, performs the simulated await and stores either a doubled value or an explicit negative-input rejection. A finally block decrements active work and calls task_done for every retrieved item, including shutdown sentinels. TaskGroup owns worker lifecycle and propagates unexpected exceptions. After join and structured exit, the reference asserts that no result slot remains empty. Tests prove 101 ordered outcomes, queue/worker bounds, empty input and a TypeError failure boundary. The outcome list is intentionally proportional to fixture size. For large production jobs, replace it with a durable result sink and bounded reorder strategy; no aggregate-memory or throughput claim follows from this tiny test.",
+    "assignment": {
+      "objective": "Implement fixed workers with backpressure, ordered outcomes and explicit expected failures.",
+      "steps": [
+        "Define expected per-item failures and unexpected run failures before coding.",
+        "Create a bounded queue and fixed TaskGroup workers.",
+        "Add original indices and store every expected outcome.",
+        "Place queue acknowledgement in finally and add shutdown sentinels.",
+        "Run happy, negative, empty and wrong-type fixtures; explain output-buffer scaling."
+      ],
+      "run": [
+        "python3 scenario_async_queue.py"
+      ],
+      "files": [
+        {
+          "name": "scenario_async_queue.py",
+          "language": "python",
+          "code": "\"\"\"Python 3.11+; stdlib. Fixed workers, bounded queue, explicit outcomes.\"\"\"\nimport asyncio\n\n\nasync def process(values, workers=3, capacity=4):\n    if workers < 1 or capacity < 1:\n        raise ValueError(\"positive worker count and capacity required\")\n    queue = asyncio.Queue(maxsize=capacity)\n    outcomes = [None] * len(values)\n    stats = {\"active\": 0, \"max_active\": 0, \"max_queued\": 0}\n    sentinel = object()\n\n    async def worker():\n        while True:\n            item = await queue.get()\n            try:\n                if item is sentinel:\n                    return\n                index, value = item\n                stats[\"active\"] += 1\n                stats[\"max_active\"] = max(stats[\"max_active\"], stats[\"active\"])\n                try:\n                    await asyncio.sleep(0)\n                    if value < 0:\n                        raise ValueError(\"negative fixture\")\n                    outcomes[index] = {\"index\": index, \"status\": \"ok\", \"value\": value * 2}\n                except ValueError as exc:\n                    outcomes[index] = {\"index\": index, \"status\": \"error\", \"reason\": str(exc)}\n                finally:\n                    stats[\"active\"] -= 1\n            finally:\n                queue.task_done()\n\n    async with asyncio.TaskGroup() as group:\n        for _ in range(workers):\n            group.create_task(worker())\n        for index, value in enumerate(values):\n            await queue.put((index, value))\n            stats[\"max_queued\"] = max(stats[\"max_queued\"], queue.qsize())\n        for _ in range(workers):\n            await queue.put(sentinel)\n        await queue.join()\n    assert all(result is not None for result in outcomes)\n    return outcomes, stats\n\n\nasync def main():\n    values = list(range(100)) + [-1]\n    outcomes, stats = await process(values)\n    assert len(outcomes) == 101 and [x[\"index\"] for x in outcomes] == list(range(101))\n    assert outcomes[-1] == {\"index\": 100, \"status\": \"error\", \"reason\": \"negative fixture\"}\n    assert outcomes[99][\"value\"] == 198\n    assert stats[\"max_active\"] <= 3 and stats[\"max_queued\"] <= 4 and stats[\"active\"] == 0\n    empty, _ = await process([])\n    assert empty == []\n    try:\n        await process([\"programmer-bug\"])\n    except ExceptionGroup as exc:\n        assert any(isinstance(error, TypeError) for error in exc.exceptions)\n    else:\n        raise AssertionError(\"unexpected programmer error swallowed\")\n    cancelled = asyncio.create_task(process(list(range(1000))))\n    await asyncio.sleep(0)\n    cancelled.cancel()\n    try:\n        await cancelled\n    except asyncio.CancelledError:\n        pass\n    else:\n        raise AssertionError(\"external cancellation swallowed\")\n    assert not [t for t in asyncio.all_tasks() if t is not asyncio.current_task() and not t.done()]\n    print(\"PASS bounded queue: 101 ordered outcomes, explicit row failure, worker/queue bounds\")\n\n\nif __name__ == \"__main__\":\n    asyncio.run(main())\n"
+        }
+      ],
+      "limits": "Executed locally with Python 3.14; uses Python 3.11+ standard-library APIs. Synthetic fixtures only; no provider, socket, installation or model call. Assertions demonstrate stated local behavior, not production throughput, persistence or cross-process guarantees."
+    },
+    "sources": [
+      {
+        "label": "Bounded queues and task accounting",
+        "url": "https://docs.python.org/3/library/asyncio-queue.html"
+      },
+      {
+        "label": "Structured task ownership",
+        "url": "https://docs.python.org/3/library/asyncio-task.html#task-groups"
+      }
+    ]
+  },
+  {
+    "id": "async-02",
+    "track": "Async Python",
+    "day": 1,
+    "title": "Deadline expires: clean up and propagate cancellation",
+    "level": "Applied",
+    "minutes": 150,
+    "context": "An async export service holds a connection lease while waiting for a slow downstream response. A timeout returns an error, but leaked leases eventually exhaust the pool. The original helper catches BaseException and returns None, swallowing caller cancellation. Build a reference that distinguishes normal completion, its own timeout and external cancellation while releasing the lease on every path.",
+    "constraints": [
+      "Normal fixture deadline one second; timeout fixture deadline 10 ms.",
+      "External cancellation fixture starts work, then cancels before its ten-second deadline.",
+      "Exactly one acquire and one release per operation; zero live child tasks after test."
+    ],
+    "requirements": [
+      "Acquire resources through an async context manager with finally cleanup.",
+      "Use asyncio.timeout around the awaited operation.",
+      "Catch TimeoutError outside the timeout context.",
+      "Let external CancelledError reach the caller.",
+      "Verify completion event appears only on the normal path."
+    ],
+    "questions": [
+      {
+        "prompt": "Why should TimeoutError be handled outside async with asyncio.timeout(...)?",
+        "answer": "asyncio.timeout implements its deadline by cancelling the current task and converts the cancellation it owns into TimeoutError when the context exits. Catching TimeoutError inside the block therefore targets the wrong boundary for that conversion. The reference awaits resource-owning work inside the context and handles TimeoutError outside it, returning a distinct timeout outcome. External caller cancellation is different: it must continue outward as CancelledError and should not be relabelled as this operation's deadline. The lease context uses finally, so release happens during normal exit, timeout cancellation and external cancellation. Its fixture release is synchronous bookkeeping and cannot itself suspend; real network cleanup can await and needs a bounded, carefully owned shutdown strategy. The test checks event sequences and absence of live child tasks, not merely the text of the returned error.",
+        "checks": [
+          "Places TimeoutError handler outside context.",
+          "Distinguishes owned deadline from external cancellation.",
+          "Checks release and task lifecycle, not response alone."
+        ]
+      },
+      {
+        "prompt": "Would shielding the whole operation fix the leak?",
+        "answer": "Shielding the whole operation would let it keep running after the caller is cancelled, which can worsen resource pressure unless another owner retains the task, enforces a deadline and collects its result. Cleanup should normally be tied to structured resource ownership rather than hiding cancellation. The reference uses an async context manager and finally, which is enough for its non-suspending release. Real cleanup that awaits can itself be interrupted by repeated cancellation, so I would separate durable safety obligations from best-effort network teardown, retain any cleanup task explicitly and bound its completion. Shielding a narrow critical cleanup may be appropriate only with clear ownership and shutdown tests. It does not provide rollback for side effects already committed remotely. I would test cancellation during acquisition, work and cleanup, plus an unresponsive cleanup dependency, before claiming leak freedom under production conditions.",
+        "checks": [
+          "Rejects unowned shielded background operation.",
+          "Names repeated-cancellation and awaitable-cleanup limits.",
+          "Separates resource release from remote side-effect rollback."
+        ]
+      }
+    ],
+    "hints": [
+      "Write the three expected event sequences before implementing timeout behavior.",
+      "Place acquire/release around work in a context manager; cleanup belongs in finally.",
+      "Catch only owned TimeoutError; external CancelledError must reach the test caller."
+    ],
+    "acceptance": [
+      "Normal path events are acquired, completed, released and result ok.",
+      "Timeout path events are acquired, released and result timeout.",
+      "External cancel yields CancelledError to caller and events acquired, released.",
+      "Cancelled task reports cancelled=True; no unfinished child task remains."
+    ],
+    "pitfalls": [
+      "except BaseException can swallow cancellation and break timeout/TaskGroup control flow.",
+      "A timed-out remote write may still have committed; cleanup is not transaction rollback."
+    ],
+    "twist": "Release now performs async network I/O and can stall. Design bounded cleanup ownership, repeated-cancellation handling and shutdown escalation without leaving invisible background tasks.",
+    "solution": "The lease context records acquisition and places release inside finally. operation marks its started event, awaits an explicit release gate and only records completed when work actually proceeds. timed_operation wraps the await with asyncio.timeout and catches TimeoutError after context exit. It deliberately does not catch CancelledError, preserving an external caller's cancellation request. Three fixtures cover immediate allowed completion, a blocked gate with a short deadline, and cancellation after the started event. Assertions inspect the exact resource event order, returned outcomes, task cancellation status and the global set of unfinished tasks. The cleanup here is non-suspending local bookkeeping; this makes the reference deterministic and demonstrates ownership without pretending that every real asynchronous close is cancellation-proof. The follow-up requires a separate design for bounded network cleanup, repeated cancellation and the uncertain outcome of external mutations.",
+    "assignment": {
+      "objective": "Implement deadline handling that cleans resources and preserves external cancellation.",
+      "steps": [
+        "Write the lease async context manager and finally release.",
+        "Add operation gates so cancellation begins after confirmed acquisition.",
+        "Wrap work with asyncio.timeout and catch outside its context.",
+        "Assert normal, deadline and external-cancel paths separately.",
+        "Document which additional tests are needed once release itself awaits."
+      ],
+      "run": [
+        "python3 scenario_async_cleanup.py"
+      ],
+      "files": [
+        {
+          "name": "scenario_async_cleanup.py",
+          "language": "python",
+          "code": "\"\"\"Python 3.11+; stdlib. Timeout cancels work; cooperative cleanup always runs.\"\"\"\nimport asyncio\nfrom contextlib import asynccontextmanager\n\n\n@asynccontextmanager\nasync def lease(events):\n    events.append(\"acquired\")\n    try:\n        yield\n    finally:\n        # This fixture cleanup has no await: synchronous release cannot be interrupted.\n        events.append(\"released\")\n\n\nasync def operation(events, started, release):\n    async with lease(events):\n        started.set()\n        await release.wait()\n        events.append(\"completed\")\n        return \"ok\"\n\n\nasync def timed_operation(events, started, release, seconds):\n    # Catch outside timeout: its context converts its own cancellation to TimeoutError.\n    try:\n        async with asyncio.timeout(seconds):\n            return await operation(events, started, release)\n    except TimeoutError:\n        return \"timeout\"\n\n\nasync def main():\n    events, started, release = [], asyncio.Event(), asyncio.Event()\n    release.set()\n    assert await timed_operation(events, started, release, 1) == \"ok\"\n    assert events == [\"acquired\", \"completed\", \"released\"]\n    events, started, release = [], asyncio.Event(), asyncio.Event()\n    assert await timed_operation(events, started, release, 0.01) == \"timeout\"\n    assert events == [\"acquired\", \"released\"]\n    events, started, release = [], asyncio.Event(), asyncio.Event()\n    task = asyncio.create_task(timed_operation(events, started, release, 10))\n    await started.wait()\n    task.cancel()\n    try:\n        await task\n    except asyncio.CancelledError:\n        pass\n    else:\n        raise AssertionError(\"external cancellation was swallowed\")\n    assert events == [\"acquired\", \"released\"] and task.cancelled()\n    assert not [t for t in asyncio.all_tasks() if t is not asyncio.current_task() and not t.done()]\n    print(\"PASS cleanup: normal, timeout, external cancellation, no leaked tasks\")\n\n\nif __name__ == \"__main__\":\n    asyncio.run(main())\n"
+        }
+      ],
+      "limits": "Executed locally with Python 3.14; uses Python 3.11+ standard-library APIs. Synthetic fixtures only; no provider, socket, installation or model call. Assertions demonstrate stated local behavior, not production throughput, persistence or cross-process guarantees."
+    },
+    "sources": [
+      {
+        "label": "Timeout context and cancellation",
+        "url": "https://docs.python.org/3/library/asyncio-task.html#timeouts"
+      }
+    ]
+  },
+  {
+    "id": "async-03",
+    "track": "Async Python",
+    "day": 1,
+    "title": "Same-question stampede: share work, isolate cancellation",
+    "level": "Principal",
+    "minutes": 180,
+    "context": "Fifty concurrent requests ask the same tenant-specific knowledge question. A Python service invokes the expensive retriever fifty times. A proposed dictionary cache accidentally lets one disconnected caller cancel work needed by the others. Build process-local in-flight deduplication that shares one task per canonical key, keeps tenant identity in that key and bounds unique active keys.",
+    "constraints": [
+      "Reference permits one distinct in-flight key; production proposal must choose a bounded limit.",
+      "Same tenant/question shares work only while task is running.",
+      "Completed and failed tasks leave the registry; cancelled waiter must not cancel shared work."
+    ],
+    "requirements": [
+      "Protect registry creation with asyncio.Lock.",
+      "Store strong task references and await via asyncio.shield.",
+      "Include tenant and canonical request identity in dedupe keys.",
+      "Reject new distinct keys when capacity is exhausted.",
+      "Remove completed tasks and retrieve unobserved errors; propagate errors to attached waiters.",
+      "Provide explicit shutdown that cancels and awaits remaining work."
+    ],
+    "questions": [
+      {
+        "prompt": "What guarantees does single-flight provide, and what does it not provide?",
+        "answer": "Single-flight coalesces concurrent identical work inside one process: callers holding the same canonical key await one shared task rather than starting duplicate tasks. It is not a durable response cache, cross-process lock or idempotency contract for external mutation. The reference removes a task after completion, so a later request can start new work. Key design is part of the security boundary: tenant, authorization scope and relevant retrieval configuration must distinguish requests that must not share results. Registry access uses a lock around task lookup and creation; the lock is released before expensive work completes. Capacity bounds distinct active keys, preventing a stampede of unique questions from growing the registry indefinitely. Tests must show one provider call for concurrent same-key waiters, failure removal and a new call after failure. External charging or writes need a separate durable idempotency mechanism.",
+        "checks": [
+          "Distinguishes in-flight dedupe from durable cache/idempotency.",
+          "Includes tenant/authorization in key contract.",
+          "Bounds distinct keys and removes finished tasks."
+        ]
+      },
+      {
+        "prompt": "Why use shield for waiters, and who owns the task if every waiter disconnects?",
+        "answer": "Without shielding, cancellation of a task awaiting the shared provider task can propagate into that task and disrupt other callers. asyncio.shield prevents that propagation while the cancelled waiter still receives CancelledError. The registry retains a strong reference to the provider task, and its done callback removes the entry and retrieves any exception so an abandoned failure does not become an unobserved-task warning. This creates an explicit owner even if all callers leave. Ownership still needs an overall provider deadline and application shutdown policy in a production service; otherwise abandoned work can consume capacity forever. The reference exposes close, which cancels and awaits all owned tasks. It tests one waiter cancellation while another receives the shared result, capacity rejection, failed-task retry and shutdown cancellation. It does not claim that cancelling a provider task reverses a committed external side effect.",
+        "checks": [
+          "Preserves caller cancellation while shielding shared task.",
+          "Names registry ownership and exception retrieval.",
+          "Requires bounded provider lifetime and shutdown policy."
+        ]
+      }
+    ],
+    "hints": [
+      "One lock protects lookup-plus-create; do not hold it while awaiting the provider.",
+      "Shield the shared task at each waiter, not the waiter itself.",
+      "A done callback removes exactly its own registered task and retrieves abandoned exceptions."
+    ],
+    "acceptance": [
+      "Two same-key callers trigger one provider call; second succeeds after first is cancelled.",
+      "Different key at capacity raises RuntimeError instead of starting more work.",
+      "Provider ValueError reaches caller and failed key can be retried.",
+      "Finished registry is empty; close cancels and awaits pending shared work.",
+      "Tenant IDs differ in canonical key; scenario never assumes question text alone is safe.",
+      "After close, owner rejects new work instead of admitting orphan tasks."
+    ],
+    "pitfalls": [
+      "Shielded work without a strong owner can leak or disappear.",
+      "Question-only cache keys can mix tenants or authorization scopes."
+    ],
+    "twist": "Service now has eight worker processes and must cache results for two minutes. Separate process-local coalescing, distributed coordination and authorization-aware cached responses; define fail-open versus fail-closed behavior.",
+    "solution": "SingleFlight owns a dictionary of in-flight tasks plus an asyncio lock. get acquires the lock, reuses an existing key or checks capacity before creating and retaining one new task. It then releases the lock and awaits that task through shield. A waiter cancellation propagates to the waiter while leaving the shared provider task running for another caller. The done callback removes only the task still registered under that key and retrieves its exception for abandoned-waiter safety. close cancels and gathers owned tasks before clearing state. The fixture proves shared-call count, cancellation isolation, distinct-key admission rejection, failure eviction and retry, then explicit shutdown. It uses tenant/question tuple keys for the shared operation. This is an in-memory, single-event-loop demonstration; deployment requires provider deadlines, authorization-complete keys and a separately specified cache or distributed coordination layer if multiple worker processes participate.",
+    "assignment": {
+      "objective": "Implement bounded in-flight dedupe with caller cancellation isolation and owned shutdown.",
+      "steps": [
+        "Define canonical tenant-aware keys and a unique-key capacity limit.",
+        "Guard lookup and creation with one lock, retaining the provider task.",
+        "Shield shared work from waiter cancellation and remove finished tasks safely.",
+        "Test cancelled first waiter plus successful second waiter and call count one.",
+        "Test capacity, provider failure, failure retry and cancellation during close."
+      ],
+      "run": [
+        "python3 scenario_async_singleflight.py"
+      ],
+      "files": [
+        {
+          "name": "scenario_async_singleflight.py",
+          "language": "python",
+          "code": "\"\"\"Python 3.11+; stdlib. Process-local in-flight dedupe, not durable idempotency.\"\"\"\nimport asyncio\n\n\nclass SingleFlight:\n    def __init__(self, limit=8):\n        self.tasks = {}\n        self.lock = asyncio.Lock()\n        self.limit = limit\n        self.closed = False\n\n    async def get(self, key, factory):\n        async with self.lock:\n            if self.closed:\n                raise RuntimeError(\"single-flight owner closed\")\n            task = self.tasks.get(key)\n            if task is None:\n                if len(self.tasks) >= self.limit:\n                    raise RuntimeError(\"in-flight key capacity reached\")\n                task = asyncio.create_task(factory())\n                self.tasks[key] = task\n                task.add_done_callback(lambda completed, k=key: self._done(k, completed))\n        # Caller cancellation leaves shared task available to other callers.\n        return await asyncio.shield(task)\n\n    def _done(self, key, task):\n        if self.tasks.get(key) is task:\n            del self.tasks[key]\n        if not task.cancelled():\n            task.exception()  # Retrieve exception even when every waiter disconnects.\n\n    async def close(self):\n        async with self.lock:\n            self.closed = True\n            tasks = list(self.tasks.values())\n            for task in tasks:\n                task.cancel()\n        await asyncio.gather(*tasks, return_exceptions=True)\n        # These are intentional shutdown cancellations, not discarded work outcomes.\n        self.tasks.clear()\n\n\nasync def main():\n    flight = SingleFlight(limit=1)\n    started, release = asyncio.Event(), asyncio.Event()\n    calls = 0\n\n    async def provider():\n        nonlocal calls\n        calls += 1\n        started.set()\n        await release.wait()\n        return \"shared result\"\n\n    first = asyncio.create_task(flight.get((\"tenant-a\", \"same-question\"), provider))\n    await started.wait()\n    second = asyncio.create_task(flight.get((\"tenant-a\", \"same-question\"), provider))\n    await asyncio.sleep(0)\n    first.cancel()\n    try:\n        await first\n    except asyncio.CancelledError:\n        pass\n    else:\n        raise AssertionError(\"cancelled caller continued\")\n    try:\n        await flight.get((\"tenant-b\", \"other-question\"), provider)\n    except RuntimeError:\n        pass\n    else:\n        raise AssertionError(\"capacity overflow accepted\")\n    release.set()\n    assert await second == \"shared result\" and calls == 1\n    await asyncio.sleep(0)\n    assert not flight.tasks\n    async def failing():\n        raise ValueError(\"provider failed\")\n    try:\n        await flight.get(\"retryable-key\", failing)\n    except ValueError:\n        pass\n    else:\n        raise AssertionError(\"provider failure hidden\")\n    await asyncio.sleep(0)\n    assert await flight.get(\"retryable-key\", provider) == \"shared result\" and calls == 2\n    pending = asyncio.create_task(flight.get(\"shutdown-key\", lambda: asyncio.Event().wait()))\n    await asyncio.sleep(0)\n    await flight.close()\n    try:\n        await pending\n    except asyncio.CancelledError:\n        pass\n    else:\n        raise AssertionError(\"shutdown did not cancel pending work\")\n    assert not flight.tasks\n    try:\n        await flight.get(\"after-close\", provider)\n    except RuntimeError:\n        pass\n    else:\n        raise AssertionError(\"shutdown owner admitted new work\")\n    print(\"PASS single-flight: one shared call, isolated cancellation, capacity, failure retry, shutdown\")\n\n\nif __name__ == \"__main__\":\n    asyncio.run(main())\n"
+        }
+      ],
+      "limits": "Executed locally with Python 3.14; uses Python 3.11+ standard-library APIs. Synthetic fixtures only; no provider, socket, installation or model call. Assertions demonstrate stated local behavior, not production throughput, persistence or cross-process guarantees."
+    },
+    "sources": [
+      {
+        "label": "Shield and strong task ownership",
+        "url": "https://docs.python.org/3/library/asyncio-task.html#shielding-from-cancellation"
+      }
+    ]
+  },
+  {
+    "id": "async-04",
+    "track": "Async Python",
+    "day": 1,
+    "title": "Async endpoint freezes: choose threads or processes",
+    "level": "Applied",
+    "minutes": 120,
+    "context": "An async search endpoint performs a blocking filesystem read and a pure-Python ranking loop before calling an async database driver. At 200 requests per second, health checks stall although CPU looks moderate in aggregate. A developer proposes adding await around the synchronous ranking function. Explain event-loop starvation, isolate blocking I/O and decide when process execution is justified.",
+    "constraints": [
+      "Target health-check p95 below 50 ms during search load.",
+      "Ranking fixture is pure Python and takes 250 ms of CPU per request.",
+      "Blocking reads take 100 ms; thread/process pools must have bounded admission."
+    ],
+    "requirements": [
+      "Identify synchronous work before each actual suspension point.",
+      "Move suitable blocking I/O to a bounded offload strategy.",
+      "Choose process execution for substantial pure-Python CPU work when measured and justified.",
+      "Explain cancellation limitations of already-running thread work.",
+      "Measure loop lag and per-pool queue depth rather than HTTP latency alone."
+    ],
+    "questions": [
+      {
+        "prompt": "Why does async def not make blocking functions non-blocking?",
+        "answer": "async def defines a coroutine, but its body runs on the event-loop thread until it reaches an await that actually suspends. A synchronous filesystem call or pure-Python ranking loop still blocks that thread, preventing other coroutines, timers and health checks from advancing. Writing await rank() is invalid if rank returns an ordinary value, and merely wrapping rank inside another coroutine preserves the blocking behavior. I would measure loop lag and trace where the request spends time before choosing an offload. Blocking I/O can often run through asyncio.to_thread or an explicitly managed executor, subject to bounded admission and safe shared-state access. Existing async client libraries should be awaited directly. The improvement must be verified under representative concurrency, including queue saturation, because unlimited offloaded work moves the overload into threads rather than eliminating it.",
+        "checks": [
+          "Explains coroutine runs until real suspension.",
+          "Rejects fake await/wrapper as offload.",
+          "Measures loop lag and bounds offload admission."
+        ]
+      },
+      {
+        "prompt": "Would threads solve the pure-Python ranking bottleneck, and what happens when the caller cancels?",
+        "answer": "Under the standard CPython build with a GIL, multiple threads do not generally execute CPU-bound Python bytecode in parallel; offloading can keep the loop responsive but does not automatically increase ranking throughput. Processes may provide parallel CPU execution at the cost of serialization, memory, startup and inter-process lifecycle complexity. Native numerical code that releases the GIL or a free-threaded Python build changes the tradeoff, so the runtime and workload must be stated. Cancelling the coroutine awaiting to_thread does not forcibly stop a function already executing in its thread. I would avoid external mutation in abandoned work or implement cooperative stop signals where practical, and use bounded queues so disconnected callers cannot leave unlimited jobs. Tests compare throughput, loop lag, queue depth and cancellation cleanup. A process pool likewise needs explicit ownership, crash handling and shutdown rather than assuming timeout kills every running operation.",
+        "checks": [
+          "States GIL/runtime/workload qualification.",
+          "Names process serialization and memory costs.",
+          "Explains thread cancellation does not stop executing function."
+        ]
+      }
+    ],
+    "hints": [
+      "Mark every true suspension point in the endpoint; synchronous time before it belongs to the loop.",
+      "Try a heartbeat coroutine while injecting blocking read/ranking fixtures.",
+      "Compare bounded thread I/O offload with process CPU work; measure queue growth and cancellation."
+    ],
+    "acceptance": [
+      "Blocking fixture visibly delays heartbeat; corrected I/O offload lets heartbeat advance.",
+      "Rank remains a synchronous function until explicitly submitted to a CPU execution strategy.",
+      "Pool admission rejects or delays overload at a documented bound.",
+      "Cancelled waiter does not claim an already-running thread function has stopped.",
+      "Report includes loop lag, throughput and queue depth under the same load."
+    ],
+    "pitfalls": [
+      "Creating thousands of to_thread calls still creates an unbounded waiting-work problem.",
+      "Aggregate multicore CPU can hide one saturated loop thread."
+    ],
+    "twist": "Ranking changes to NumPy and releases the GIL, while payload serialization doubles memory. Re-measure thread versus process tradeoffs and explain why the previous choice may no longer fit.",
+    "solution": "Trace the endpoint as a sequence of execution segments and suspension points. Use a heartbeat or loop-lag measurement to show that blocking file reads and pure-Python ranking prevent unrelated requests from progressing. Replace suitable blocking I/O with a bounded offload path, retaining result/error ownership and defining shutdown. For CPU work, benchmark a process strategy against threads on the stated Python runtime rather than assuming that async syntax changes execution. Include serialization and memory costs in the process comparison. Add overload and caller-disconnect fixtures to reveal queued jobs that outlive their request. Explain that cancelling an awaiter is not equivalent to stopping a running thread or reversing its side effect. This scenario supplies a design/debug exercise; learners produce their own bounded-executor implementation and measurements. Any performance numbers in the context are requirements or fixtures, not claimed results from executed reference code.",
+    "assignment": null,
+    "sources": [
+      {
+        "label": "Blocking work in threads",
+        "url": "https://docs.python.org/3/library/asyncio-task.html#running-in-threads"
+      },
+      {
+        "label": "Executor work and process pools",
+        "url": "https://docs.python.org/3/library/concurrent.futures.html"
+      }
+    ]
+  },
+  {
+    "id": "async-05",
+    "track": "Async Python",
+    "day": 1,
+    "title": "Slow consumer: backpressure or explicit overload",
+    "level": "Principal",
+    "minutes": 150,
+    "context": "An async event bridge accepts 2,000 events per second, enriches them and forwards them to a consumer handling 500 per second. Its unbounded queue grows until memory exhaustion. Product demands no data loss and p95 acceptance below 100 ms. You must explain the incompatible steady-state requirements and design a visible overload contract with durable recovery.",
+    "constraints": [
+      "Arrival 2,000/s; sustainable consumer 500/s; net backlog growth 1,500/s.",
+      "Memory queue capacity 1,000 events; payload size 2 KB.",
+      "No silent drops; p95 acceptance target 100 ms applies only within admitted capacity."
+    ],
+    "requirements": [
+      "Compute backlog growth and time to saturate a bounded queue.",
+      "Choose an explicit reject, wait or durable-spool admission policy.",
+      "Separate accepted-to-buffer from durably-processed acknowledgements.",
+      "Preserve event identity and classify replay versus changed payload.",
+      "Design shutdown drain deadlines and unresolved-work reporting."
+    ],
+    "questions": [
+      {
+        "prompt": "Can a bounded in-memory queue satisfy no loss, immediate acceptance and permanent excess arrival rate?",
+        "answer": "No finite buffer can absorb a sustained arrival rate above service rate indefinitely. With 2,000 arrivals and 500 completions per second, backlog grows by roughly 1,500 events per second. An initially empty 1,000-slot queue fills in about two-thirds of a second under that simplified steady-rate assumption. Bounding memory prevents one failure mode but requires an admission policy: await capacity, reject with a documented retry contract or durably spool elsewhere within storage limits. Waiting conflicts with the 100 ms acceptance target during overload, while rejection cannot be described as accepted work. If no loss is mandatory, the producer must retain unaccepted events or use an acknowledged durable ingress boundary. I would renegotiate the latency scope and capacity assumptions explicitly rather than claim a queue setting solves the arithmetic. Measurements should report admitted, rejected, buffered and committed counts separately.",
+        "checks": [
+          "Computes 1,500/s growth and approximately 0.67 s saturation.",
+          "States finite-buffer impossibility under sustained overload.",
+          "Defines who retains rejected/unaccepted events."
+        ]
+      },
+      {
+        "prompt": "What should an acknowledgement mean, and how does restart interact with duplicates?",
+        "answer": "An acknowledgement must name its durability boundary. Returning accepted after queue.put only says the event entered volatile process memory; a crash can still lose it. A durable ingress acknowledgement requires the event and its identity to be persisted before confirming receipt. Downstream processing can then advance a durable state machine from received to processing to committed, with retry and uncertain outcomes visible. After restart, unfinished records are replayed using the same identity. The consumer compares canonical payload fingerprints so an identical replay does not create a duplicate effect and changed content under the same identity is a conflict. Exactly-once delivery is not a label I would infer from a queue or acknowledgement flag; effect semantics depend on the transactional sink and any external side effects. Shutdown needs a bounded drain period followed by persisted unresolved work, not cancellation followed by an empty success summary.",
+        "checks": [
+          "Distinguishes volatile admission from durable receipt.",
+          "Preserves identity across restart and detects changed content.",
+          "Avoids claiming exactly-once effects from queue mechanics."
+        ]
+      }
+    ],
+    "hints": [
+      "Subtract service rate from arrival rate before proposing architecture.",
+      "Write what accepted means and identify which side owns an event before that boundary.",
+      "Use bounded ingress plus durable replay state; expose capacity and unresolved counts."
+    ],
+    "acceptance": [
+      "Capacity model predicts 1,000-slot queue fills in approximately 0.67 s at stated net rate.",
+      "Every incoming event has admitted, rejected or pending-producer status; counts reconcile.",
+      "Crash before durable receipt produces no accepted acknowledgement.",
+      "Unchanged replay preserves one effect; changed payload under same ID is a conflict.",
+      "Shutdown deadline leaves explicit durable unresolved records rather than reporting an empty successful drain."
+    ],
+    "pitfalls": [
+      "Dropping oldest queue entries violates no-loss even if current requests still return 200.",
+      "Growing a disk spool without capacity limits postpones rather than solves overload."
+    ],
+    "twist": "Ingress can pause only for five seconds and disk spool has twenty minutes of capacity. Define escalation before exhaustion, producer retention contract and a measured scale-out target.",
+    "solution": "Begin with the rate calculation and make the incompatibility visible. A bounded queue limits immediate memory, but excess throughput must appear as waiting, rejection or durable backlog. Define a durable receipt boundary and require the producer to retain ownership until that boundary is acknowledged. If local spooling is selected, give it explicit byte and age limits, restart recovery and integrity checks. Processing records retain identity and payload fingerprint through retries; identical replay and changed-content conflict have different outcomes. Separate ingress latency from completion latency and monitor queue age, spool occupancy, reject counts and committed throughput. On shutdown, drain only within a stated deadline and persist unfinished state. The learner's design should include overload fixtures, crash-boundary tests and arithmetic for capacity exhaustion. This scenario has no executable assignment and makes no claim that a particular broker or storage setup has already been validated.",
+    "assignment": null,
+    "sources": [
+      {
+        "label": "Queue capacity and acknowledgement semantics",
+        "url": "https://docs.python.org/3/library/asyncio-queue.html"
+      }
+    ]
+  },
+  {
+    "id": "async-06",
+    "track": "Async Python",
+    "day": 1,
+    "title": "Parallel fan-out: critical failure versus partial result",
+    "level": "Principal",
+    "minutes": 150,
+    "context": "A search response combines retrieval, authorization and optional analytics. A developer runs all three with gather(return_exceptions=True), then turns every exception into an empty list. Authorization failure therefore looks like an authorized zero-document result, while analytics failure hides metrics gaps. Design cancellation and error policy for dependencies with different criticality and one shared request deadline.",
+    "constraints": [
+      "Request budget 800 ms; authorization is mandatory and fail-closed.",
+      "Retrieval timeout may produce an explicit unavailable response; analytics is optional.",
+      "Every owned task must be awaited, cancelled or deliberately transferred to a bounded owner."
+    ],
+    "requirements": [
+      "Classify mandatory and optional dependency failures before choosing concurrency primitive.",
+      "Keep authorization exceptions distinguishable from successful empty retrieval.",
+      "Apply one overall deadline plus justified per-dependency bounds.",
+      "Cancel and await unnecessary work when mandatory authorization fails.",
+      "Log optional failures with correlation and no sensitive payloads."
+    ],
+    "questions": [
+      {
+        "prompt": "Why is return_exceptions=True followed by empty-list fallback dangerous here?",
+        "answer": "return_exceptions=True changes gather's result collection, not the business meaning of errors. If authorization raises and the caller replaces that exception with an empty list, the system loses the distinction between denied or unavailable authorization and successful permission checking. The response path might later add cached documents or fallback retrieval without any validated authority boundary. I would make authorization a mandatory prerequisite or an explicitly critical concurrent task whose failure prevents output construction. Retrieval can legitimately return zero documents only after authorization succeeds. Optional analytics may fail independently, but that failure should produce a recorded degraded observability outcome rather than disappear. Typed result states make these contracts visible. Tests inject denial, authorization timeout, retrieval empty success and analytics failure separately; none should share the same generic empty-list state merely because their Python values can be coerced that way.",
+        "checks": [
+          "Separates collection behavior from business error semantics.",
+          "Keeps authorization fail-closed before output construction.",
+          "Tests denied, unavailable and empty-success separately."
+        ]
+      },
+      {
+        "prompt": "Would one TaskGroup be correct for all three dependencies?",
+        "answer": "TaskGroup cancels sibling tasks when an unhandled child failure occurs and waits for them before raising the grouped failure. That is useful when children form one critical unit, but an optional analytics failure should not automatically cancel authorized retrieval. I would either run analytics in a separately owned, bounded branch whose expected operational errors become explicit optional outcomes, or delay analytics until a minimal authorized response is secured. Mandatory authorization and retrieval need their own carefully defined result policy and shared request deadline. Catching expected analytics errors inside its task can preserve TaskGroup structure without pretending success, but unexpected programming errors may still deserve escalation. Any cancellation cleanup must propagate CancelledError after releasing resources. The final design should state which tasks remain useful after each failure and await every owned task. A background task without deadline, strong ownership or shutdown collection is not an acceptable escape hatch.",
+        "checks": [
+          "Explains TaskGroup sibling cancellation accurately.",
+          "Separates optional failure policy from critical branch.",
+          "Requires task ownership, deadlines and cancellation cleanup."
+        ]
+      }
+    ],
+    "hints": [
+      "Build a failure matrix: authorization denied, authorization unavailable, retrieval empty, retrieval timeout, analytics error.",
+      "Map each failure to deny, unavailable, valid empty or degraded analytics explicitly.",
+      "Choose task boundaries only after policy; ensure each created task has one clear owner."
+    ],
+    "acceptance": [
+      "Authorization denial never reaches a document-rendering path.",
+      "Authorization timeout produces unavailable/deny policy, not an authorized empty success.",
+      "Authorized zero-document retrieval remains a valid empty result.",
+      "Expected analytics failure preserves authorized response and records degraded analytics.",
+      "Mandatory failure cancels/awaits unneeded retrieval and no owned child task remains live."
+    ],
+    "pitfalls": [
+      "Broad exception-to-empty conversion erases authority and outage boundaries.",
+      "Unowned background analytics can leak tasks and hide failures after request completion."
+    ],
+    "twist": "Retrieval completes before authorization, and analytics already sent an event containing document titles. Redesign the data-flow boundary so unauthorized metadata cannot escape, even through optional telemetry.",
+    "solution": "Write the dependency criticality table before concurrency code. Authorization is mandatory and controls whether any retrieved document or metadata can leave the service. Retrieval has explicit successful-empty and unavailable states; analytics is optional but observable. Apply an overall monotonic request budget and decide whether early parallel retrieval is safe before authorization, including telemetry and cache boundaries. Use structured task ownership for critical work and a separately bounded optional outcome where appropriate. Never erase exceptions into the same empty value as a legitimate result. On mandatory failure, cancel and await now-useless work, then return the defined fail-closed outcome. Tests must inject every failure class and inspect output plus telemetry, not only status codes. This is a principal-level design scenario rather than an executed sample; the learner should justify chosen TaskGroup/gather boundaries against the failure matrix and attach implementation evidence independently.",
+    "assignment": null,
+    "sources": [
+      {
+        "label": "TaskGroup failure propagation",
+        "url": "https://docs.python.org/3/library/asyncio-task.html#task-groups"
+      }
+    ]
+  }
+]
